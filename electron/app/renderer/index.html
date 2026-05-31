@@ -80,7 +80,7 @@
             <strong>Windows 10</strong>
             <span>Descarga directa. Un clic.</span>
           </div>
-          <button class="btn-link" data-url="https://drive.google.com/file/d/1YefHUkzusD1ep7aM8Iv38HHjWmQ7xZJg">Descargar →</button>
+          <button class="btn-download" data-download="win10" data-filename="Windows10.iso">⬇ Descargar aquí</button>
         </div>
 
         <div class="iso-card" data-iso="win11">
@@ -89,7 +89,7 @@
             <strong>Windows 11</strong>
             <span>Descarga oficial de Microsoft</span>
           </div>
-          <button class="btn-link" data-url="https://www.microsoft.com/es-es/software-download/windows11">Descargar →</button>
+          <button class="btn-link" data-url="https://www.microsoft.com/es-es/software-download/windows11">Abrir web →</button>
         </div>
 
         <div class="iso-card recommended" data-iso="poxi">
@@ -105,7 +105,7 @@
               <li>Sin Copilot ni iconos que no pediste</li>
             </ul>
           </div>
-          <button class="btn-link" data-url="https://acortar.link/tIszzw">Descargar →</button>
+          <button class="btn-download" data-download="poxi" data-filename="Win11-LTSC-Poxi.iso">⬇ Descargar aquí</button>
         </div>
       </div>
 
@@ -115,11 +115,26 @@
     </div>
 
     <!-- ══════════════════════════════════════════════════════════
-         SCREEN 2 — Seleccionar ISO
+         SCREEN 2 — Seleccionar / Descargar ISO
     ══════════════════════════════════════════════════════════ -->
     <div class="screen" id="screen-2">
-      <div class="sec-head"><span class="sec-dot"></span><h2>Selecciona tu archivo ISO</h2></div>
-      <p class="screen-hint">Busca el archivo <code>.iso</code> que descargaste (normalmente en la carpeta <strong>Descargas</strong>).</p>
+      <div class="sec-head"><span class="sec-dot"></span><h2 id="screen2-title">Selecciona tu archivo ISO</h2></div>
+      <p class="screen-hint" id="screen2-hint">Busca el archivo <code>.iso</code> que descargaste (normalmente en la carpeta <strong>Descargas</strong>).</p>
+
+      <!-- Download progress panel (shown when downloading) -->
+      <div class="download-panel" id="download-panel" style="display:none">
+        <div class="download-info">
+          <span id="dl-filename">Descargando...</span>
+          <span id="dl-size-info"></span>
+        </div>
+        <div class="dl-bar-wrap">
+          <div class="dl-bar" id="dl-bar"></div>
+        </div>
+        <div class="dl-foot">
+          <span id="dl-pct">0%</span>
+          <button class="btn-cancel-dl" id="btn-cancel-dl">✕ Cancelar</button>
+        </div>
+      </div>
 
       <div class="iso-drop-zone" id="iso-drop-zone">
         <div class="iso-drop-icon">

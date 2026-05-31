@@ -51,6 +51,13 @@ document.getElementById('btn-close').addEventListener('click', () => {
 document.getElementById('btn-start').addEventListener('click', () => goTo(1));
 
 // ── SCREEN 1 — Choose ISO ─────────────────────────────────────────
+// ISO download URLs (resolved)
+const ISO_URLS = {
+  win10:  { url: 'https://drive.google.com/uc?export=download&id=1YefHUkzusD1ep7aM8Iv38HHjWmQ7xZJg', filename: 'Windows10.iso' },
+  poxi:   { url: 'https://acortar.link/tIszzw', filename: 'Win11-LTSC-Poxi.iso' },
+};
+
+// Open-in-browser links
 document.querySelectorAll('.btn-link').forEach(btn => {
   btn.addEventListener('click', (e) => {
     const url = e.currentTarget.dataset.url;
@@ -58,32 +65,118 @@ document.querySelectorAll('.btn-link').forEach(btn => {
   });
 });
 
-document.getElementById('btn-skip-iso').addEventListener('click', () => goTo(2));
+// In-app download buttons
+document.querySelectorAll('.btn-download').forEach(btn => {
+  btn.addEventListener('click', async (e) => {
+    const key = e.currentTarget.dataset.download;
+    const iso = ISO_URLS[key];
+    if (!iso) return;
+    // Go to screen 2 and start download
+    state._pendingDownload = iso;
+    goTo(2);
+  });
+});
 
-// ── SCREEN 2 — Select ISO ─────────────────────────────────────────
+document.getElementById('btn-skip-iso').addEventListener('click', () => {
+  state._pendingDownload = null;
+  goTo(2);
+});
+
+// ── SCREEN 2 — Select / Download ISO ─────────────────────────────
 const isoDropZone = document.getElementById('iso-drop-zone');
 const isoFileNameEl = document.getElementById('iso-file-name');
 const isoErrorEl = document.getElementById('iso-error');
 const btnIsoOk = document.getElementById('btn-iso-ok');
+const dlPanel = document.getElementById('download-panel');
 
-isoDropZone.addEventListener('click', async () => {
-  const result = await api.openIsoPicker();
-  if (!result) return;
-  if (result.error) {
-    showError(isoErrorEl, result.error);
-    return;
-  }
-  state.isoPath = result.path;
-  state.isoName = result.name;
-  isoFileNameEl.textContent = result.name + ' (' + result.sizeMB + ' MB)';
+function setIsoSelected(filePath, fileName, sizeMB) {
+  state.isoPath = filePath;
+  state.isoName = fileName;
+  isoFileNameEl.textContent = fileName + (sizeMB ? ` (${sizeMB} MB)` : '');
   isoDropZone.classList.add('has-file');
   document.getElementById('iso-drop-label').textContent = 'ISO seleccionada:';
   hideError(isoErrorEl);
   btnIsoOk.disabled = false;
+}
+
+isoDropZone.addEventListener('click', async () => {
+  if (dlPanel.style.display !== 'none') return; // downloading, don't open picker
+  const result = await api.openIsoPicker();
+  if (!result) return;
+  if (result.error) { showError(isoErrorEl, result.error); return; }
+  setIsoSelected(result.path, result.name, result.sizeMB);
 });
 
-document.getElementById('btn-back-1').addEventListener('click', () => goTo(1));
+document.getElementById('btn-back-1').addEventListener('click', () => {
+  api.cancelDownload();
+  api.offDownloadProgress();
+  dlPanel.style.display = 'none';
+  goTo(1);
+});
 btnIsoOk.addEventListener('click', () => goTo(3));
+
+// Download cancel
+document.getElementById('btn-cancel-dl').addEventListener('click', () => {
+  api.cancelDownload();
+  api.offDownloadProgress();
+  dlPanel.style.display = 'none';
+  isoDropZone.style.display = 'flex';
+  btnIsoOk.disabled = true;
+  state.isoPath = null;
+});
+
+// Auto-start download if coming from a download button on screen 1
+const _origScreen2GoTo = goTo;
+function maybeStartDownload() {
+  if (!state._pendingDownload) return;
+  const iso = state._pendingDownload;
+  state._pendingDownload = null;
+  startInAppDownload(iso.url, iso.filename);
+}
+
+async function startInAppDownload(url, filename) {
+  // Show download panel, hide drop zone
+  isoDropZone.style.display = 'none';
+  dlPanel.style.display = 'flex';
+  document.getElementById('dl-filename').textContent = 'Descargando ' + filename + '...';
+  document.getElementById('dl-size-info').textContent = '';
+  document.getElementById('dl-pct').textContent = '0%';
+  document.getElementById('dl-bar').style.width = '0%';
+  btnIsoOk.disabled = true;
+  hideError(isoErrorEl);
+
+  api.offDownloadProgress();
+  api.onDownloadProgress(({ percent, downloadedMB, totalMB }) => {
+    document.getElementById('dl-bar').style.width = percent + '%';
+    document.getElementById('dl-pct').textContent = percent + '%';
+    document.getElementById('dl-size-info').textContent =
+      totalMB > 0 ? `${downloadedMB} / ${totalMB} MB` : `${downloadedMB} MB`;
+  });
+
+  const result = await api.downloadIso({ url, filename });
+
+  if (result.status === 'error') {
+    dlPanel.style.display = 'none';
+    isoDropZone.style.display = 'flex';
+    showError(isoErrorEl, '⚠️ ' + result.message);
+    return;
+  }
+
+  // Done or already exists
+  api.offDownloadProgress();
+  dlPanel.style.display = 'none';
+  isoDropZone.style.display = 'flex';
+  setIsoSelected(result.path, result.name || filename, null);
+}
+
+// Hook screen-2 activation to check for pending download
+(function() {
+  const s2 = document.getElementById('screen-2');
+  const obs = new MutationObserver(() => {
+    if (s2.classList.contains('active')) maybeStartDownload();
+  });
+  obs.observe(s2, { attributes: true, attributeFilter: ['class'] });
+})();
 
 // ── SCREEN 3 — USB ────────────────────────────────────────────────
 let usbPollTimer = null;

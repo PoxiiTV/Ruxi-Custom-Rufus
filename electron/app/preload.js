@@ -1,28 +1,22 @@
 const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('ruxi', {
-  // Window controls
   minimize: () => ipcRenderer.invoke('window-minimize'),
   close: () => ipcRenderer.invoke('window-close'),
 
-  // USB detection
   listUsbDrives: () => ipcRenderer.invoke('list-usb-drives'),
 
-  // ISO picker
   openIsoPicker: () => ipcRenderer.invoke('open-iso-picker'),
-
-  // Open URL in system browser
   openUrl: (url) => ipcRenderer.invoke('open-url', url),
 
-  // Flash
+  // In-app ISO download
+  downloadIso: (opts) => ipcRenderer.invoke('download-iso', opts),
+  cancelDownload: () => ipcRenderer.invoke('cancel-download'),
+  onDownloadProgress: (cb) => ipcRenderer.on('download-progress', (_, d) => cb(d)),
+  offDownloadProgress: () => ipcRenderer.removeAllListeners('download-progress'),
+
   startFlash: (opts) => ipcRenderer.invoke('start-flash', opts),
   cancelFlash: () => ipcRenderer.invoke('cancel-flash'),
-
-  // Flash progress events
-  onFlashEvent: (cb) => {
-    ipcRenderer.on('flash-event', (_, data) => cb(data));
-  },
-  offFlashEvents: () => {
-    ipcRenderer.removeAllListeners('flash-event');
-  },
+  onFlashEvent: (cb) => ipcRenderer.on('flash-event', (_, d) => cb(d)),
+  offFlashEvents: () => ipcRenderer.removeAllListeners('flash-event'),
 });
