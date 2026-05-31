@@ -174,11 +174,15 @@ body {
 }
 .iso-card:hover { background: var(--glass-hi); border-color: rgba(255,255,255,.16); }
 .iso-card.recommended { border-color: rgba(123,92,255,.4); background: rgba(123,92,255,.08); }
-.iso-badge {
-  position: absolute; top: -1px; right: 14px;
+.iso-badge { display: none; } /* legacy — replaced by iso-badge-inline */
+.iso-card-actions {
+  display: flex; flex-direction: column; align-items: flex-end;
+  gap: 8px; flex-shrink: 0; justify-content: flex-start;
+}
+.iso-badge-inline {
   background: var(--grad); color: #fff;
   font-size: 10px; font-weight: 700; letter-spacing: .4px;
-  padding: 3px 10px; border-radius: 0 0 8px 8px;
+  padding: 3px 10px; border-radius: 20px; white-space: nowrap;
 }
 .iso-card-icon {
   width: 44px; height: 44px; border-radius: 12px;

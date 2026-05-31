@@ -53,8 +53,8 @@ document.getElementById('btn-start').addEventListener('click', () => goTo(1));
 // ── SCREEN 1 — Choose ISO ─────────────────────────────────────────
 // ISO download URLs (resolved)
 const ISO_URLS = {
-  win10:  { url: 'https://drive.google.com/uc?export=download&id=1YefHUkzusD1ep7aM8Iv38HHjWmQ7xZJg', filename: 'Windows10.iso' },
-  poxi:   { url: 'https://acortar.link/tIszzw', filename: 'Win11-LTSC-Poxi.iso' },
+  win10: { url: 'https://drive.usercontent.google.com/download?id=1YefHUkzusD1ep7aM8Iv38HHjWmQ7xZJg&export=download&authuser=0&confirm=t', filename: 'Windows10.iso' },
+  poxi:  { url: 'https://drive.usercontent.google.com/download?id=1XWl5vnFsGIP_qz_PbwTsa4m5K1p7jAMn&export=download&authuser=0&confirm=t', filename: 'Win11-LTSC-Poxi.iso' },
 };
 
 // Open-in-browser links

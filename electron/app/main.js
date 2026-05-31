@@ -143,24 +143,38 @@ function downloadFile(url, destPath, onProgress, onDone, onError) {
         return;
       }
 
-      // Google Drive confirmation page detection
-      if (currentUrl.includes('drive.google.com') && res.headers['content-type']?.includes('text/html')) {
+      // Detect HTML responses (confirmation pages, anti-bot pages, etc.)
+      const contentType = res.headers['content-type'] || '';
+      const isGoogleDrive = currentUrl.includes('drive.google.com') || currentUrl.includes('drive.usercontent.google.com');
+      if (contentType.includes('text/html')) {
         let html = '';
         res.on('data', c => html += c.toString());
         res.on('end', () => {
-          // Extract confirm token
-          const match = html.match(/confirm=([^&"]+)/);
-          if (match) {
-            const fileId = currentUrl.match(/id=([^&]+)/)?.[1];
+          // Strategy 1: add confirm=t if not present (Google Drive large file bypass)
+          if (isGoogleDrive && !currentUrl.includes('confirm=t') && !currentUrl.includes('confirm=')) {
+            const sep = currentUrl.includes('?') ? '&' : '?';
+            followRedirect(currentUrl + sep + 'confirm=t', redirectCount + 1);
+            return;
+          }
+          // Strategy 2: extract confirm token from HTML
+          const confirmMatch = html.match(/confirm=([^&"'\s]+)/);
+          if (isGoogleDrive && confirmMatch) {
+            const fileId = currentUrl.match(/[?&]id=([^&]+)/)?.[1];
             if (fileId) {
               followRedirect(
-                `https://drive.google.com/uc?export=download&confirm=${match[1]}&id=${fileId}`,
+                `https://drive.usercontent.google.com/download?id=${fileId}&export=download&authuser=0&confirm=${confirmMatch[1]}`,
                 redirectCount + 1
               );
               return;
             }
           }
-          onError('No se pudo iniciar la descarga de Google Drive. Descárgala manualmente.');
+          // Strategy 3: look for any download link in the HTML
+          const hrefMatch = html.match(/href="(https:\/\/[^"]*(?:download|uc)[^"]*confirm[^"]*)"/);
+          if (hrefMatch) {
+            followRedirect(hrefMatch[1].replace(/&amp;/g, '&'), redirectCount + 1);
+            return;
+          }
+          onError('No se pudo descargar directamente. Descárgala manualmente desde el navegador.');
         });
         return;
       }
@@ -198,7 +212,7 @@ function downloadFile(url, destPath, onProgress, onDone, onError) {
         const stat = fs.statSync(destPath);
         if (stat.size < 1.5 * 1024 * 1024 * 1024) {
           fs.unlinkSync(destPath);
-          onError('El archivo descargado es demasiado pequeño. La descarga puede haber fallado.');
+          onError(`El archivo recibido no es una ISO válida (${Math.round(stat.size/1024)} KB). Google Drive puede haber bloqueado la descarga directa. Inténtalo de nuevo o descárgala desde el navegador.`);
           return;
         }
         onDone(destPath);
