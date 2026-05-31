@@ -57,47 +57,45 @@ ipcMain.handle('window-close', () => {
   app.quit();
 });
 
-// ── USB detection (logical disk → partition → physical drive) ─────────────────
+// ── Drive detection — muestra TODOS los discos excepto C: y CD-ROM ───────────
 ipcMain.handle('list-usb-drives', async () => {
   try {
-    // Query from the logical disk side — much more reliable for letter detection
-    const ps = `
-$disks = Get-WmiObject Win32_LogicalDisk | Where-Object { $_.DriveType -eq 2 }
-$result = @()
-foreach ($d in $disks) {
-  $part = Get-WmiObject -Query "ASSOCIATORS OF {Win32_LogicalDisk.DeviceID='$($d.DeviceID)'} WHERE AssocClass=Win32_LogicalDiskToPartition" | Select-Object -First 1
-  $model = 'USB Drive'
-  $totalSize = $d.Size
-  if ($part) {
-    $phys = Get-WmiObject -Query "ASSOCIATORS OF {Win32_DiskPartition.DeviceID='$($part.DeviceID)'} WHERE AssocClass=Win32_DiskDriveToDiskPartition" | Select-Object -First 1
-    if ($phys) { $model = $phys.Model; $totalSize = $phys.Size }
-  }
-  $result += [PSCustomObject]@{
-    Letter = $d.DeviceID
-    Label  = if ($d.VolumeName) { $d.VolumeName } else { '' }
-    Size   = $totalSize
-    Model  = $model
-  }
-}
-if ($result.Count -eq 0) { '[]' } else { $result | ConvertTo-Json -Compress }
-`.trim();
+    // Simple, reliable query — no multiline, no complex escaping
+    const raw = execSync(
+      'powershell -NoProfile -Command "Get-WmiObject Win32_LogicalDisk | Select-Object DeviceID,VolumeName,Size,DriveType | ConvertTo-Json -Compress"',
+      { timeout: 10000 }
+    ).toString().trim();
 
-    const raw = execSync(`powershell -NoProfile -Command "${ps}"`, { timeout: 12000 }).toString().trim();
-    if (!raw || raw === 'null' || raw === '[]') return [];
+    if (!raw || raw === 'null') return [];
     const data = JSON.parse(raw);
-    const drives = Array.isArray(data) ? data : [data];
+    const disks = Array.isArray(data) ? data : [data];
 
-    return drives.filter(d => d && d.Size).map(d => {
-      const sizeGB = Math.round(parseInt(d.Size || 0) / 1073741824);
-      const label = d.Label ? `${d.Model} — ${d.Label} (${d.Letter})` : `${d.Model} (${d.Letter})`;
-      return {
-        model: d.Model || 'USB Drive',
-        sizeGB,
-        letters: [d.Letter],
-        label,
-        tooSmall: sizeGB < 8,
-      };
-    });
+    return disks
+      .filter(d => {
+        if (!d || !d.DeviceID) return false;
+        if (d.DriveType === 5) return false;        // CD-ROM
+        if (d.DeviceID === 'C:') return false;       // disco del sistema
+        if (!d.Size || parseInt(d.Size) === 0) return false;
+        return true;
+      })
+      .map(d => {
+        const sizeGB = Math.round(parseInt(d.Size) / 1073741824);
+        const label = d.VolumeName || '';
+        const isRemovable = d.DriveType === 2;
+        const icon = isRemovable ? '💾' : '🖥️';
+        const typeTag = isRemovable ? 'USB' : 'Disco';
+        const displayName = label
+          ? `${icon} ${label} (${d.DeviceID}) — ${typeTag}`
+          : `${icon} ${d.DeviceID} — ${typeTag} ${sizeGB} GB`;
+        return {
+          model: label || d.DeviceID,
+          sizeGB,
+          letters: [d.DeviceID],
+          label: displayName,
+          tooSmall: sizeGB < 8,
+          driveType: d.DriveType,
+        };
+      });
   } catch (e) {
     return [];
   }

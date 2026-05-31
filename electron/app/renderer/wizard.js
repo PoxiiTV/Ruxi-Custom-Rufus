@@ -193,21 +193,26 @@ async function refreshUsbList() {
   if (!drives.length) {
     listEl.innerHTML = '';
     listEl.appendChild(emptyEl);
-    emptyEl.querySelector('span').textContent = 'No se detectaron USBs. Conecta uno e intenta de nuevo.';
+    emptyEl.querySelector('span').textContent = 'No se detectaron unidades. Conecta tu USB e intenta de nuevo.';
     btnUsbOk.disabled = true;
     return;
   }
 
-  const html = drives.map((d, i) => `
+  const html = drives.map((d, i) => {
+    const isRemovable = d.driveType === 2;
+    const icon = isRemovable ? '💾' : '🖥️';
+    const badge = isRemovable ? '' : '<span class="drive-badge">Disco</span>';
+    const smallWarn = d.tooSmall ? ' <span class="drive-small">— mín. 8 GB</span>' : '';
+    return `
     <div class="usb-item ${d.tooSmall ? 'too-small' : ''}" data-idx="${i}">
-      <span class="usb-icon">💾</span>
+      <span class="usb-icon">${icon}</span>
       <div class="usb-info">
-        <strong>${escHtml(d.model)}</strong>
-        <span>${d.letters.length ? d.letters.join(', ') : 'Sin letra asignada'}${d.tooSmall ? ' — Demasiado pequeño (mín. 8 GB)' : ''}</span>
+        <strong>${escHtml(d.model)}${badge}</strong>
+        <span>${d.letters.join(', ')}${smallWarn}</span>
       </div>
       <span class="usb-size">${d.sizeGB} GB</span>
-    </div>
-  `).join('');
+    </div>`;
+  }).join('');
 
   listEl.innerHTML = html;
 
