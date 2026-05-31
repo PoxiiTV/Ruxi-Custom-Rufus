@@ -7,7 +7,7 @@
 **La forma más sencilla de instalar Windows.**  
 Sin tecnicismos. Sin pasos raros. Para todos.
 
-[![GitHub release](https://img.shields.io/github/v/release/PoxiiTV/Ruxi-Custom-Rufus?style=flat-square&color=7b5cff)](https://github.com/PoxiiTV/Ruxi-Custom-Rufus/releases)
+[![GitHub release](https://img.shields.io/github/v/release/PoxiiTV/Ruxi-Custom-Rufus?include_prereleases&style=flat-square&color=7b5cff)](https://github.com/PoxiiTV/Ruxi-Custom-Rufus/releases)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg?style=flat-square)](LICENSE.txt)
 [![Made by Poxi](https://img.shields.io/badge/made%20by-Poxi-e23aff?style=flat-square)](https://github.com/PoxiiTV)
 
