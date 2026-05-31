@@ -217,10 +217,16 @@ async function refreshUsbList() {
   listEl.innerHTML = html;
 
   listEl.querySelectorAll('.usb-item:not(.too-small)').forEach(el => {
+    // Restore selection if this drive was already selected
+    const idx = parseInt(el.dataset.idx);
+    if (state.driveLetter && usbDrives[idx]?.letters[0] === state.driveLetter) {
+      el.classList.add('selected');
+      btnUsbOk.disabled = false;
+    }
+
     el.addEventListener('click', () => {
       listEl.querySelectorAll('.usb-item').forEach(e => e.classList.remove('selected'));
       el.classList.add('selected');
-      const idx = parseInt(el.dataset.idx);
       state.selectedDrive = usbDrives[idx];
       state.driveLetter = usbDrives[idx].letters[0] || '';
       btnUsbOk.disabled = false;
@@ -244,9 +250,17 @@ document.getElementById('btn-usb-ok').addEventListener('click', () => {
   goTo(4);
 });
 
+async function triggerUsbSearch() {
+  const btn = document.getElementById('btn-refresh-usb');
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ Buscando...'; }
+  await refreshUsbList();
+  if (btn) { btn.disabled = false; btn.textContent = '🔄 Buscar'; }
+}
+
+document.getElementById('btn-refresh-usb').addEventListener('click', triggerUsbSearch);
+
 function startUsbPoll() {
-  refreshUsbList();
-  usbPollTimer = setInterval(refreshUsbList, 3000);
+  triggerUsbSearch();
 }
 function stopUsbPoll() {
   if (usbPollTimer) { clearInterval(usbPollTimer); usbPollTimer = null; }
@@ -303,7 +317,10 @@ function startFlash() {
 
   api.offFlashEvents();
   api.onFlashEvent((evt) => {
-    if (evt.status === 'progress') {
+    if (evt.status === 'log-path') {
+      state.logPath = evt.path;
+      return;
+    } else if (evt.status === 'progress') {
       updateProgress(evt.percent || 0, evt.message || 'Procesando...');
     } else if (evt.status === 'done') {
       updateProgress(100, '¡Completado!');
@@ -366,20 +383,186 @@ document.getElementById('btn-secure-boot-toggle').addEventListener('click', (e) 
   btn.classList.toggle('open', !isOpen);
 });
 
-document.getElementById('btn-to-install-guide').addEventListener('click', () => goTo(8));
+document.getElementById('btn-to-install-guide').addEventListener('click', () => {
+  buildGuide();
+  goTo(8);
+});
 
-// ── SCREEN 8 — Install guide ──────────────────────────────────────
+// ── SCREEN 8 — Install guide (dinámica según equipo + escenario) ──
 document.getElementById('btn-back-7').addEventListener('click', () => goTo(7));
 document.getElementById('btn-finish').addEventListener('click', () => api.close());
 
-const stepChecks = document.querySelectorAll('.step-check');
-stepChecks.forEach((chk, i) => {
-  chk.addEventListener('change', () => {
-    const allChecked = [...stepChecks].every(c => c.checked);
-    if (allChecked) {
-      document.getElementById('done-final').style.display = 'block';
-      document.getElementById('done-final').scrollIntoView({ behavior: 'smooth' });
+const guide = { device: 'desktop', scenario: 'new' };
+
+// Define los pasos según el tipo de equipo y el escenario
+function getInstallSteps() {
+  const isLaptop = guide.device === 'laptop';
+  const isReinstall = guide.scenario === 'reinstall';
+  const steps = [];
+
+  steps.push({
+    title: 'Aparece "Instalación de Windows"',
+    desc: 'Sale una pantalla pidiendo idioma y teclado. Déjalo en <em>Español</em> → <strong>Siguiente</strong> → <strong>"Instalar ahora"</strong>.',
+  });
+  steps.push({
+    title: 'Cuando pida la clave de producto',
+    desc: 'Pulsa abajo en <em>"No tengo clave de producto"</em>. Windows funcionará igual, lo puedes activar después.',
+  });
+  steps.push({
+    title: 'Elige la edición (si te lo pregunta)',
+    desc: 'Normalmente <em>Windows Pro</em>. Si solo hay una opción, dale a Siguiente.',
+  });
+  steps.push({
+    title: 'Acepta los términos',
+    desc: 'Marca la casilla de aceptar → Siguiente.',
+  });
+  steps.push({
+    title: 'Tipo de instalación: "Personalizada"',
+    desc: 'Elige <strong>"Personalizada: instalar solo Windows"</strong>. <em>NUNCA</em> elijas "Actualización".',
+  });
+
+  if (isReinstall) {
+    steps.push({
+      critical: true,
+      title: '⚠️ Momento clave — Borrar el disco viejo',
+      desc: 'Verás varias particiones (Recuperación, Sistema, EFI, Principal...). Identifica <strong>TU disco por el tamaño total</strong> y borra TODAS sus particiones una a una con el botón <strong>"Eliminar"</strong>, hasta que quede una sola línea: <strong>"Espacio no asignado"</strong>. Selecciónala y pulsa <strong>Siguiente</strong>.',
+      tip: isLaptop
+        ? '💡 Los portátiles suelen tener un solo disco: bórralo entero sin miedo. Si ves un disco aparte muy pequeño, suele ser de recuperación del fabricante.'
+        : '💡 Si tienes VARIOS discos (ej. uno de datos de 1&nbsp;TB para fotos), NO toques sus particiones. Fíjate bien en el tamaño y borra SOLO las del disco donde quieres Windows.',
+    });
+  } else {
+    steps.push({
+      critical: true,
+      title: '⚠️ Momento clave — Elegir el disco',
+      desc: 'Verás tu disco como <strong>"Espacio no asignado"</strong>. Haz clic en él y pulsa <strong>Siguiente</strong>. Windows creará las particiones automáticamente, tú no tienes que hacer nada más.',
+      tip: isLaptop
+        ? '💡 Si por algún motivo ya hubiera particiones, bórralas todas con "Eliminar" hasta dejar solo "Espacio no asignado".'
+        : '💡 Si ves VARIOS discos, elige por el tamaño el que quieras usar para Windows. Si ya tuviera particiones, bórralas hasta dejar "Espacio no asignado".',
+    });
+  }
+
+  steps.push({
+    title: 'Windows se instala solo',
+    desc: 'Copia los archivos y se reinicia varias veces. <strong>No toques nada</strong> y no quites el USB hasta que te pida configurar.' +
+      (isLaptop ? ' <strong>Mantén el portátil enchufado a la corriente.</strong>' : ''),
+  });
+  steps.push({
+    title: 'Configuración inicial de Windows',
+    desc: 'Elige país (España) y teclado. ' +
+      (isLaptop
+        ? 'Cuando pida la red, <strong>conéctate a tu WiFi</strong> (te pedirá la contraseña).'
+        : 'Si tienes cable de red, lo detecta solo; si usas WiFi, conéctala cuando lo pida.') +
+      '<br>✨ Como Ruxi ya lo configuró todo, <strong>NO te obliga a poner cuenta de Microsoft</strong>: entrarás directo con tu usuario local.',
+  });
+  steps.push({
+    title: '¡Llegaste al escritorio de Windows!',
+    desc: 'Ya está instalado. Ahora vamos a dejarlo perfecto con los pasos de abajo 👇',
+  });
+
+  return steps;
+}
+
+function getPostSteps() {
+  const isLaptop = guide.device === 'laptop';
+  const steps = [];
+
+  steps.push({
+    title: 'Conéctate a internet',
+    desc: isLaptop
+      ? 'Clic en el icono de red (abajo a la derecha) → elige tu WiFi → contraseña. <br>Si el WiFi no aparece todavía, usa un cable de red, o comparte internet desde el móvil conectándolo por USB ("anclaje USB").'
+      : 'Conecta el cable de red, o pulsa el icono de red (abajo a la derecha) y configura el WiFi.',
+  });
+  steps.push({
+    title: 'Pasa Windows Update',
+    desc: 'Ve a <strong>Configuración → Windows Update → Buscar actualizaciones</strong>. Instala todo y reinicia si lo pide. Esto ya instala muchos drivers automáticamente.',
+  });
+
+  if (isLaptop) {
+    steps.push({
+      title: 'Instala los drivers de tu portátil',
+      desc: 'Entra en la web de soporte de tu marca (HP, Lenovo, ASUS, Acer, MSI...), busca tu <strong>modelo exacto</strong> y descarga los drivers. Lo más importante: <strong>WiFi/Bluetooth, touchpad y teclas Fn</strong>.',
+      tip: '💡 Muchas marcas tienen una app que lo hace sola: <em>MyASUS, Lenovo Vantage, HP Support Assistant, MyDell...</em>. Y si el WiFi no va al principio, descarga el driver de red desde otro PC y pásalo por USB.',
+    });
+  } else {
+    steps.push({
+      title: 'Instala los drivers de tu sobremesa',
+      desc: 'Descarga el driver de tu <strong>tarjeta gráfica</strong>: <em>NVIDIA (GeForce Experience), AMD (Adrenalin) o Intel</em>. Y el <strong>chipset</strong> desde la web de tu placa base (ASUS, Gigabyte, MSI, ASRock...).',
+      tip: '💡 Si no sabes qué placa tienes, pulsa Win+R, escribe <em>msinfo32</em> y mira "Fabricante/Modelo de la placa base".',
+    });
+  }
+
+  steps.push({
+    title: 'Comprueba que todo funciona',
+    desc: 'Revisa sonido, los puertos USB e internet.' +
+      (isLaptop ? ' Y además: cámara, touchpad, teclas de brillo/volumen y el lector de huella si tiene.' : ''),
+  });
+  steps.push({
+    title: 'Instala tus programas y listo',
+    desc: 'Navegador, ofimática, juegos... lo que uses. ¡Tu PC ya está a punto! 🎉',
+  });
+
+  return steps;
+}
+
+function renderSteps(containerId, steps, offset) {
+  const html = steps.map((s, i) => `
+    <label class="install-step ${s.critical ? 'critical' : ''}">
+      <input type="checkbox" class="step-check" />
+      <span class="step-circle"></span>
+      <div class="step-text">
+        <strong>${offset + i + 1}. ${s.title}</strong>
+        <span>${s.desc}</span>
+        ${s.tip ? `<div class="tip-box">${s.tip}</div>` : ''}
+      </div>
+    </label>`).join('');
+  document.getElementById(containerId).innerHTML = html;
+}
+
+function buildGuide() {
+  const install = getInstallSteps();
+  const post = getPostSteps();
+  renderSteps('install-steps', install, 0);
+  renderSteps('post-steps', post, install.length);
+  bindGuideProgress();
+  document.getElementById('done-final').style.display = 'none';
+}
+
+function bindGuideProgress() {
+  const checks = [...document.querySelectorAll('#screen-8 .step-check')];
+  const fill = document.getElementById('guide-progress-fill');
+  const text = document.getElementById('guide-progress-text');
+  const update = () => {
+    const done = checks.filter(c => c.checked).length;
+    const pct = checks.length ? Math.round((done / checks.length) * 100) : 0;
+    fill.style.width = pct + '%';
+    text.textContent = `${done} de ${checks.length}`;
+    const final = document.getElementById('done-final');
+    if (done === checks.length && checks.length > 0) {
+      final.style.display = 'block';
+      final.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      final.style.display = 'none';
     }
+  };
+  checks.forEach(c => c.addEventListener('change', update));
+  update();
+}
+
+// Chips: cambiar tipo de equipo / escenario reconstruye la guía
+document.querySelectorAll('#chips-device .chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    document.querySelectorAll('#chips-device .chip').forEach(c => c.classList.remove('selected'));
+    chip.classList.add('selected');
+    guide.device = chip.dataset.device;
+    buildGuide();
+  });
+});
+document.querySelectorAll('#chips-scenario .chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    document.querySelectorAll('#chips-scenario .chip').forEach(c => c.classList.remove('selected'));
+    chip.classList.add('selected');
+    guide.scenario = chip.dataset.scenario;
+    buildGuide();
   });
 });
 
@@ -407,6 +590,21 @@ function hideError(el) {
 function escHtml(str) {
   return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
+
+// ── Ver logs (delegación, el botón vive en el footer de progreso) ──
+document.addEventListener('click', (e) => {
+  if (e.target.closest('#btn-view-logs')) api.openLogs();
+});
+
+// ── Atajos de desarrollo (ocultos) ────────────────────────────────
+//  Ctrl+Shift+G  → salta a la guía final (pantalla 7) sin grabar USB
+//  Ctrl+Shift+H  → salta directo a la guía de instalación (pantalla 8)
+document.addEventListener('keydown', (e) => {
+  if (!(e.ctrlKey && e.shiftKey)) return;
+  const k = e.key.toLowerCase();
+  if (k === 'g') { e.preventDefault(); goTo(7); }
+  else if (k === 'h') { e.preventDefault(); buildGuide(); goTo(8); }
+});
 
 // ── Init ──────────────────────────────────────────────────────────
 setStatus('Listo');

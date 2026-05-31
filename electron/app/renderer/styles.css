@@ -54,23 +54,19 @@ body {
 /* ── Window ──────────────────────────────────────────────────────── */
 .win {
   position: relative; z-index: 2;
-  width: 640px; max-width: 100%;
+  width: 100%; max-width: 100%;
   background: linear-gradient(180deg,rgba(22,24,38,0.72),rgba(12,13,24,0.72));
   backdrop-filter: blur(40px) saturate(150%);
   -webkit-backdrop-filter: blur(40px) saturate(150%);
-  border: 1px solid var(--stroke);
-  border-radius: var(--r);
-  box-shadow:
-    0 1px 0 rgba(255,255,255,.08) inset,
-    0 40px 120px -30px rgba(0,0,0,.85),
-    0 0 0 1px rgba(0,0,0,.4);
+  border: none;
+  border-radius: 0;
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  height: 780px;
+  height: 100vh;
 }
 .win::before {
-  content: ""; position: absolute; inset: 0; border-radius: var(--r);
+  content: ""; position: absolute; inset: 0;
   pointer-events: none;
   background: radial-gradient(140% 60% at 50% -10%, rgba(123,92,255,.14), transparent 60%);
 }
@@ -305,6 +301,40 @@ body {
 .progress-pct { text-align: center; font-family: 'JetBrains Mono',monospace; font-size: 28px; font-weight: 700; background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 .progress-msg { text-align: center; font-size: 12.5px; color: var(--dim); }
 
+/* ── Flash explain panel ─────────────────────────────────────────── */
+.flash-explain {
+  background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.07);
+  border-radius: 14px; padding: 16px 18px; margin-top: 16px;
+}
+.flash-explain-title {
+  font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--dim); margin: 0 0 12px;
+}
+.flash-explain-steps {
+  list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 11px;
+}
+.flash-explain-steps li {
+  display: flex; align-items: flex-start; gap: 12px;
+}
+.flash-step-icon {
+  font-size: 18px; line-height: 1; flex-shrink: 0; margin-top: 1px;
+}
+.flash-explain-steps li div {
+  display: flex; flex-direction: column; gap: 2px;
+}
+.flash-explain-steps li strong {
+  font-size: 12.5px; color: var(--fg);
+}
+.flash-explain-steps li span {
+  font-size: 11.5px; color: var(--dim); line-height: 1.45;
+}
+.flash-explain-note {
+  font-size: 11.5px; color: var(--dim); margin: 12px 0 0;
+  padding-top: 10px; border-top: 1px solid rgba(255,255,255,.06);
+  line-height: 1.5;
+}
+.flash-explain-note strong { color: var(--fg); }
+
 /* ── Done screen ─────────────────────────────────────────────────── */
 .done-banner { text-align: center; padding: 8px 0 4px; }
 .done-icon { font-size: 40px; display: block; margin-bottom: 8px; }
@@ -374,6 +404,60 @@ body {
 .done-icon.big { font-size: 56px; margin-bottom: 10px; }
 .done-final h3 { font-size: 22px; font-weight: 800; }
 .done-final p { color: var(--dim); font-size: 13px; margin-top: 6px; }
+
+/* ── Guide config selector (screen 8) ────────────────────────────── */
+.guide-config {
+  display: flex; flex-direction: column; gap: 14px;
+  background: var(--glass); border: 1px solid var(--stroke);
+  border-radius: 16px; padding: 16px 18px;
+}
+.config-group { display: flex; flex-direction: column; gap: 9px; }
+.config-label { font-size: 12px; font-weight: 600; color: var(--dim); }
+.chips { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip {
+  flex: 1; min-width: 130px;
+  padding: 11px 14px; border-radius: 12px;
+  background: var(--glass); border: 1.5px solid var(--stroke);
+  color: var(--dim); font-family: inherit; font-size: 12.5px; font-weight: 600;
+  cursor: pointer; transition: .16s; white-space: nowrap; text-align: center;
+}
+.chip:hover { background: var(--glass-hi); color: var(--txt); }
+.chip.selected {
+  color: #fff; border-color: transparent;
+  background: var(--grad);
+  box-shadow: 0 6px 20px -8px rgba(123,92,255,.7), 0 0 0 1px rgba(255,255,255,.1) inset;
+}
+
+/* ── Guide progress ──────────────────────────────────────────────── */
+.guide-progress { display: flex; align-items: center; gap: 12px; }
+.guide-progress-bar {
+  flex: 1; height: 7px; background: rgba(255,255,255,.07);
+  border-radius: 7px; overflow: hidden;
+}
+.guide-progress-fill {
+  height: 100%; width: 0%; background: var(--grad);
+  border-radius: 7px; transition: width .35s ease;
+}
+.guide-progress-text {
+  font-family: 'JetBrains Mono',monospace; font-size: 11.5px;
+  font-weight: 700; color: var(--dim); white-space: nowrap;
+}
+
+/* ── Guide section titles ────────────────────────────────────────── */
+.guide-section-title {
+  font-size: 13px; font-weight: 700; letter-spacing: .3px;
+  margin: 4px 0 -4px; display: flex; align-items: center; gap: 8px;
+}
+
+/* ── Install step extras ─────────────────────────────────────────── */
+.install-step .step-num-badge {
+  width: 22px; height: 22px; border-radius: 50%;
+  background: rgba(123,92,255,.18); color: var(--txt);
+  font-size: 11px; font-weight: 700; flex-shrink: 0;
+  display: grid; place-items: center; margin-top: 1px;
+}
+.install-step input:checked ~ .step-text { opacity: .55; }
+.install-step input:checked ~ .step-text strong { text-decoration: line-through; }
 
 /* ── Status bar ──────────────────────────────────────────────────── */
 .statusbar {

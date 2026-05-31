@@ -22,6 +22,29 @@ function getEnginePath() {
     : path.join(__dirname, '..', '..', 'build', 'rufus-engine.exe');
 }
 
+// Cuando corre como portable, Electron extrae a una carpeta Temp.
+// Copiamos el engine a userData y lo desbloqueamos para que Windows permita ejecutarlo.
+function getReadyEnginePath() {
+  const src = getEnginePath();
+  if (!app.isPackaged) return src;
+
+  const dest = path.join(app.getPath('userData'), 'rufus-engine.exe');
+  try {
+    const srcStat = fs.statSync(src);
+    const destStat = fs.existsSync(dest) ? fs.statSync(dest) : null;
+    if (!destStat || srcStat.mtimeMs > destStat.mtimeMs) {
+      fs.copyFileSync(src, dest);
+      // Eliminar Mark-of-the-Web para que Windows no bloquee la ejecución
+      try {
+        execSync(`powershell -NoProfile -Command "Unblock-File -Path '${dest}'"`, { timeout: 5000 });
+      } catch {}
+    }
+  } catch (e) {
+    return src;
+  }
+  return dest;
+}
+
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 640,
@@ -275,20 +298,58 @@ ipcMain.handle('cancel-download', () => {
   if (activeDownload) { activeDownload.destroy(); activeDownload = null; }
 });
 
+// Carpeta de logs en AppData (userData = %APPDATA%\ruxi\Ruxi-Logs)
+function getLogDir() {
+  const dir = path.join(app.getPath('userData'), 'Ruxi-Logs');
+  try { fs.mkdirSync(dir, { recursive: true }); } catch {}
+  return dir;
+}
+function getLogPath() {
+  const stamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+  return path.join(getLogDir(), `ruxi-${stamp}.log`);
+}
+
+let lastLogPath = null;
+
 // ── Flash USB ─────────────────────────────────────────────────────────────────
 ipcMain.handle('start-flash', (_, { isoPath, driveLetter, username }) => {
-  const enginePath = getEnginePath();
+  const enginePath = getReadyEnginePath();
   if (!fs.existsSync(enginePath)) {
     mainWindow.webContents.send('flash-event', { status: 'error', message: 'rufus-engine.exe no encontrado.' });
     return;
   }
-  flashProcess = spawn(enginePath, [
-    '--headless', '--iso', isoPath, '--device', driveLetter, '--username', username
-  ], { stdio: ['ignore', 'pipe', 'pipe'] });
+  lastLogPath = getLogPath();
+  // Mirror de los eventos JSON de stdout a un archivo aparte
+  let eventLog = null;
+  try { eventLog = fs.createWriteStream(lastLogPath.replace('.log', '-eventos.log')); } catch {}
+  try {
+    flashProcess = spawn(enginePath, [
+      '--headless', '--iso', isoPath, '--device', driveLetter,
+      '--username', username, '--logfile', lastLogPath,
+    ], { stdio: ['ignore', 'pipe', 'pipe'] });
+  } catch (spawnErr) {
+    mainWindow.webContents.send('flash-event', {
+      status: 'error',
+      message: `No se pudo lanzar el motor: ${spawnErr.message}. Asegúrate de ejecutar Ruxi como administrador.`,
+    });
+    return;
+  }
+  // Informar a la UI dónde está el log
+  mainWindow.webContents.send('flash-event', { status: 'log-path', path: lastLogPath });
+
+  flashProcess.on('error', (err) => {
+    flashProcess = null;
+    mainWindow.webContents.send('flash-event', {
+      status: 'error',
+      message: `Error al ejecutar rufus-engine.exe: ${err.message}`,
+    });
+  });
 
   let buffer = '';
   flashProcess.stdout.on('data', chunk => {
-    buffer += chunk.toString();
+    const text = chunk.toString();
+    if (eventLog) eventLog.write(text);
+    buffer += text;
     const lines = buffer.split('\n');
     buffer = lines.pop();
     for (const line of lines) {
@@ -297,10 +358,23 @@ ipcMain.handle('start-flash', (_, { isoPath, driveLetter, username }) => {
       try { mainWindow.webContents.send('flash-event', JSON.parse(t)); } catch {}
     }
   });
+  if (flashProcess.stderr) {
+    flashProcess.stderr.on('data', chunk => { if (eventLog) eventLog.write(chunk.toString()); });
+  }
   flashProcess.on('close', code => {
     flashProcess = null;
+    if (eventLog) { try { eventLog.end(); } catch {} }
     if (code !== 0) mainWindow.webContents.send('flash-event', { status: 'error', message: `El proceso terminó inesperadamente (código ${code}).` });
   });
+});
+
+// Abrir la carpeta de logs en el Explorador
+ipcMain.handle('open-logs', () => {
+  if (lastLogPath && fs.existsSync(lastLogPath)) {
+    shell.showItemInFolder(lastLogPath);
+  } else {
+    shell.openPath(getLogDir());
+  }
 });
 
 ipcMain.handle('cancel-flash', () => {

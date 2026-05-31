@@ -19,4 +19,6 @@ contextBridge.exposeInMainWorld('ruxi', {
   cancelFlash: () => ipcRenderer.invoke('cancel-flash'),
   onFlashEvent: (cb) => ipcRenderer.on('flash-event', (_, d) => cb(d)),
   offFlashEvents: () => ipcRenderer.removeAllListeners('flash-event'),
+
+  openLogs: () => ipcRenderer.invoke('open-logs'),
 });

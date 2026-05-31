@@ -52,6 +52,7 @@
  */
 const HANDLE hRufus = (HANDLE)0x0000005275667573ULL;	// "\0\0\0Rufus"
 HWND hStatus;
+extern FILE* headless_log;	// Ruxi: optional log file, written by uprintf when set
 size_t ubuffer_pos = 0;
 char ubuffer[UBUFFER_SIZE];	// Buffer for ubpushf() messages we don't log right away
 static uint64_t archive_size;
@@ -90,6 +91,12 @@ void uprintf(const char *format, ...)
 	// Send output to Windows debug facility
 	// coverity[dont_call]
 	OutputDebugStringW(wbuf);
+	// Ruxi: in headless mode, also write the full log to the --logfile so the
+	// user can verify what happened after the USB is created.
+	if (headless_log != NULL) {
+		fputs(buf, headless_log);
+		fflush(headless_log);
+	}
 	if ((hLog != NULL) && (hLog != INVALID_HANDLE_VALUE)) {
 		// Send output to our log Window
 		Edit_SetSel(hLog, MAX_LOG_SIZE, MAX_LOG_SIZE);

@@ -36,12 +36,16 @@ Ruxi es un fork de [Rufus](https://github.com/pbatard/rufus) — la herramienta 
 
 ## Características
 
-- **Wizard guiado** — 8 pantallas que te llevan de la mano de principio a fin
+- **Wizard guiado** — 9 pantallas que te llevan de la mano de principio a fin
+- **Descarga integrada de ISOs** — Baja la ISO desde la propia app, con barra de progreso
 - **ISO recomendada** — Windows 11 IoT LTSC 2024 optimizado por Poxi: sin bloatware, sin telemetría, máximo rendimiento para gaming
 - **Todo automático** — GPT + UEFI + NTFS + bypass de TPM/SecureBoot configurados solos
 - **Cuenta local** — Sin obligarte a usar cuenta de Microsoft
+- **Etiqueta del USB** — Se crea como `Poxi-WINDOWS`
+- **Pide admin automáticamente** — El portable solicita permisos de administrador al abrirse (UAC)
 - **Guía de arranque** — Tabla de teclas por marca (ASUS, MSI, HP, Lenovo, Dell…) y solución al error de Secure Boot
-- **Guía de instalación** — Pasos interactivos marcables dentro del propio programa
+- **Guía de instalación adaptativa** — Pasos interactivos marcables que cambian según tu equipo (🖥️ sobremesa / 💻 portátil) y tu caso (🆕 PC nuevo / ♻️ reinstalar)
+- **Guía post-instalación** — Qué hacer al terminar: internet, Windows Update y drivers del fabricante (WiFi/touchpad en portátiles, GPU/chipset en sobremesa)
 - **Motor Rufus** — El backend real es Rufus modificado con modo headless (`--headless`)
 
 ---
@@ -102,8 +106,16 @@ El frontend Electron llama a `rufus-engine.exe` con el modo headless que añadim
 #### Parámetros del motor headless
 
 ```
-rufus-engine.exe --headless --iso "C:\ruta\windows.iso" --device "E:" --username "TuNombre"
+rufus-engine.exe --headless --iso "C:\ruta\windows.iso" --device "E:" --username "TuNombre" [--logfile "C:\ruta\log.txt"]
 ```
+
+| Flag | Descripción |
+|------|-------------|
+| `--headless` | Corre sin interfaz, auto-configurado, emitiendo JSON por stdout |
+| `--iso PATH` | Ruta de la imagen ISO de Windows |
+| `--device "E:"` | Letra de la unidad USB destino |
+| `--username NOMBRE` | Nombre de la cuenta local de Windows |
+| `--logfile PATH` | (Opcional) Vuelca el log completo de Rufus a un archivo |
 
 Output JSON por stdout:
 ```json
@@ -125,14 +137,19 @@ npm run build:portable
 npm run build:installer
 ```
 
+O usa el script **`build-portable.bat`** (doble clic), que hace el build del portable. El portable pide permisos de administrador al abrirse gracias a `portable.requestExecutionLevel: "admin"` en `package.json`.
+
+> **Recuerda:** si tocas el código C del motor, recompílalo en VS2022 y copia `x64\Release\rufus.exe` a `build\rufus-engine.exe` **antes** de hacer el build del portable.
+
 > **Nota de desarrollo:** `npm start` no funciona en modo dev por un conflicto de resolución de módulos entre el paquete npm `electron` y las APIs internas del runtime. La app funciona correctamente al hacer el build con electron-builder.
 
 ### Modificaciones al código C de Rufus
 
 Todos los cambios están marcados con comentarios `// Ruxi`:
 
-- **`rufus.c`** — Flags CLI `--headless`, `--device`, `--username`; mensaje `UM_HEADLESS_INIT`; bypass del diálogo WUE; `UM_PROGRESS_EXIT` emite JSON y sale limpiamente
+- **`rufus.c`** — Flags CLI `--headless`, `--device`, `--username`, `--logfile`; mensaje `UM_HEADLESS_INIT` que se lanza **al terminar el escaneo de la ISO** (no antes, para evitar grabar sin imagen válida); selección automática de unidad y arranque del formato; etiqueta del volumen `Poxi-WINDOWS`; bypass del diálogo de actualización, del diálogo WUE, del aviso de bootloader UEFI revocado y de todas las confirmaciones modales cuando `bHeadless`; el resultado real (`done`/`error`) se emite desde `UM_FORMAT_COMPLETED`
 - **`ui.c`** — `UpdateProgress` emite `{"status":"progress","percent":N}` a stdout cuando `bHeadless == TRUE`
+- **`stdio.c`** — `uprintf` también vuelca el log a un archivo cuando se pasa `--logfile`
 - **`rufus.h`** — `UM_HEADLESS_INIT` en el enum de mensajes; `extern BOOL bHeadless`
 - **`wue.h`** — `extern char unattend_username[]`
 

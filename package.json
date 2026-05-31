@@ -11,7 +11,7 @@
   },
   "devDependencies": {
     "electron": "^22.3.27",
-    "electron-builder": "^25.1.8"
+    "electron-builder": "^24.13.3"
   },
   "build": {
     "appId": "com.poxi.ruxi",
@@ -21,7 +21,7 @@
     },
     "win": {
       "icon": "electron/app/renderer/assets/logo.ico",
-      "requestedExecutionLevel": "asInvoker",
+      "requestedExecutionLevel": "requireAdministrator",
       "extraResources": [
         {
           "from": "build/rufus-engine.exe",
@@ -40,11 +40,22 @@
       "shortcutName": "Ruxi"
     },
     "portable": {
-      "artifactName": "Ruxi-Portable.exe"
+      "artifactName": "Ruxi-Portable.exe",
+      "requestExecutionLevel": "admin"
     },
     "target": [
-      { "target": "nsis", "arch": ["x64"] },
-      { "target": "portable", "arch": ["x64"] }
+      {
+        "target": "nsis",
+        "arch": [
+          "x64"
+        ]
+      },
+      {
+        "target": "portable",
+        "arch": [
+          "x64"
+        ]
+      }
     ]
   }
 }

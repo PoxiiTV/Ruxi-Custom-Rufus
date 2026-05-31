@@ -83,6 +83,7 @@ static BOOL dont_process_dbt_devnodes = FALSE;
 BOOL bHeadless = FALSE;
 char headless_device[16] = "";    // Drive letter, e.g. "E:"
 char headless_username[64] = "";  // Windows local account name
+FILE* headless_log = NULL;        // Optional log file (--logfile) — uprintf is teed here
 static BOOL user_changed_label = FALSE;
 static BOOL user_deleted_rufus_dir = FALSE;
 static BOOL app_changed_label = FALSE;
@@ -1356,6 +1357,13 @@ DWORD WINAPI ImageScanThread(LPVOID param)
 		PrintInfoDebug(0, MSG_203);
 		PrintStatus(0, MSG_203);
 		EnableControls(TRUE, FALSE);
+		// Ruxi: report an explicit error to the front-end instead of letting the
+		// UM_PROGRESS_EXIT below be misread as a successful flash.
+		if (bHeadless) {
+			printf("{\"status\":\"error\",\"message\":\"La imagen ISO no es valida o no se pudo leer.\"}\n");
+			fflush(stdout);
+			PostQuitMessage(1);
+		}
 		goto out;
 	}
 
@@ -1476,6 +1484,13 @@ DWORD WINAPI ImageScanThread(LPVOID param)
 		SendMessage(hMainDialog, WM_NEXTDLGCTL, (WPARAM)FALSE, 0);
 		// Lose the focus from Close and set it back to Start
 		SendMessage(hMainDialog, WM_NEXTDLGCTL, (WPARAM)hStart, TRUE);
+		// Ruxi: image validated and device list populated, so it is finally safe
+		// to auto-select the device and start the format in headless mode.
+		if (bHeadless) {
+			printf("{\"status\":\"progress\",\"percent\":3,\"message\":\"ISO escaneada OK. Buscando unidad...\"}\n");
+			fflush(stdout);
+			PostMessage(hMainDialog, UM_HEADLESS_INIT, 0, 0);
+		}
 	}
 
 	// Need to invalidate as we may have changed the UI and may get artifacts if we don't
@@ -1525,18 +1540,27 @@ static DWORD WINAPI BootCheckThread(LPVOID param)
 		if_assert_fails(image_path != NULL)
 			goto out;
 		if (IsSourceImageLocatedOnTargetDrive((DWORD)ComboBox_GetItemData(hDeviceList, ComboBox_GetCurSel(hDeviceList)))) {
-			// You cannot use an image that is located on the target drive
-			Notification(MB_OK | MB_ICONERROR, lmprintf(MSG_358), lmprintf(MSG_359));
+			if (bHeadless) {
+				printf("{\"status\":\"error\",\"message\":\"La ISO esta guardada en el mismo USB que quieres grabar. Muevela a otro lugar.\"}\n");
+				fflush(stdout); PostQuitMessage(1);
+			} else {
+				Notification(MB_OK | MB_ICONERROR, lmprintf(MSG_358), lmprintf(MSG_359));
+			}
 			goto out;
 		}
 		if ((size_check) && (img_report.projected_size > (uint64_t)SelectedDrive.DiskSize)) {
-			// This ISO image is too big for the selected target
-			Notification(MB_OK | MB_ICONERROR, lmprintf(MSG_088), lmprintf(MSG_089));
+			if (bHeadless) {
+				printf("{\"status\":\"error\",\"message\":\"La ISO es demasiado grande para el USB seleccionado.\"}\n");
+				fflush(stdout); PostQuitMessage(1);
+			} else {
+				Notification(MB_OK | MB_ICONERROR, lmprintf(MSG_088), lmprintf(MSG_089));
+			}
 			goto out;
 		}
 
 		// Display an alert if any of the UEFI bootloaders have been revoked
-		if (img_report.has_secureboot_bootloader & 0xfe) {
+		// Ruxi: skip in headless mode — user chose the ISO, proceed regardless
+		if (!bHeadless && (img_report.has_secureboot_bootloader & 0xfe)) {
 			switch (img_report.has_secureboot_bootloader & 0xfe) {
 			case 4:
 				msg = lmprintf(MSG_341, "Error code: 0xc0000428");
@@ -1756,7 +1780,7 @@ static DWORD WINAPI BootCheckThread(LPVOID param)
 					                     UNATTEND_NO_DATA_COLLECTION | UNATTEND_SET_USER |
 					                     UNATTEND_DISABLE_BITLOCKER | UNATTEND_QOL_ENHANCEMENTS;
 					if (headless_username[0] != 0)
-						safe_strcpy(unattend_username, sizeof(unattend_username), headless_username);
+						safe_strcpy(unattend_username, MAX_USERNAME_LENGTH, headless_username);
 					unattend_xml_path = CreateUnattendXml(arch, headless_flags);
 					unattend_xml_mask = headless_flags;
 				} else {
@@ -2052,6 +2076,16 @@ uefi_target:
 	ret = BOOTCHECK_PROCEED;
 
 out:
+	// Ruxi: in headless mode, a CANCEL result means an unrecoverable incompatibility
+	// was detected and reported via printf above. Quit instead of hanging in the message loop.
+	if (bHeadless && ret != BOOTCHECK_PROCEED) {
+		if (ret != BOOTCHECK_CANCEL) {
+			printf("{\"status\":\"error\",\"message\":\"Verificacion fallida (codigo %d). La ISO puede no ser compatible.\"}\n", (int)ret);
+			fflush(stdout);
+		}
+		PostQuitMessage(1);
+		ExitThread((DWORD)ret);
+	}
 	PostMessage(hMainDialog, UM_FORMAT_START, ret, 0);
 	ExitThread((DWORD)ret);
 }
@@ -2867,7 +2901,7 @@ static INT_PTR CALLBACK MainCallback(HWND hDlg, UINT message, WPARAM wParam, LPA
 		// The AppStore version always enables Fido
 		if (appstore_version)
 			SetFidoCheck();
-		else
+		else if (!bHeadless)	// Ruxi: skip the first-run update-policy dialog in headless mode
 			SetUpdateCheck();
 		first_log_display = TRUE;
 		log_displayed = FALSE;
@@ -2877,7 +2911,7 @@ static INT_PTR CALLBACK MainCallback(HWND hDlg, UINT message, WPARAM wParam, LPA
 		EnableControls(TRUE, FALSE);
 		UpdateImage(FALSE);
 		// The AppStore version does not need the internal check for updates
-		if (!appstore_version)
+		if (!appstore_version && !bHeadless)	// Ruxi: no update check in headless mode
 			CheckForUpdates(FALSE);
 		// Register MEDIA_INSERTED/MEDIA_REMOVED notifications for card readers
 		if (SUCCEEDED(SHGetSpecialFolderLocation(0, CSIDL_DESKTOP, &pidlDesktop))) {
@@ -3097,21 +3131,18 @@ static INT_PTR CALLBACK MainCallback(HWND hDlg, UINT message, WPARAM wParam, LPA
 		}
 		SendMessage(hProgress, PBM_SETSTATE, (WPARAM)tb_state, 0);
 		SetTaskbarProgressState(tb_flags);
-		if (bHeadless) {
-			if (!IS_ERROR(ErrorStatus) && SCODE_CODE(ErrorStatus) != ERROR_CANCELLED) {
-				printf("{\"status\":\"done\"}\n");
-			} else {
-				printf("{\"status\":\"error\",\"message\":\"Error durante el proceso (codigo %lu)\"}\n",
-				       SCODE_CODE(ErrorStatus));
-			}
-			fflush(stdout);
-			PostQuitMessage(0);
-		}
+		// Ruxi: UM_PROGRESS_EXIT is also fired by the async ISO scan and by downloads,
+		// not just by a finished format. Reporting "done" here produced a false success
+		// when nothing was written. The real flash result is now emitted from
+		// UM_FORMAT_COMPLETED, which only fires when the format thread actually finishes.
 		break;
 
 	case UM_HEADLESS_INIT: {
 		// Ruxi: auto-configure and start format without UI interaction
 		int idx;
+		BOOL device_found = FALSE;
+		printf("{\"status\":\"progress\",\"percent\":5,\"message\":\"UM_HEADLESS_INIT: buscando unidad %s...\"}\n", headless_device);
+		fflush(stdout);
 		// Set partition scheme to GPT and target to UEFI (no CSM)
 		partition_type = PARTITION_STYLE_GPT;
 		target_type = TT_UEFI;
@@ -3121,7 +3152,9 @@ static INT_PTR CALLBACK MainCallback(HWND hDlg, UINT message, WPARAM wParam, LPA
 		// no online account, no data collection, set local username, no BitLocker
 		unattend_xml_mask = UNATTEND_SECUREBOOT_TPM_MINRAM | UNATTEND_NO_ONLINE_ACCOUNT |
 		                    UNATTEND_NO_DATA_COLLECTION | UNATTEND_SET_USER | UNATTEND_DISABLE_BITLOCKER;
-		safe_strcpy(unattend_username, sizeof(unattend_username), headless_username);
+		safe_strcpy(unattend_username, MAX_USERNAME_LENGTH, headless_username);
+		// Ruxi: set a custom volume label for the USB
+		SetWindowTextU(hLabel, "Poxi-WINDOWS");
 		// Find the device matching headless_device letter and select it
 		for (idx = 0; idx < ComboBox_GetCount(hDeviceList); idx++) {
 			char drive_label[128] = "";
@@ -3130,10 +3163,22 @@ static INT_PTR CALLBACK MainCallback(HWND hDlg, UINT message, WPARAM wParam, LPA
 				ComboBox_SetCurSel(hDeviceList, idx);
 				SendMessage(hDlg, WM_COMMAND, (CBN_SELCHANGE << 16) | IDC_DEVICE,
 				            (LPARAM)hDeviceList);
+				device_found = TRUE;
+				printf("{\"status\":\"progress\",\"percent\":8,\"message\":\"Unidad encontrada: %s\"}\n", drive_label);
+				fflush(stdout);
 				break;
 			}
 		}
+		if (!device_found) {
+			printf("{\"status\":\"error\",\"message\":\"Unidad %s no encontrada en la lista de Rufus (%d unidades detectadas).\"}\n",
+			       headless_device, ComboBox_GetCount(hDeviceList));
+			fflush(stdout);
+			PostQuitMessage(1);
+			break;
+		}
 		// Trigger format start
+		printf("{\"status\":\"progress\",\"percent\":10,\"message\":\"Lanzando formato...\"}\n");
+		fflush(stdout);
 		PostMessage(hDlg, WM_COMMAND, (WPARAM)IDC_START, 0);
 		break;
 	}
@@ -3174,25 +3219,31 @@ static INT_PTR CALLBACK MainCallback(HWND hDlg, UINT message, WPARAM wParam, LPA
 		// Ideally, exec should be no big deal, but Windows complains on USB ejection if a
 		// process such as cmd.exe holds exec rights, so we follow suit.
 		PrintStatus(0, MSG_278);
+		// Ruxi: in headless mode the user already confirmed destruction in the Ruxi UI,
+		// so skip all the modal confirmation dialogs that would otherwise block the engine.
 		if (GetProcessSearch(SEARCH_PROCESS_TIMEOUT, 0x06, TRUE)) {
 			char title[128];
 			ComboBox_GetTextU(hDeviceList, title, sizeof(title));
-			if (Notification(MB_ICONWARNING | MB_YESNO, title, lmprintf(MSG_132)) != IDYES)
+			if (!bHeadless && Notification(MB_ICONWARNING | MB_YESNO, title, lmprintf(MSG_132)) != IDYES)
 				goto aborted_start;
 		}
 		PrintStatus(0, MSG_142);
 
 		GetWindowTextU(hDeviceList, tmp, ARRAYSIZE(tmp));
-		if (Notification(MB_OKCANCEL | MB_ICONWARNING, APPLICATION_NAME, lmprintf(MSG_003, tmp)) != IDOK)
+		if (!bHeadless && Notification(MB_OKCANCEL | MB_ICONWARNING, APPLICATION_NAME, lmprintf(MSG_003, tmp)) != IDOK)
 			goto aborted_start;
-		if ((SelectedDrive.nPartitions > 1) && (Notification(MB_OKCANCEL | MB_ICONWARNING, lmprintf(MSG_094), lmprintf(MSG_093)) != IDOK))
+		if (!bHeadless && (SelectedDrive.nPartitions > 1) && (Notification(MB_OKCANCEL | MB_ICONWARNING, lmprintf(MSG_094), lmprintf(MSG_093)) != IDOK))
 			goto aborted_start;
-		if ((!zero_drive) && (boot_type != BT_NON_BOOTABLE) && (SelectedDrive.SectorSize != 512) &&
+		if (!bHeadless && (!zero_drive) && (boot_type != BT_NON_BOOTABLE) && (SelectedDrive.SectorSize != 512) &&
 			(Notification(MB_OKCANCEL | MB_ICONWARNING, lmprintf(MSG_197), lmprintf(MSG_196, SelectedDrive.SectorSize)) != IDOK))
 			goto aborted_start;
 
 		nDeviceIndex = ComboBox_GetCurSel(hDeviceList);
 		DeviceNum = (DWORD)ComboBox_GetItemData(hDeviceList, nDeviceIndex);
+		if (bHeadless) {
+			printf("{\"status\":\"progress\",\"percent\":12,\"message\":\"Verificacion OK, boot_type=%d. Iniciando grabacion...\"}\n", boot_type);
+			fflush(stdout);
+		}
 		InitProgress(zero_drive || write_as_image);
 		format_thread = CreateThread(NULL, 0, FormatThread, (LPVOID)(uintptr_t)DeviceNum, 0, NULL);
 		if (format_thread == NULL) {
@@ -3245,6 +3296,18 @@ static INT_PTR CALLBACK MainCallback(HWND hDlg, UINT message, WPARAM wParam, LPA
 			GetDevices(DeviceNum);
 		}
 		save_image = FALSE;
+		// Ruxi: emit the real flash result now that the format thread has actually finished.
+		if (bHeadless) {
+			if (!IS_ERROR(ErrorStatus))
+				printf("{\"status\":\"done\"}\n");
+			else if (SCODE_CODE(ErrorStatus) == ERROR_CANCELLED)
+				printf("{\"status\":\"error\",\"message\":\"Proceso cancelado.\"}\n");
+			else
+				printf("{\"status\":\"error\",\"message\":\"Error durante el proceso (codigo %lu)\"}\n",
+				       SCODE_CODE(ErrorStatus));
+			fflush(stdout);
+			PostQuitMessage(IS_ERROR(ErrorStatus) ? 1 : 0);
+		}
 		if (!IS_ERROR(ErrorStatus)) {
 			SendMessage(hProgress, PBM_SETPOS, MAX_PROGRESS, 0);
 			SetTaskbarProgressState(TASKBAR_NOPROGRESS);
@@ -3438,6 +3501,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		{"headless",   no_argument,       NULL, 'H'},
 		{"device",     required_argument, NULL, 'D'},
 		{"username",   required_argument, NULL, 'U'},
+		{"logfile",    required_argument, NULL, 'L'},
 		{0, 0, NULL, 0}
 	};
 
@@ -3685,6 +3749,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 					break;
 				case 'U':
 					safe_strcpy(headless_username, sizeof(headless_username), optarg);
+					break;
+				case 'L':
+					headless_log = fopenU(optarg, "w");
 					break;
 				case 'h':
 					PrintUsage(argv[0]);
@@ -3964,7 +4031,10 @@ relaunch:
 
 	if (bHeadless) {
 		ShowWindow(hDlg, SW_HIDE);
-		PostMessage(hDlg, UM_HEADLESS_INIT, 0, 0);
+		// Ruxi: do NOT start formatting here. The ISO scan (triggered by --iso via
+		// img_provided) runs in an async thread; starting now would race it and format
+		// the drive without a valid Windows image. UM_HEADLESS_INIT is instead posted
+		// from the end of ImageScanThread once the image has been validated.
 	} else {
 		ShowWindow(hDlg, SW_SHOWNORMAL);
 	}

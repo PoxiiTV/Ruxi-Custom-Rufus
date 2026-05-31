@@ -179,6 +179,7 @@
 
       <div class="screen-footer">
         <button class="btn btn-ghost" id="btn-back-2">← Atrás</button>
+        <button class="btn btn-ghost" id="btn-refresh-usb" title="Recargar lista de dispositivos">🔄 Buscar</button>
         <button class="btn btn-go" id="btn-usb-ok" disabled>Este es mi USB →</button>
       </div>
     </div>
@@ -264,8 +265,44 @@
       <div class="progress-pct" id="progress-pct">0%</div>
       <p class="progress-msg" id="progress-msg">Preparando...</p>
 
+      <div class="flash-explain">
+        <p class="flash-explain-title">¿Qué está pasando ahora?</p>
+        <ol class="flash-explain-steps">
+          <li>
+            <span class="flash-step-icon">🗑️</span>
+            <div>
+              <strong>Se borra el USB por completo</strong>
+              <span>Para que Windows pueda instalarse, el USB tiene que quedar totalmente vacío y configurado de una forma específica.</span>
+            </div>
+          </li>
+          <li>
+            <span class="flash-step-icon">📦</span>
+            <div>
+              <strong>Se copia Windows al USB</strong>
+              <span>Se transfieren todos los archivos de Windows desde la ISO al USB. Esto es lo que más tarda — puede llevar varios minutos.</span>
+            </div>
+          </li>
+          <li>
+            <span class="flash-step-icon">⚙️</span>
+            <div>
+              <strong>Se configura el arranque</strong>
+              <span>Se prepara el USB para que el PC pueda arrancar desde él y empezar a instalar Windows.</span>
+            </div>
+          </li>
+          <li>
+            <span class="flash-step-icon">✅</span>
+            <div>
+              <strong>Listo para instalar</strong>
+              <span>Cuando acabe, te diremos cómo usar el USB para instalar Windows en tu PC.</span>
+            </div>
+          </li>
+        </ol>
+        <p class="flash-explain-note">⏱️ El proceso puede tardar entre <strong>5 y 20 minutos</strong> según la velocidad del USB y el PC. Ten paciencia.</p>
+      </div>
+
       <div class="screen-footer">
         <button class="btn btn-ghost" id="btn-cancel-flash">Cancelar</button>
+        <button class="btn btn-ghost" id="btn-view-logs" title="Abrir la carpeta de logs">📄 Ver logs</button>
       </div>
     </div>
 
@@ -342,81 +379,45 @@
          SCREEN 8 — Guía instalación Windows
     ══════════════════════════════════════════════════════════ -->
     <div class="screen" id="screen-8">
-      <div class="sec-head"><span class="sec-dot"></span><h2>Instalando Windows</h2></div>
-      <p class="screen-hint">Marca cada paso conforme avances. <strong>No desconectes el USB en todo este proceso.</strong></p>
+      <div class="sec-head"><span class="sec-dot"></span><h2>Instalar Windows</h2></div>
+      <p class="screen-hint">Cuéntanos sobre tu PC y te damos los pasos exactos para tu caso. <strong>No desconectes el USB.</strong></p>
 
-      <div class="install-steps" id="install-steps">
-        <label class="install-step">
-          <input type="checkbox" class="step-check" />
-          <span class="step-circle"></span>
-          <div class="step-text">
-            <strong>Sale la pantalla azul de Windows Setup</strong>
-            <span>Pulsa "Siguiente" → "Instalar ahora"</span>
+      <!-- Selector tipo de equipo + escenario -->
+      <div class="guide-config">
+        <div class="config-group">
+          <span class="config-label">¿Qué tipo de equipo es?</span>
+          <div class="chips" id="chips-device">
+            <button class="chip selected" data-device="desktop">🖥️ Sobremesa</button>
+            <button class="chip" data-device="laptop">💻 Portátil</button>
           </div>
-        </label>
-        <label class="install-step">
-          <input type="checkbox" class="step-check" />
-          <span class="step-circle"></span>
-          <div class="step-text">
-            <strong>¿Tienes clave de producto?</strong>
-            <span>Pulsa <em>"No tengo clave de producto"</em> (abajo a la derecha)</span>
+        </div>
+        <div class="config-group">
+          <span class="config-label">¿Qué vas a hacer?</span>
+          <div class="chips" id="chips-scenario">
+            <button class="chip selected" data-scenario="new">🆕 PC nuevo (sin sistema)</button>
+            <button class="chip" data-scenario="reinstall">♻️ Reinstalar (borrar lo que hay)</button>
           </div>
-        </label>
-        <label class="install-step">
-          <input type="checkbox" class="step-check" />
-          <span class="step-circle"></span>
-          <div class="step-text">
-            <strong>Elige la edición</strong>
-            <span>Selecciona <em>Windows 10 Pro</em> o <em>Windows 11 Pro</em> → Siguiente</span>
-          </div>
-        </label>
-        <label class="install-step">
-          <input type="checkbox" class="step-check" />
-          <span class="step-circle"></span>
-          <div class="step-text">
-            <strong>Acepta los términos de licencia</strong>
-            <span>Activa el tick y pulsa Siguiente</span>
-          </div>
-        </label>
-        <label class="install-step">
-          <input type="checkbox" class="step-check" />
-          <span class="step-circle"></span>
-          <div class="step-text">
-            <strong>Tipo de instalación: elige "Personalizada"</strong>
-            <span>La opción de abajo — <em>NO</em> la de actualización</span>
-          </div>
-        </label>
-        <label class="install-step critical">
-          <input type="checkbox" class="step-check" />
-          <span class="step-circle"></span>
-          <div class="step-text">
-            <strong>⚠️ Momento crítico — Particiones</strong>
-            <span>Identifica tu disco por el tamaño. Borra <em>TODAS</em> las particiones de ese disco una por una (botón "Eliminar"). Cuando quede solo "Espacio sin asignar", selecciónalo → Siguiente.</span>
-            <div class="tip-box">💡 Si tienes otro disco (p.ej. uno de 1TB para fotos), NO lo toques. Solo borra las particiones del disco donde quieres instalar Windows.</div>
-          </div>
-        </label>
-        <label class="install-step">
-          <input type="checkbox" class="step-check" />
-          <span class="step-circle"></span>
-          <div class="step-text">
-            <strong>Windows se instala solo</strong>
-            <span>El PC puede reiniciarse varias veces. <strong>No toques nada y no desconectes el USB.</strong></span>
-          </div>
-        </label>
-        <label class="install-step">
-          <input type="checkbox" class="step-check" />
-          <span class="step-circle"></span>
-          <div class="step-text">
-            <strong>Sale el menú de bienvenida de Windows</strong>
-            <span>Como cuando compras un móvil nuevo. Sigue los pasos que te pide.</span>
-          </div>
-        </label>
+        </div>
       </div>
+
+      <!-- Progreso de pasos -->
+      <div class="guide-progress">
+        <div class="guide-progress-bar"><div class="guide-progress-fill" id="guide-progress-fill"></div></div>
+        <span class="guide-progress-text" id="guide-progress-text">0 de 0</span>
+      </div>
+
+      <!-- Sección: durante la instalación -->
+      <h3 class="guide-section-title">📀 Durante la instalación</h3>
+      <div class="install-steps" id="install-steps"></div>
+
+      <!-- Sección: después de instalar -->
+      <h3 class="guide-section-title">🚀 Después de instalar (déjalo perfecto)</h3>
+      <div class="install-steps" id="post-steps"></div>
 
       <div class="done-final" id="done-final" style="display:none">
         <span class="done-icon big">🎉</span>
-        <h3>¡Windows instalado!</h3>
-        <p>Ya puedes quitar el USB y disfrutar.</p>
+        <h3>¡Todo listo!</h3>
+        <p>Windows está instalado y configurado. Ya puedes quitar el USB y disfrutar de tu PC.</p>
       </div>
 
       <div class="screen-footer">
