@@ -1,0 +1,50 @@
+{
+  "name": "ruxi",
+  "version": "1.0.0",
+  "description": "Instala Windows en minutos. Sin complicaciones. Para todos.",
+  "main": "electron/app/main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder",
+    "build:portable": "electron-builder --win portable",
+    "build:installer": "electron-builder --win nsis"
+  },
+  "devDependencies": {
+    "electron": "^22.3.27",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "com.poxi.ruxi",
+    "productName": "Ruxi",
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "icon": "electron/app/renderer/assets/logo.ico",
+      "requestedExecutionLevel": "asInvoker",
+      "extraResources": [
+        {
+          "from": "build/rufus-engine.exe",
+          "to": "rufus-engine.exe"
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "installerIcon": "electron/app/renderer/assets/logo.ico",
+      "uninstallerIcon": "electron/app/renderer/assets/logo.ico",
+      "installerHeaderIcon": "electron/app/renderer/assets/logo.ico",
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Ruxi"
+    },
+    "portable": {
+      "artifactName": "Ruxi-Portable.exe"
+    },
+    "target": [
+      { "target": "nsis", "arch": ["x64"] },
+      { "target": "portable", "arch": ["x64"] }
+    ]
+  }
+}

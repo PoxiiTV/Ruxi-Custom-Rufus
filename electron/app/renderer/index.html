@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Ruxi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<!-- Background -->
+<div class="scene">
+  <div class="blob b1"></div>
+  <div class="blob b2"></div>
+  <div class="blob b3"></div>
+</div>
+<div class="grain"></div>
+
+<!-- App window -->
+<div class="win" id="app">
+
+  <!-- Title bar -->
+  <div class="titlebar" id="titlebar">
+    <img class="logo" src="assets/logo.png" alt="Ruxi" onerror="this.style.display='none'" />
+    <span class="title">Ruxi<span class="v">· by Poxi</span></span>
+    <div class="ctrls">
+      <button class="ctrl" id="btn-minimize" title="Minimizar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      </button>
+      <button class="ctrl close" id="btn-close" title="Cerrar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Screens container -->
+  <div class="screens">
+
+    <!-- ══════════════════════════════════════════════════════════
+         SCREEN 0 — Bienvenida
+    ══════════════════════════════════════════════════════════ -->
+    <div class="screen active" id="screen-0">
+      <div class="welcome-body">
+        <div class="welcome-icon">
+          <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="64" height="64" rx="18" fill="url(#grad-icon)"/>
+            <path d="M20 44V32a12 12 0 0 1 24 0v12" stroke="white" stroke-width="3" stroke-linecap="round"/>
+            <rect x="16" y="38" width="32" height="14" rx="4" fill="white" fill-opacity="0.15" stroke="white" stroke-width="2"/>
+            <circle cx="32" cy="45" r="2.5" fill="white"/>
+            <defs>
+              <linearGradient id="grad-icon" x1="0" y1="0" x2="64" y2="64">
+                <stop offset="0%" stop-color="#2f7bff"/>
+                <stop offset="50%" stop-color="#7b5cff"/>
+                <stop offset="100%" stop-color="#e23aff"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        <h1 class="welcome-title">Ruxi</h1>
+        <p class="welcome-sub">Instala Windows en minutos.<br/>Sin complicaciones. Para todos.</p>
+        <button class="btn btn-go btn-large" id="btn-start">Empezar →</button>
+        <p class="welcome-note">Hecho por <strong>Poxi</strong> · basado en Rufus</p>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════
+         SCREEN 1 — Elige tu Windows
+    ══════════════════════════════════════════════════════════ -->
+    <div class="screen" id="screen-1">
+      <div class="sec-head"><span class="sec-dot"></span><h2>¿Qué Windows quieres instalar?</h2></div>
+      <p class="screen-hint">Elige una opción. Si ya tienes la ISO descargada, salta este paso.</p>
+
+      <div class="iso-cards">
+        <div class="iso-card" data-iso="win10">
+          <div class="iso-card-icon win10-icon">10</div>
+          <div class="iso-card-info">
+            <strong>Windows 10</strong>
+            <span>Descarga directa. Un clic.</span>
+          </div>
+          <button class="btn-link" data-url="https://drive.google.com/file/d/1YefHUkzusD1ep7aM8Iv38HHjWmQ7xZJg">Descargar →</button>
+        </div>
+
+        <div class="iso-card" data-iso="win11">
+          <div class="iso-card-icon win11-icon">11</div>
+          <div class="iso-card-info">
+            <strong>Windows 11</strong>
+            <span>Descarga oficial de Microsoft</span>
+          </div>
+          <button class="btn-link" data-url="https://www.microsoft.com/es-es/software-download/windows11">Descargar →</button>
+        </div>
+
+        <div class="iso-card recommended" data-iso="poxi">
+          <div class="iso-badge">⭐ Recomendado</div>
+          <div class="iso-card-icon poxi-icon">P</div>
+          <div class="iso-card-info">
+            <strong>Windows 11 LTSC Poxi</strong>
+            <span>Sin bloatware · Sin telemetría · Máximo rendimiento</span>
+            <ul class="poxi-features">
+              <li>Más RAM y CPU libre para juegos</li>
+              <li>Sin actualizaciones automáticas</li>
+              <li>Sin Candy Crush, Teams, TikTok</li>
+              <li>Sin Copilot ni iconos que no pediste</li>
+            </ul>
+          </div>
+          <button class="btn-link" data-url="https://acortar.link/tIszzw">Descargar →</button>
+        </div>
+      </div>
+
+      <div class="screen-footer">
+        <button class="btn btn-ghost" id="btn-skip-iso">Ya tengo la ISO →</button>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════
+         SCREEN 2 — Seleccionar ISO
+    ══════════════════════════════════════════════════════════ -->
+    <div class="screen" id="screen-2">
+      <div class="sec-head"><span class="sec-dot"></span><h2>Selecciona tu archivo ISO</h2></div>
+      <p class="screen-hint">Busca el archivo <code>.iso</code> que descargaste (normalmente en la carpeta <strong>Descargas</strong>).</p>
+
+      <div class="iso-drop-zone" id="iso-drop-zone">
+        <div class="iso-drop-icon">
+          <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M8 36V12a4 4 0 0 1 4-4h18l10 10v18a4 4 0 0 1-4 4H12a4 4 0 0 1-4-4z"/>
+            <path d="M30 8v10h10M24 20v12M19 27l5 5 5-5"/>
+          </svg>
+        </div>
+        <p id="iso-drop-label">Haz clic para buscar la ISO</p>
+        <span id="iso-file-name" class="iso-filename"></span>
+      </div>
+
+      <div id="iso-error" class="error-box" style="display:none"></div>
+
+      <div class="screen-footer">
+        <button class="btn btn-ghost" id="btn-back-1">← Atrás</button>
+        <button class="btn btn-go" id="btn-iso-ok" disabled>Continuar →</button>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════
+         SCREEN 3 — Conecta tu USB
+    ══════════════════════════════════════════════════════════ -->
+    <div class="screen" id="screen-3">
+      <div class="sec-head"><span class="sec-dot"></span><h2>Conecta tu USB</h2></div>
+      <p class="screen-hint">El USB debe tener <strong>mínimo 8 GB</strong>. Todo lo que contenga <strong>se borrará</strong>.</p>
+
+      <div class="warning-box">
+        ⚠️ <strong>ATENCIÓN:</strong> TODO lo que haya dentro del USB se borrará sin excepción. Haz una copia si tienes algo importante.
+      </div>
+
+      <div class="usb-list" id="usb-list">
+        <div class="usb-empty" id="usb-empty">
+          <div class="spinner"></div>
+          <span>Buscando dispositivos USB...</span>
+        </div>
+      </div>
+
+      <div id="usb-error" class="error-box" style="display:none"></div>
+
+      <div class="screen-footer">
+        <button class="btn btn-ghost" id="btn-back-2">← Atrás</button>
+        <button class="btn btn-go" id="btn-usb-ok" disabled>Este es mi USB →</button>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════
+         SCREEN 4 — Tu nombre en Windows
+    ══════════════════════════════════════════════════════════ -->
+    <div class="screen" id="screen-4">
+      <div class="sec-head"><span class="sec-dot"></span><h2>¿Cómo quieres llamarte?</h2></div>
+      <p class="screen-hint">Este será tu nombre de usuario en Windows. Se creará una <strong>cuenta local</strong> — sin Microsoft.</p>
+
+      <div class="field">
+        <label class="label" for="input-username">Tu nombre en Windows</label>
+        <input class="ctl" type="text" id="input-username" placeholder="Ej: Poxi" maxlength="20" autocomplete="off" />
+        <span class="field-hint">Sin espacios ni caracteres especiales. Máximo 20 letras.</span>
+      </div>
+
+      <div id="username-error" class="error-box" style="display:none"></div>
+
+      <div class="screen-footer">
+        <button class="btn btn-ghost" id="btn-back-3">← Atrás</button>
+        <button class="btn btn-go" id="btn-username-ok">Continuar →</button>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════
+         SCREEN 5 — Resumen y confirmar
+    ══════════════════════════════════════════════════════════ -->
+    <div class="screen" id="screen-5">
+      <div class="sec-head"><span class="sec-dot"></span><h2>Todo listo</h2></div>
+
+      <div class="summary-grid">
+        <div class="summary-item">
+          <span class="summary-label">ISO</span>
+          <span class="summary-value" id="sum-iso">—</span>
+        </div>
+        <div class="summary-item">
+          <span class="summary-label">USB</span>
+          <span class="summary-value" id="sum-usb">—</span>
+        </div>
+        <div class="summary-item">
+          <span class="summary-label">Usuario</span>
+          <span class="summary-value" id="sum-user">—</span>
+        </div>
+      </div>
+
+      <div class="auto-config">
+        <p class="auto-config-title">Se configurará automáticamente:</p>
+        <ul class="auto-config-list">
+          <li><span class="check-green">✓</span> GPT + UEFI (compatible con PCs modernos)</li>
+          <li><span class="check-green">✓</span> Sin requisito de TPM ni RAM extra para Windows 11</li>
+          <li><span class="check-green">✓</span> Cuenta local — sin cuenta Microsoft obligatoria</li>
+          <li><span class="check-green">✓</span> Sin telemetría ni seguimiento de Microsoft</li>
+          <li><span class="check-green">✓</span> Sin bloatware preinstalado</li>
+        </ul>
+      </div>
+
+      <div class="warning-box">
+        ⚠️ El USB se formateará y <strong>TODO su contenido se perderá</strong>.
+      </div>
+
+      <div class="screen-footer">
+        <button class="btn btn-ghost" id="btn-back-4">← Atrás</button>
+        <button class="btn btn-go" id="btn-start-flash">🚀 EMPEZAR</button>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════
+         SCREEN 6 — Progreso
+    ══════════════════════════════════════════════════════════ -->
+    <div class="screen" id="screen-6">
+      <div class="sec-head"><span class="sec-dot"></span><h2>Grabando USB...</h2></div>
+
+      <div class="progress-warning">
+        🚫 <strong>NO desconectes el USB del PC</strong> durante este proceso.
+      </div>
+
+      <div class="track" id="progress-track">
+        <div class="fill" id="progress-fill"></div>
+        <div class="shine"></div>
+        <span class="lbl" id="progress-lbl">Iniciando...</span>
+      </div>
+      <div class="progress-pct" id="progress-pct">0%</div>
+      <p class="progress-msg" id="progress-msg">Preparando...</p>
+
+      <div class="screen-footer">
+        <button class="btn btn-ghost" id="btn-cancel-flash">Cancelar</button>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════
+         SCREEN 7 — USB listo + arrancar desde USB
+    ══════════════════════════════════════════════════════════ -->
+    <div class="screen" id="screen-7">
+      <div class="done-banner">
+        <span class="done-icon">✅</span>
+        <h2>¡USB listo!</h2>
+        <p>Ahora sigue estos pasos para instalar Windows:</p>
+      </div>
+
+      <div class="guide-steps">
+        <div class="guide-step">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <strong>Apaga el PC dejando el USB conectado</strong>
+          </div>
+        </div>
+        <div class="guide-step">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <strong>Enciéndelo y pulsa repetidamente la tecla de arranque</strong>
+            <div class="boot-keys-table">
+              <div class="boot-key-row header"><span>Marca</span><span>Tecla BIOS</span><span>Tecla Boot</span></div>
+              <div class="boot-key-row"><span>ASUS / ROG</span><span>Del / F2</span><span>F8</span></div>
+              <div class="boot-key-row"><span>MSI</span><span>Del</span><span>F11</span></div>
+              <div class="boot-key-row"><span>Gigabyte</span><span>Del / F2</span><span>F12</span></div>
+              <div class="boot-key-row"><span>HP</span><span>F10 / Esc</span><span>F9</span></div>
+              <div class="boot-key-row"><span>Lenovo</span><span>F2 / Fn+F2</span><span>F12</span></div>
+              <div class="boot-key-row"><span>Dell</span><span>F2</span><span>F12</span></div>
+              <div class="boot-key-row"><span>Acer</span><span>F2 / Del</span><span>F12</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="guide-step">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <strong>Selecciona tu USB de la lista</strong>
+            <span>Sale la marca y capacidad del USB. Usa las flechas del teclado y pulsa Enter.</span>
+          </div>
+        </div>
+        <div class="guide-step">
+          <div class="step-num">4</div>
+          <div class="step-content">
+            <strong>Espera a que cargue el instalador de Windows</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="secure-boot-info">
+        <button class="adv" id="btn-secure-boot-toggle">
+          <span class="tw">▶</span> ¿Te sale error "Secure Boot Violation"? Haz clic aquí
+        </button>
+        <div class="adv-body" id="secure-boot-body" style="display:none">
+          <p>Tu PC tiene Secure Boot activado. Hay que desactivarlo temporalmente:</p>
+          <ol>
+            <li>Reinicia el PC y entra al BIOS (tecla de tu marca, tabla de arriba)</li>
+            <li>Busca la opción <strong>"Secure Boot"</strong> (en la pestaña "Boot" o "Security")</li>
+            <li>Cámbiala a <strong>"Disabled"</strong></li>
+            <li>Guarda y sal (normalmente <strong>F10</strong>)</li>
+            <li>Intenta arrancar desde USB de nuevo</li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="screen-footer">
+        <button class="btn btn-go" id="btn-to-install-guide">Ver guía de instalación →</button>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════
+         SCREEN 8 — Guía instalación Windows
+    ══════════════════════════════════════════════════════════ -->
+    <div class="screen" id="screen-8">
+      <div class="sec-head"><span class="sec-dot"></span><h2>Instalando Windows</h2></div>
+      <p class="screen-hint">Marca cada paso conforme avances. <strong>No desconectes el USB en todo este proceso.</strong></p>
+
+      <div class="install-steps" id="install-steps">
+        <label class="install-step">
+          <input type="checkbox" class="step-check" />
+          <span class="step-circle"></span>
+          <div class="step-text">
+            <strong>Sale la pantalla azul de Windows Setup</strong>
+            <span>Pulsa "Siguiente" → "Instalar ahora"</span>
+          </div>
+        </label>
+        <label class="install-step">
+          <input type="checkbox" class="step-check" />
+          <span class="step-circle"></span>
+          <div class="step-text">
+            <strong>¿Tienes clave de producto?</strong>
+            <span>Pulsa <em>"No tengo clave de producto"</em> (abajo a la derecha)</span>
+          </div>
+        </label>
+        <label class="install-step">
+          <input type="checkbox" class="step-check" />
+          <span class="step-circle"></span>
+          <div class="step-text">
+            <strong>Elige la edición</strong>
+            <span>Selecciona <em>Windows 10 Pro</em> o <em>Windows 11 Pro</em> → Siguiente</span>
+          </div>
+        </label>
+        <label class="install-step">
+          <input type="checkbox" class="step-check" />
+          <span class="step-circle"></span>
+          <div class="step-text">
+            <strong>Acepta los términos de licencia</strong>
+            <span>Activa el tick y pulsa Siguiente</span>
+          </div>
+        </label>
+        <label class="install-step">
+          <input type="checkbox" class="step-check" />
+          <span class="step-circle"></span>
+          <div class="step-text">
+            <strong>Tipo de instalación: elige "Personalizada"</strong>
+            <span>La opción de abajo — <em>NO</em> la de actualización</span>
+          </div>
+        </label>
+        <label class="install-step critical">
+          <input type="checkbox" class="step-check" />
+          <span class="step-circle"></span>
+          <div class="step-text">
+            <strong>⚠️ Momento crítico — Particiones</strong>
+            <span>Identifica tu disco por el tamaño. Borra <em>TODAS</em> las particiones de ese disco una por una (botón "Eliminar"). Cuando quede solo "Espacio sin asignar", selecciónalo → Siguiente.</span>
+            <div class="tip-box">💡 Si tienes otro disco (p.ej. uno de 1TB para fotos), NO lo toques. Solo borra las particiones del disco donde quieres instalar Windows.</div>
+          </div>
+        </label>
+        <label class="install-step">
+          <input type="checkbox" class="step-check" />
+          <span class="step-circle"></span>
+          <div class="step-text">
+            <strong>Windows se instala solo</strong>
+            <span>El PC puede reiniciarse varias veces. <strong>No toques nada y no desconectes el USB.</strong></span>
+          </div>
+        </label>
+        <label class="install-step">
+          <input type="checkbox" class="step-check" />
+          <span class="step-circle"></span>
+          <div class="step-text">
+            <strong>Sale el menú de bienvenida de Windows</strong>
+            <span>Como cuando compras un móvil nuevo. Sigue los pasos que te pide.</span>
+          </div>
+        </label>
+      </div>
+
+      <div class="done-final" id="done-final" style="display:none">
+        <span class="done-icon big">🎉</span>
+        <h3>¡Windows instalado!</h3>
+        <p>Ya puedes quitar el USB y disfrutar.</p>
+      </div>
+
+      <div class="screen-footer">
+        <button class="btn btn-ghost" id="btn-back-7">← Atrás</button>
+        <button class="btn btn-go" id="btn-finish">Cerrar</button>
+      </div>
+    </div>
+
+  </div><!-- /screens -->
+
+  <!-- Status bar -->
+  <div class="statusbar">
+    <span class="pulse" id="status-pulse"></span>
+    <span id="status-text">Listo</span>
+  </div>
+
+</div><!-- /win -->
+
+<script src="wizard.js"></script>
+</body>
+</html>
