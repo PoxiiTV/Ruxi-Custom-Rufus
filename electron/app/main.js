@@ -1,10 +1,14 @@
-const { app, BrowserWindow, ipcMain, dialog, shell, net } = require('electron');
+const { app, BrowserWindow, ipcMain, dialog, shell, net, Notification, powerSaveBlocker } = require('electron');
 const { spawn, execSync } = require('child_process');
 const path = require('path');
 const fs = require('fs');
 const os = require('os');
 const https = require('https');
 const http = require('http');
+
+// Letra de la unidad del sistema (donde corre Windows), normalmente "C:"
+const SYSTEM_DRIVE = (process.env.SystemDrive || 'C:').toUpperCase();
+let powerBlockerId = null;
 
 // Ensure app works when launched via Windows ShellExecute (double-click)
 if (process.argv.indexOf('--no-sandbox') === -1) {
@@ -80,12 +84,13 @@ ipcMain.handle('window-close', () => {
   app.quit();
 });
 
-// ── Drive detection — muestra TODOS los discos excepto C: y CD-ROM ───────────
+// ── Drive detection — todas las unidades excepto CD-ROM ──────────────────────
+//  Devuelve flags: removable (USB), isSystem (disco de Windows actual).
+//  El renderer decide qué mostrar (solo USB por defecto, internos en avanzado).
 ipcMain.handle('list-usb-drives', async () => {
   try {
-    // Simple, reliable query — no multiline, no complex escaping
     const raw = execSync(
-      'powershell -NoProfile -Command "Get-WmiObject Win32_LogicalDisk | Select-Object DeviceID,VolumeName,Size,DriveType | ConvertTo-Json -Compress"',
+      'powershell -NoProfile -Command "Get-WmiObject Win32_LogicalDisk | Select-Object DeviceID,VolumeName,Size,FreeSpace,DriveType | ConvertTo-Json -Compress"',
       { timeout: 10000 }
     ).toString().trim();
 
@@ -97,14 +102,15 @@ ipcMain.handle('list-usb-drives', async () => {
       .filter(d => {
         if (!d || !d.DeviceID) return false;
         if (d.DriveType === 5) return false;        // CD-ROM
-        if (d.DeviceID === 'C:') return false;       // disco del sistema
         if (!d.Size || parseInt(d.Size) === 0) return false;
         return true;
       })
       .map(d => {
         const sizeGB = Math.round(parseInt(d.Size) / 1073741824);
+        const freeGB = d.FreeSpace ? Math.round(parseInt(d.FreeSpace) / 1073741824) : null;
         const label = d.VolumeName || '';
         const isRemovable = d.DriveType === 2;
+        const isSystem = (d.DeviceID || '').toUpperCase() === SYSTEM_DRIVE;
         const icon = isRemovable ? '💾' : '🖥️';
         const typeTag = isRemovable ? 'USB' : 'Disco';
         const displayName = label
@@ -113,14 +119,107 @@ ipcMain.handle('list-usb-drives', async () => {
         return {
           model: label || d.DeviceID,
           sizeGB,
+          freeGB,
           letters: [d.DeviceID],
           label: displayName,
           tooSmall: sizeGB < 8,
           driveType: d.DriveType,
+          removable: isRemovable,
+          isSystem,
         };
       });
   } catch (e) {
     return [];
+  }
+});
+
+// ── Detección del PC actual (marca, modelo, firmware, RAM) ───────────────────
+let pcInfoCache = null;
+ipcMain.handle('get-pc-info', async () => {
+  if (pcInfoCache) return pcInfoCache;
+  try {
+    const ps =
+      "$cs = Get-WmiObject Win32_ComputerSystem;" +
+      "$fw = 'desconocido';" +
+      "try { Confirm-SecureBootUEFI -ErrorAction Stop | Out-Null; $fw='UEFI' } catch { $fw='BIOS' };" +
+      "[pscustomobject]@{ Manufacturer=$cs.Manufacturer; Model=$cs.Model; RAM=$cs.TotalPhysicalMemory; Firmware=$fw } | ConvertTo-Json -Compress";
+    const raw = execSync(`powershell -NoProfile -Command "${ps}"`, { timeout: 10000 }).toString().trim();
+    const d = JSON.parse(raw);
+    pcInfoCache = {
+      manufacturer: (d.Manufacturer || '').trim(),
+      model: (d.Model || '').trim(),
+      ramGB: d.RAM ? Math.round(parseInt(d.RAM) / 1073741824) : null,
+      firmware: d.Firmware || 'desconocido',
+    };
+    return pcInfoCache;
+  } catch (e) {
+    return { manufacturer: '', model: '', ramGB: null, firmware: 'desconocido' };
+  }
+});
+
+// ── Inspeccionar una unidad antes de borrarla (qué contiene) ─────────────────
+ipcMain.handle('inspect-drive', async (_, driveLetter) => {
+  const letter = (driveLetter || '').replace(/[^A-Za-z]/g, '').toUpperCase();
+  if (!letter) return { ok: false };
+  const root = letter + ':\\';
+  const result = { ok: true, letter: letter + ':', label: '', totalGB: null, usedGB: null, freeGB: null, itemCount: 0, items: [], empty: true };
+
+  // Espacio y etiqueta vía WMI (sin -Filter para evitar comillas anidadas: filtro en JS)
+  try {
+    const raw = execSync(
+      'powershell -NoProfile -Command "Get-WmiObject Win32_LogicalDisk | Select-Object DeviceID,VolumeName,Size,FreeSpace | ConvertTo-Json -Compress"',
+      { timeout: 8000 }
+    ).toString().trim();
+    if (raw && raw !== 'null') {
+      const all = JSON.parse(raw);
+      const list = Array.isArray(all) ? all : [all];
+      const d = list.find(x => (x.DeviceID || '').toUpperCase() === letter + ':');
+      if (d) {
+        result.label = d.VolumeName || '';
+        if (d.Size) result.totalGB = Math.round(parseInt(d.Size) / 1073741824 * 10) / 10;
+        if (d.FreeSpace != null && d.Size) {
+          result.freeGB = Math.round(parseInt(d.FreeSpace) / 1073741824 * 10) / 10;
+          result.usedGB = Math.round((parseInt(d.Size) - parseInt(d.FreeSpace)) / 1073741824 * 10) / 10;
+        }
+      }
+    }
+  } catch {}
+
+  // Contenido de la raíz (solo nivel superior, rápido)
+  try {
+    const entries = fs.readdirSync(root, { withFileTypes: true })
+      .filter(e => !e.name.startsWith('$') && e.name.toLowerCase() !== 'system volume information');
+    result.itemCount = entries.length;
+    result.empty = entries.length === 0;
+    result.items = entries.slice(0, 8).map(e => ({ name: e.name, dir: e.isDirectory() }));
+  } catch {}
+
+  return result;
+});
+
+// ── Validar que un archivo es una ISO de Windows válida ──────────────────────
+//  Lee el Volume Descriptor ISO9660 (sector 16, offset 0x8000) sin montar nada.
+ipcMain.handle('validate-iso', async (_, isoPath) => {
+  try {
+    const stat = fs.statSync(isoPath);
+    const sizeMB = Math.round(stat.size / 1048576);
+    if (stat.size < 1.5 * 1024 * 1024 * 1024) {
+      return { valid: false, reason: 'too-small', label: '', sizeMB };
+    }
+    let label = '';
+    try {
+      const fd = fs.openSync(isoPath, 'r');
+      const buf = Buffer.alloc(64);
+      // Primary Volume Descriptor: sector 16 = offset 32768; volume id en +40, 32 bytes
+      fs.readSync(fd, buf, 0, 64, 32768 + 8);
+      fs.closeSync(fd);
+      label = buf.slice(32, 64).toString('latin1').trim();
+    } catch {}
+    // Una ISO de Windows típica tiene labels tipo CCCOMA_..., CES_..., J_CCSA_..., CTOS_..., etc.
+    const looksWindows = /[A-Z0-9_]/i.test(label);
+    return { valid: true, label, looksWindows, sizeMB };
+  } catch (e) {
+    return { valid: false, reason: 'not-found', label: '' };
   }
 });
 
@@ -311,6 +410,27 @@ function getLogPath() {
 
 let lastLogPath = null;
 
+// Evita que el PC se suspenda durante el grabado
+function startPowerBlocker() {
+  try { if (powerBlockerId === null) powerBlockerId = powerSaveBlocker.start('prevent-display-sleep'); } catch {}
+}
+function stopPowerBlocker() {
+  try { if (powerBlockerId !== null) { powerSaveBlocker.stop(powerBlockerId); powerBlockerId = null; } } catch {}
+}
+
+// Notificación del sistema (útil si la ventana está minimizada)
+function notify(title, body) {
+  try {
+    if (Notification.isSupported()) {
+      new Notification({
+        title,
+        body,
+        icon: path.join(__dirname, 'renderer', 'assets', 'logo.png'),
+      }).show();
+    }
+  } catch {}
+}
+
 // ── Flash USB ─────────────────────────────────────────────────────────────────
 ipcMain.handle('start-flash', (_, { isoPath, driveLetter, username }) => {
   const enginePath = getReadyEnginePath();
@@ -334,11 +454,14 @@ ipcMain.handle('start-flash', (_, { isoPath, driveLetter, username }) => {
     });
     return;
   }
-  // Informar a la UI dónde está el log
+  // Informar a la UI dónde está el log + evitar que el PC se suspenda
   mainWindow.webContents.send('flash-event', { status: 'log-path', path: lastLogPath });
+  startPowerBlocker();
+  let notified = false;
 
   flashProcess.on('error', (err) => {
     flashProcess = null;
+    stopPowerBlocker();
     mainWindow.webContents.send('flash-event', {
       status: 'error',
       message: `Error al ejecutar rufus-engine.exe: ${err.message}`,
@@ -355,7 +478,19 @@ ipcMain.handle('start-flash', (_, { isoPath, driveLetter, username }) => {
     for (const line of lines) {
       const t = line.trim();
       if (!t) continue;
-      try { mainWindow.webContents.send('flash-event', JSON.parse(t)); } catch {}
+      let evt;
+      try { evt = JSON.parse(t); } catch { continue; }
+      mainWindow.webContents.send('flash-event', evt);
+      // Notificación del sistema al terminar (una sola vez)
+      if (!notified && evt.status === 'done') {
+        notified = true;
+        stopPowerBlocker();
+        notify('✅ ¡USB listo!', 'Ya puedes usar tu USB para instalar Windows.');
+      } else if (!notified && evt.status === 'error') {
+        notified = true;
+        stopPowerBlocker();
+        notify('❌ Hubo un problema', evt.message || 'No se pudo completar la grabación.');
+      }
     }
   });
   if (flashProcess.stderr) {
@@ -363,9 +498,82 @@ ipcMain.handle('start-flash', (_, { isoPath, driveLetter, username }) => {
   }
   flashProcess.on('close', code => {
     flashProcess = null;
+    stopPowerBlocker();
     if (eventLog) { try { eventLog.end(); } catch {} }
     if (code !== 0) mainWindow.webContents.send('flash-event', { status: 'error', message: `El proceso terminó inesperadamente (código ${code}).` });
   });
+});
+
+// ── Actualizaciones / changelog (GitHub Releases) ────────────────────────────
+const GH_REPO = 'PoxiiTV/Ruxi-Custom-Rufus';
+function ghGetJson(apiPath) {
+  return new Promise((resolve, reject) => {
+    const req = https.get(`https://api.github.com/repos/${GH_REPO}${apiPath}`, {
+      headers: { 'User-Agent': 'Ruxi', 'Accept': 'application/vnd.github+json' },
+      timeout: 8000,
+    }, (res) => {
+      if (res.statusCode !== 200) { res.resume(); reject(new Error('HTTP ' + res.statusCode)); return; }
+      let data = '';
+      res.on('data', c => data += c);
+      res.on('end', () => { try { resolve(JSON.parse(data)); } catch (e) { reject(e); } });
+    });
+    req.on('error', reject);
+    req.on('timeout', () => { req.destroy(); reject(new Error('timeout')); });
+  });
+}
+function cmpVersions(a, b) {
+  const pa = String(a).replace(/^v/i, '').split('.').map(n => parseInt(n) || 0);
+  const pb = String(b).replace(/^v/i, '').split('.').map(n => parseInt(n) || 0);
+  for (let i = 0; i < Math.max(pa.length, pb.length); i++) {
+    if ((pa[i] || 0) > (pb[i] || 0)) return 1;
+    if ((pa[i] || 0) < (pb[i] || 0)) return -1;
+  }
+  return 0;
+}
+ipcMain.handle('check-update', async () => {
+  try {
+    const rel = await ghGetJson('/releases/latest');
+    const latest = rel.tag_name || rel.name || '';
+    const hasUpdate = cmpVersions(latest, app.getVersion()) > 0;
+    return { ok: true, hasUpdate, latest, url: rel.html_url || `https://github.com/${GH_REPO}/releases` };
+  } catch (e) {
+    return { ok: false };
+  }
+});
+ipcMain.handle('get-release-notes', async () => {
+  try {
+    const rel = await ghGetJson('/releases/latest');
+    return { ok: true, name: rel.name || rel.tag_name || '', body: rel.body || '', url: rel.html_url || '' };
+  } catch (e) {
+    return { ok: false };
+  }
+});
+
+// ── Exportar la guía a PDF ───────────────────────────────────────────────────
+ipcMain.handle('export-pdf', async (_, { html, suggestedName }) => {
+  const res = await dialog.showSaveDialog(mainWindow, {
+    title: 'Guardar guía de instalación en PDF',
+    defaultPath: path.join(app.getPath('desktop'), suggestedName || 'Guia-Ruxi.pdf'),
+    filters: [{ name: 'PDF', extensions: ['pdf'] }],
+  });
+  if (res.canceled || !res.filePath) return { ok: false };
+
+  const win = new BrowserWindow({ show: false, webPreferences: { sandbox: true } });
+  try {
+    await win.loadURL('data:text/html;charset=utf-8,' + encodeURIComponent(html));
+    const pdf = await win.webContents.printToPDF({
+      printBackground: true,
+      margins: { marginType: 'custom', top: 0.5, bottom: 0.5, left: 0.5, right: 0.5 },
+      pageSize: 'A4',
+    });
+    fs.writeFileSync(res.filePath, pdf);
+    win.destroy();
+    shell.openPath(res.filePath);
+    return { ok: true, path: res.filePath };
+  } catch (e) {
+    try { win.destroy(); } catch {}
+    return { ok: false, error: e.message };
+  }
 });
 
 // Abrir la carpeta de logs en el Explorador
@@ -379,4 +587,5 @@ ipcMain.handle('open-logs', () => {
 
 ipcMain.handle('cancel-flash', () => {
   if (flashProcess) { flashProcess.kill(); flashProcess = null; }
+  stopPowerBlocker();
 });

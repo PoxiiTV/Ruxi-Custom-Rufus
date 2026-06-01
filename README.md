@@ -15,6 +15,8 @@ Solo tú, un USB y unos minutos. 🚀
 [![License: GPL v3](https://img.shields.io/badge/Licencia-GPLv3-2f7bff?style=for-the-badge&labelColor=11132a)](LICENSE.txt)
 [![Made by Poxi](https://img.shields.io/badge/hecho%20por-Poxi-e23aff?style=for-the-badge&labelColor=11132a)](https://github.com/PoxiiTV)
 
+**🇪🇸 Español** · [🇬🇧 English](#-ruxi--english)
+
 </div>
 
 <br>
@@ -61,16 +63,36 @@ Ruxi es un fork de [**Rufus**](https://github.com/pbatard/rufus) — la herramie
 
 ## 🌟 Características
 
-- 🧭 **Asistente guiado** — 9 pantallas que te llevan de la mano de principio a fin
-- ⬇️ **Descarga de ISOs integrada** — Baja Windows desde la propia app, con barra de progreso
+### 🧭 Fácil de principio a fin
+- **Asistente guiado** — 9 pantallas que te llevan de la mano, con pantalla inicial *"¿Qué quieres hacer?"*
+- **Descarga de ISOs integrada** — Baja Windows desde la propia app, con barra de progreso, MB y velocidad
 - ⭐ **ISO recomendada** — Windows 11 IoT LTSC 2024 optimizado por Poxi: sin bloatware, sin telemetría, máximo rendimiento para gaming
-- ⚙️ **Todo automático** — GPT + UEFI + NTFS + bypass de TPM/SecureBoot/RAM configurados solos
+- **Todo automático** — GPT + UEFI + NTFS + bypass de TPM/SecureBoot/RAM configurados solos
 - 🙅 **Cuenta local** — Sin obligarte a usar cuenta de Microsoft
-- 🔐 **Permisos automáticos** — Pide administrador al abrirse (no hay que hacer "ejecutar como admin")
+- 🔐 **Pide administrador automáticamente** al abrirse (no hay que hacer "ejecutar como admin")
 - 🏷️ **USB con nombre propio** — Se crea como `Poxi-WINDOWS`
+
+### 🛡️ Seguro (no la lías)
+- **Verifica qué hay en el USB** antes de borrarlo (te enseña sus archivos y avisa)
+- **Comprueba que la ISO es válida** (lee la imagen antes de grabar)
+- **Bloquea el disco del sistema** — imposible borrar por error el disco donde tienes Windows
+- ☕ **Evita que el PC se suspenda** durante el grabado
+- 🔔 **Notificación + sonido** al terminar (aunque esté minimizado)
+- ⏱️ **Tiempo restante y velocidad** (MB/s) en tiempo real
+
+### 📚 Tutoriales para todo
 - ⌨️ **Guía de arranque** — Tabla de teclas por marca (ASUS, MSI, HP, Lenovo, Dell…) y solución al "Secure Boot Violation"
+- 💻 **Detecta tu PC** y resalta automáticamente tu tecla de arranque
 - ✅ **Guía de instalación adaptativa** — Pasos marcables que cambian según tu equipo (🖥️ sobremesa / 💻 portátil) y tu caso (🆕 PC nuevo / ♻️ reinstalar)
-- 🚀 **Guía post-instalación** — Qué hacer al terminar: internet, Windows Update y drivers del fabricante (WiFi/touchpad en portátiles, GPU/chipset en sobremesa)
+- 🚀 **Guía post-instalación** — Internet, Windows Update y drivers del fabricante (WiFi/touchpad en portátiles, GPU/chipset en sobremesa)
+- 📦 **Instalador de programas básicos** — Chrome + VLC + WinRAR de un clic con Ninite
+- 📱 **Llévate la guía al móvil** con un código QR · 📄 o **expórtala a PDF**
+- ❓ **FAQ integrada** con los problemas más comunes y sus soluciones
+
+### ✨ Detalles
+- 🌍 **Multi-idioma** — Español e Inglés, se elige al abrir y se cambia con un clic (🌐)
+- 🎉 **Confeti y animaciones** al terminar
+- 🆙 **Aviso de nueva versión** y **novedades** (changelog) desde GitHub
 
 ---
 
@@ -219,6 +241,158 @@ Ruxi se distribuye bajo [**GPL v3**](LICENSE.txt), la misma licencia que Rufus.
 ### ⭐ Si te ha servido, deja una estrella al repo ⭐
 
 Hecho con 💜 por **Poxi**
+
+[🌐 GitHub](https://github.com/PoxiiTV) · [📦 Releases](https://github.com/PoxiiTV/Ruxi-Custom-Rufus/releases)
+
+</div>
+
+<br><br>
+
+---
+---
+
+<div align="center">
+
+<img src="electron/app/renderer/assets/logo.png" width="110" alt="Ruxi logo" />
+
+# ✨ Ruxi — English
+
+### The easiest way to install Windows 🪟
+
+**No jargon. No weird steps. No paying anyone.**
+Just you, a USB stick and a few minutes. 🚀
+
+[🇪🇸 Español](#-ruxi) · **🇬🇧 English**
+
+</div>
+
+<br>
+
+---
+
+## 💡 Why does Ruxi exist?
+
+Installing Windows **isn't hard** — it just looks that way. 😮‍💨
+
+Many people end up taking their computer to a shop and paying for something they could perfectly do at home in half an hour with the right guide. Partitions, BIOS, "boot from USB", TPM, Secure Boot… scary words that actually hide a pretty simple process.
+
+**Ruxi exists so anyone can do it themselves.** 🙌
+
+Whether you just built a new PC or want to leave your laptop like it came from the factory, Ruxi holds your hand from minute zero: it helps you download Windows, prepares the USB automatically and explains **step by step, in plain language**, what to do until Windows is up and running.
+
+> 🎯 **The goal:** that you know how to do it yourself, understand what you're doing, and don't depend on (or pay) anyone for something within your reach.
+
+---
+
+## 🪄 What exactly is it?
+
+Ruxi is a fork of [**Rufus**](https://github.com/pbatard/rufus) — the world's most reliable tool for creating bootable USBs — but with:
+
+- 🎨 A **fresh, pretty interface** (dark glassmorphism)
+- 🧭 A **guided wizard** that handles the technical part for you
+- 📚 A **built-in tutorial** that doesn't let go until Windows is installed
+
+> 👵 **Made for everyone:** if your grandma can use WhatsApp, she can use Ruxi.
+
+### 🆚 Ruxi vs. original Rufus
+
+| | 🔧 Rufus | ✨ Ruxi |
+|---|:---:|:---:|
+| **Interface** | Classic Win32 | Modern glassmorphism |
+| **Difficulty** | Technical (GPT, UEFI, NTFS…) | Fully automatic |
+| **Tutorial** | ❌ | ✅ Built-in, step by step |
+| **ISO download** | ❌ | ✅ From the app itself |
+| **Recommended ISO** | ❌ | ✅ Optimized Windows 11 LTSC |
+| **Post-install guide** | ❌ | ✅ Drivers, WiFi, updates |
+| **Writing engine** | Rufus | Rufus (under the hood) |
+
+---
+
+## 🌟 Features
+
+### 🧭 Easy from start to finish
+- **Guided wizard** — 9 screens that walk you through, with an initial *"What do you want to do?"* screen
+- **Built-in ISO download** — Download Windows from the app, with progress bar, MB and speed
+- ⭐ **Recommended ISO** — Windows 11 IoT LTSC 2024 optimized by Poxi: no bloatware, no telemetry, max gaming performance
+- **Fully automatic** — GPT + UEFI + NTFS + TPM/SecureBoot/RAM bypass configured for you
+- 🙅 **Local account** — No forced Microsoft account
+- 🔐 **Asks for administrator automatically** on launch (no "run as admin")
+- 🏷️ **USB with its own name** — Created as `Poxi-WINDOWS`
+
+### 🛡️ Safe (you won't mess up)
+- **Checks what's on the USB** before erasing it (shows you its files and warns you)
+- **Verifies the ISO is valid** (reads the image before writing)
+- **Blocks the system disk** — impossible to wipe the disk where Windows lives by mistake
+- ☕ **Prevents the PC from sleeping** while writing
+- 🔔 **Notification + sound** when done (even if minimized)
+- ⏱️ **Time left and speed** (MB/s) in real time
+
+### 📚 Tutorials for everything
+- ⌨️ **Boot guide** — Boot-key table by brand (ASUS, MSI, HP, Lenovo, Dell…) and a fix for "Secure Boot Violation"
+- 💻 **Detects your PC** and auto-highlights your boot key
+- ✅ **Adaptive install guide** — Checkable steps that change based on your computer (🖥️ desktop / 💻 laptop) and your case (🆕 new PC / ♻️ reinstall)
+- 🚀 **Post-install guide** — Internet, Windows Update and manufacturer drivers (WiFi/touchpad on laptops, GPU/chipset on desktops)
+- 📦 **Basic programs installer** — Chrome + VLC + WinRAR in one click via Ninite
+- 📱 **Take the guide on your phone** with a QR code · 📄 or **export it to PDF**
+- ❓ **Built-in FAQ** with the most common problems and their fixes
+
+### ✨ Details
+- 🌍 **Bilingual** — Spanish and English, chosen on launch and switchable with one click (🌐)
+- 🎉 **Confetti and animations** when done
+- 🆙 **New-version notice** and **what's new** (changelog) from GitHub
+
+---
+
+## 📥 Download
+
+<div align="center">
+
+### 👉 **[Download the latest version](https://github.com/PoxiiTV/Ruxi-Custom-Rufus/releases)** 👈
+
+</div>
+
+Grab the **`Ruxi-Portable.exe`** file from the latest release.
+**No installation** — double click and go. ✨
+
+> 🖥️ Requires **Windows 10/11 (64-bit)**. It will ask for administrator permissions on launch (normal and required to write the USB).
+
+---
+
+## 🗺️ How does it work? (in 4 steps)
+
+1. 📥 **Download Windows** — from the app or use an ISO you already have
+2. 🔌 **Plug in a USB** (min. 8 GB — it gets fully erased ⚠️)
+3. 🚀 **Hit start** — Ruxi formats and writes everything by itself
+4. 📖 **Follow the guide** — it explains how to boot and install step by step
+
+> ⏱️ The whole process takes 5 to 20 minutes depending on your USB and PC.
+
+---
+
+## 👨‍💻 For developers
+
+See the technical documentation in the [Spanish section above](#-para-desarrolladores) (project structure, building the `rufus-engine.exe`, headless engine parameters and the C-code modifications). The engine flags:
+
+```
+rufus-engine.exe --headless --iso "C:\path\windows.iso" --device "E:" --username "YourName" [--logfile "C:\path\log.txt"]
+```
+
+---
+
+## 🙏 Credits
+
+- 🛠️ **Engine** — [Rufus](https://github.com/pbatard/rufus) by Pete Batard (GPL v3)
+- 🎨 **Frontend, design and concept** — Poxi
+
+Ruxi is distributed under [**GPL v3**](LICENSE.txt), the same license as Rufus.
+
+---
+
+<div align="center">
+
+### ⭐ If it helped you, leave the repo a star ⭐
+
+Made with 💜 by **Poxi**
 
 [🌐 GitHub](https://github.com/PoxiiTV) · [📦 Releases](https://github.com/PoxiiTV/Ruxi-Custom-Rufus/releases)
 

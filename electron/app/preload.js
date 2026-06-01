@@ -5,6 +5,9 @@ contextBridge.exposeInMainWorld('ruxi', {
   close: () => ipcRenderer.invoke('window-close'),
 
   listUsbDrives: () => ipcRenderer.invoke('list-usb-drives'),
+  getPcInfo: () => ipcRenderer.invoke('get-pc-info'),
+  inspectDrive: (letter) => ipcRenderer.invoke('inspect-drive', letter),
+  validateIso: (path) => ipcRenderer.invoke('validate-iso', path),
 
   openIsoPicker: () => ipcRenderer.invoke('open-iso-picker'),
   openUrl: (url) => ipcRenderer.invoke('open-url', url),
@@ -21,4 +24,7 @@ contextBridge.exposeInMainWorld('ruxi', {
   offFlashEvents: () => ipcRenderer.removeAllListeners('flash-event'),
 
   openLogs: () => ipcRenderer.invoke('open-logs'),
+  exportPdf: (opts) => ipcRenderer.invoke('export-pdf', opts),
+  checkUpdate: () => ipcRenderer.invoke('check-update'),
+  getReleaseNotes: () => ipcRenderer.invoke('get-release-notes'),
 });
