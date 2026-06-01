@@ -558,6 +558,7 @@ function cmpVersions(a, b) {
   }
   return 0;
 }
+ipcMain.handle('get-app-version', () => app.getVersion());
 ipcMain.handle('check-update', async () => {
   try {
     const rel = await ghGetJson('/releases/latest');

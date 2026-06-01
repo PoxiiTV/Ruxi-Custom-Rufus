@@ -73,6 +73,7 @@ Ruxi es un fork de [**Rufus**](https://github.com/pbatard/rufus) — la herramie
 - 🙅 **Cuenta local** — Sin obligarte a usar cuenta de Microsoft
 - 🔐 **Pide administrador automáticamente** al abrirse (no hay que hacer "ejecutar como admin")
 - 🏷️ **USB con nombre propio** — Se crea como `Poxi-WINDOWS`
+- 🔁 **Crear otro USB** al terminar, sin reiniciar el asistente
 
 ### 🛡️ Seguro (no la lías)
 - **Verifica qué hay en el USB** antes de borrarlo (te enseña sus archivos y avisa)
@@ -97,6 +98,7 @@ Ruxi es un fork de [**Rufus**](https://github.com/pbatard/rufus) — la herramie
 - 🌍 **Multi-idioma** — Español e Inglés, se elige al abrir y se cambia cuando quieras
 - 🎨 **Temas de color** — 6 paletas (Poxi, Aurora, Sunset, Océano, Ruby, Lima)
 - 🔊 **Silenciar sonidos** desde Ajustes
+- ℹ️ **Acerca de** — versión, buscar actualizaciones, enlaces y VirusTotal
 - 🎉 **Confeti y animaciones** al terminar
 - 🆙 **Aviso de nueva versión** y **novedades** (changelog) desde GitHub
 
@@ -107,6 +109,8 @@ Ruxi es un fork de [**Rufus**](https://github.com/pbatard/rufus) — la herramie
 <div align="center">
 
 ### 👉 **[Descargar la última versión](https://github.com/PoxiiTV/Ruxi-Custom-Rufus/releases)** 👈
+
+🌐 **Web del proyecto:** [poxiitv.github.io/Ruxi-Custom-Rufus](https://poxiitv.github.io/Ruxi-Custom-Rufus/)
 
 </div>
 
@@ -326,6 +330,7 @@ Ruxi is a fork of [**Rufus**](https://github.com/pbatard/rufus) — the world's 
 - 🙅 **Local account** — No forced Microsoft account
 - 🔐 **Asks for administrator automatically** on launch (no "run as admin")
 - 🏷️ **USB with its own name** — Created as `Poxi-WINDOWS`
+- 🔁 **Create another USB** when done, without restarting the wizard
 
 ### 🛡️ Safe (you won't mess up)
 - **Checks what's on the USB** before erasing it (shows you its files and warns you)
@@ -350,6 +355,7 @@ Ruxi is a fork of [**Rufus**](https://github.com/pbatard/rufus) — the world's 
 - 🌍 **Bilingual** — Spanish and English, chosen on launch and switchable anytime
 - 🎨 **Color themes** — 6 palettes (Poxi, Aurora, Sunset, Ocean, Ruby, Lime)
 - 🔊 **Mute sounds** from Settings
+- ℹ️ **About** — version, check for updates, links and VirusTotal
 - 🎉 **Confetti and animations** when done
 - 🆙 **New-version notice** and **what's new** (changelog) from GitHub
 

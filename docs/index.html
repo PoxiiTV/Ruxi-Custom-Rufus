@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Ruxi — La forma más sencilla de instalar Windows</title>
+<meta name="description" content="Ruxi crea un USB para instalar Windows 10/11 y te guía paso a paso. Gratis, sin complicaciones, para todos." />
+<meta property="og:title" content="Ruxi — Instala Windows fácil" />
+<meta property="og:description" content="Crea un USB de Windows y sigue la guía paso a paso. Gratis y para todos." />
+<meta property="og:image" content="logo.png" />
+<link rel="icon" href="logo.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg:#070810; --txt:#eef0f7; --dim:#9aa0b6; --faint:#666c84;
+    --glass:rgba(255,255,255,.045); --glass-hi:rgba(255,255,255,.085); --stroke:rgba(255,255,255,.10);
+    --grad:linear-gradient(105deg,#2f7bff 0%,#7b5cff 48%,#e23aff 100%);
+    --mid:#7b5cff;
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family:'Plus Jakarta Sans',system-ui,sans-serif; background:var(--bg); color:var(--txt); -webkit-font-smoothing:antialiased; overflow-x:hidden; }
+  .scene { position:fixed; inset:0; z-index:0; background:radial-gradient(120% 90% at 18% 5%,#11132a,#070810 55%),radial-gradient(100% 80% at 85% 100%,#150c24,rgba(7,8,16,0) 60%); }
+  .blob { position:fixed; border-radius:50%; filter:blur(100px); opacity:.5; mix-blend-mode:screen; z-index:0; }
+  .b1 { width:520px;height:520px;left:-140px;top:-120px;background:#2f7bff; }
+  .b2 { width:480px;height:480px;right:-120px;top:5%;background:#e23aff;opacity:.4; }
+  .wrap { position:relative; z-index:1; max-width:960px; margin:0 auto; padding:0 22px; }
+
+  header { text-align:center; padding:70px 0 50px; }
+  header img { width:96px; height:96px; border-radius:24px; box-shadow:0 0 60px rgba(123,92,255,.5); }
+  h1 { font-size:54px; font-weight:800; margin-top:18px; background:var(--grad); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+  .tagline { font-size:19px; color:var(--dim); margin-top:10px; line-height:1.6; }
+  .cta { display:flex; gap:14px; justify-content:center; flex-wrap:wrap; margin-top:30px; }
+  .btn { text-decoration:none; font-weight:700; font-size:16px; padding:15px 30px; border-radius:16px; transition:.18s; display:inline-block; }
+  .btn-go { background:var(--grad); color:#fff; box-shadow:0 12px 36px -10px rgba(123,92,255,.7); }
+  .btn-go:hover { transform:translateY(-2px); filter:brightness(1.08); }
+  .btn-ghost { background:var(--glass); color:var(--txt); border:1.5px solid var(--stroke); }
+  .btn-ghost:hover { background:var(--glass-hi); }
+  .req { font-size:13px; color:var(--faint); margin-top:16px; }
+
+  h2 { font-size:30px; font-weight:800; text-align:center; margin-bottom:10px; }
+  section { padding:46px 0; }
+  .lead { text-align:center; color:var(--dim); font-size:16px; line-height:1.7; max-width:680px; margin:0 auto; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:16px; margin-top:30px; }
+  .card { background:var(--glass); border:1px solid var(--stroke); border-radius:18px; padding:22px; }
+  .card .ico { font-size:30px; }
+  .card h3 { font-size:16px; margin:12px 0 6px; }
+  .card p { font-size:13.5px; color:var(--dim); line-height:1.6; }
+  .steps { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:16px; margin-top:30px; counter-reset:s; }
+  .step { background:var(--glass); border:1px solid var(--stroke); border-radius:16px; padding:20px; position:relative; }
+  .step::before { counter-increment:s; content:counter(s); position:absolute; top:-14px; left:20px; width:30px; height:30px; border-radius:50%; background:var(--grad); color:#fff; font-weight:800; display:grid; place-items:center; font-size:14px; }
+  .step h3 { font-size:15px; margin:8px 0 5px; }
+  .step p { font-size:13px; color:var(--dim); line-height:1.55; }
+  footer { text-align:center; padding:46px 0 60px; color:var(--faint); font-size:14px; border-top:1px solid var(--stroke); margin-top:30px; }
+  footer a { color:var(--mid); text-decoration:none; }
+</style>
+</head>
+<body>
+<div class="scene"></div>
+<div class="blob b1"></div>
+<div class="blob b2"></div>
+
+<div class="wrap">
+  <header>
+    <img src="logo.png" alt="Ruxi" />
+    <h1>Ruxi</h1>
+    <p class="tagline">La forma más sencilla de instalar Windows 10 y 11.<br>Sin tecnicismos. Sin pagar a nadie. Para todos.</p>
+    <div class="cta">
+      <a class="btn btn-go" href="https://github.com/PoxiiTV/Ruxi-Custom-Rufus/releases">⬇ Descargar gratis</a>
+      <a class="btn btn-ghost" href="guia/">📖 Ver la guía</a>
+    </div>
+    <p class="req">Windows 10/11 (64 bits) · No necesita instalación · Código abierto (GPL v3)</p>
+  </header>
+
+  <section>
+    <h2>💡 ¿Por qué Ruxi?</h2>
+    <p class="lead">Instalar Windows no es difícil, solo lo parece. Mucha gente paga por algo que podría hacer en casa en media hora. Ruxi te coge de la mano: descarga Windows, prepara el USB automáticamente y te explica paso a paso, en lenguaje normal, hasta tenerlo funcionando.</p>
+  </section>
+
+  <section>
+    <h2>🌟 Qué hace por ti</h2>
+    <div class="grid">
+      <div class="card"><div class="ico">🧭</div><h3>Asistente guiado</h3><p>9 pantallas que te llevan de principio a fin, sin tecnicismos.</p></div>
+      <div class="card"><div class="ico">⚙️</div><h3>Todo automático</h3><p>GPT + UEFI + NTFS y el bypass de TPM/SecureBoot configurados solos.</p></div>
+      <div class="card"><div class="ico">🛡️</div><h3>Seguro</h3><p>Verifica el USB y la ISO, y bloquea el disco del sistema para que no la líes.</p></div>
+      <div class="card"><div class="ico">📚</div><h3>Guía completa</h3><p>Cómo arrancar e instalar, adaptada a sobremesa/portátil y a tu caso.</p></div>
+      <div class="card"><div class="ico">📦</div><h3>Tus programas</h3><p>Instala Chrome, VLC y más de un clic, o crea tu propio pack.</p></div>
+      <div class="card"><div class="ico">📱</div><h3>Guía en el móvil</h3><p>Escanea un QR y llévate los pasos en el teléfono mientras instalas.</p></div>
+      <div class="card"><div class="ico">🙅</div><h3>Sin Microsoft</h3><p>Cuenta local, sin telemetría ni bloatware. Tú mandas.</p></div>
+      <div class="card"><div class="ico">🌍</div><h3>Español e Inglés</h3><p>Multi-idioma, temas de color y avisos de nuevas versiones.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>🗺️ En 4 pasos</h2>
+    <div class="steps">
+      <div class="step"><h3>Descarga Windows</h3><p>Desde la propia app o usa una ISO que ya tengas.</p></div>
+      <div class="step"><h3>Conecta un USB</h3><p>Mínimo 8 GB (se borra entero, avisado quedas).</p></div>
+      <div class="step"><h3>Dale a empezar</h3><p>Ruxi formatea y graba todo solo en unos minutos.</p></div>
+      <div class="step"><h3>Sigue la guía</h3><p>Te explica cómo arrancar e instalar paso a paso.</p></div>
+    </div>
+  </section>
+
+  <footer>
+    Hecho con 💜 por <strong>Poxi</strong> · basado en <a href="https://github.com/pbatard/rufus">Rufus</a><br>
+    <a href="https://github.com/PoxiiTV/Ruxi-Custom-Rufus">GitHub</a> · <a href="https://github.com/PoxiiTV/Ruxi-Custom-Rufus/releases">Descargas</a> · <a href="guia/">Guía</a>
+  </footer>
+</div>
+</body>
+</html>

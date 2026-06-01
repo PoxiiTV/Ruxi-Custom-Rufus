@@ -159,6 +159,19 @@ html.needs-lang #lang-overlay { display: flex; }
 }
 .settings-toggle:hover { background: rgba(123,92,255,.2); }
 .settings-toggle.off { border-color: var(--stroke); background: var(--glass); color: var(--dim); }
+.about-box { background: var(--glass); border: 1px solid var(--stroke); border-radius: 12px; padding: 12px 14px; }
+.about-ver { font-size: 14px; font-weight: 700; }
+.about-ver span { font-family: 'JetBrains Mono',monospace; color: var(--mid); }
+.about-credits { font-size: 11.5px; color: var(--dim); margin: 3px 0 10px; }
+.about-links { display: flex; flex-wrap: wrap; gap: 7px; }
+.about-link {
+  font-family: inherit; font-size: 12px; font-weight: 600; cursor: pointer;
+  background: var(--glass); border: 1px solid var(--stroke); color: var(--txt);
+  border-radius: 9px; padding: 6px 11px; transition: .15s;
+}
+.about-link:hover { background: var(--glass-hi); border-color: var(--mid); }
+.about-updstatus { font-size: 11.5px; color: var(--green); margin-top: 8px; min-height: 14px; }
+.about-updstatus:empty { display: none; }
 
 /* ── Constructor de Ninite (beta) ────────────────────────────────── */
 .ninite-panel { max-width: 560px; }

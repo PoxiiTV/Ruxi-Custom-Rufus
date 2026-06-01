@@ -25,6 +25,7 @@ contextBridge.exposeInMainWorld('ruxi', {
 
   openLogs: () => ipcRenderer.invoke('open-logs'),
   exportPdf: (opts) => ipcRenderer.invoke('export-pdf', opts),
+  getAppVersion: () => ipcRenderer.invoke('get-app-version'),
   checkUpdate: () => ipcRenderer.invoke('check-update'),
   getReleaseNotes: () => ipcRenderer.invoke('get-release-notes'),
 });

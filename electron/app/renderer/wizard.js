@@ -673,6 +673,15 @@ document.getElementById('btn-to-install-guide').addEventListener('click', () => 
   goTo(8);
 });
 
+// Crear otro USB: mantiene la ISO y el usuario, solo elige otra unidad
+document.getElementById('btn-another-usb').addEventListener('click', () => {
+  state.selectedDrive = null;
+  state.driveLetter = null;
+  showInternalDrives = false;
+  document.getElementById('btn-usb-ok').disabled = true;
+  goTo(3);
+});
+
 // ── SCREEN 8 — Install guide (dinámica según equipo + escenario) ──
 document.getElementById('btn-back-7').addEventListener('click', () => goTo(7));
 document.getElementById('btn-finish').addEventListener('click', () => api.close());
@@ -989,7 +998,12 @@ function markCurrentLang() {
   const cur = getLang();
   settingsOverlay.querySelectorAll('.lang-opt').forEach(o => o.classList.toggle('selected', o.dataset.lang === cur));
 }
-function openSettings() { markCurrentTheme(); markCurrentLang(); refreshSoundToggle(); settingsOverlay.style.display = 'flex'; }
+function openSettings() {
+  markCurrentTheme(); markCurrentLang(); refreshSoundToggle();
+  document.getElementById('about-version').textContent = 'v' + (appVersion || '—');
+  document.getElementById('about-updstatus').textContent = '';
+  settingsOverlay.style.display = 'flex';
+}
 function closeSettings() { settingsOverlay.style.display = 'none'; }
 document.getElementById('btn-settings').addEventListener('click', openSettings);
 document.getElementById('btn-settings-close').addEventListener('click', closeSettings);
@@ -1008,6 +1022,24 @@ function refreshSoundToggle() {
 document.getElementById('toggle-sound').addEventListener('click', () => {
   try { localStorage.setItem('ruxi-sound', soundEnabled() ? '0' : '1'); } catch {}
   refreshSoundToggle();
+});
+
+// Acerca de
+const REPO_URL = 'https://github.com/PoxiiTV/Ruxi-Custom-Rufus';
+const RELEASES_URL = REPO_URL + '/releases';
+// VirusTotal: sube el .exe a VirusTotal y pega aquí el enlace del análisis para cada release.
+const VIRUSTOTAL_URL = 'https://www.virustotal.com/gui/home/upload';
+let appVersion = '';
+(async () => { try { appVersion = await api.getAppVersion(); } catch {} })();
+document.getElementById('about-github').addEventListener('click', () => api.openUrl(REPO_URL));
+document.getElementById('about-releases').addEventListener('click', () => api.openUrl(RELEASES_URL));
+document.getElementById('about-vt').addEventListener('click', () => api.openUrl(VIRUSTOTAL_URL));
+document.getElementById('about-update').addEventListener('click', async () => {
+  const status = document.getElementById('about-updstatus');
+  status.textContent = t('about.checking');
+  const r = await api.checkUpdate();
+  if (r && r.ok && r.hasUpdate) { showUpdateBanner(r.latest, r.url); closeSettings(); }
+  else { status.textContent = t('about.uptodate'); }
 });
 
 // ── Idioma: selector + botón 🌐 ───────────────────────────────────

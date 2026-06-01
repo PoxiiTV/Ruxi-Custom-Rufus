@@ -112,6 +112,20 @@
             <button class="theme-opt" data-theme="lime"><span class="theme-sw" style="background:linear-gradient(105deg,#9be15d,#14d1a0,#2f8bff)"></span>Lima</button>
           </div>
         </div>
+        <div class="settings-section">
+          <span class="settings-label" data-i18n="settings.about">ℹ️ Acerca de</span>
+          <div class="about-box">
+            <p class="about-ver">Ruxi <span id="about-version">—</span></p>
+            <p class="about-credits" data-i18n="about.credits"></p>
+            <div class="about-links">
+              <button class="about-link" id="about-update" data-i18n="about.update"></button>
+              <button class="about-link" id="about-github" data-i18n="about.github"></button>
+              <button class="about-link" id="about-releases" data-i18n="about.releases"></button>
+              <button class="about-link" id="about-vt" data-i18n="about.vt"></button>
+            </div>
+            <p class="about-updstatus" id="about-updstatus"></p>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -505,6 +519,7 @@
       </div>
 
       <div class="screen-footer">
+        <button class="btn btn-ghost" id="btn-another-usb" data-i18n="btn.anotherUsb"></button>
         <button class="btn btn-go" id="btn-to-install-guide" data-i18n="btn.toGuide"></button>
       </div>
     </div>
