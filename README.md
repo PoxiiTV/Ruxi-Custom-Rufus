@@ -105,6 +105,20 @@ Ruxi es un fork de [**Rufus**](https://github.com/pbatard/rufus) — la herramie
 
 ---
 
+## 📸 Capturas
+
+<div align="center">
+
+<img src="docs/screenshots/inicio.png" width="32%" alt="Pantalla de inicio" />
+<img src="docs/screenshots/progreso.png" width="32%" alt="Grabando el USB" />
+<img src="docs/screenshots/guia.png" width="32%" alt="Guía de instalación" />
+
+<sub>Inicio · Grabando el USB · Guía de instalación paso a paso</sub>
+
+</div>
+
+---
+
 ## 📥 Descarga
 
 <div align="center">
@@ -361,6 +375,20 @@ Ruxi is a fork of [**Rufus**](https://github.com/pbatard/rufus) — the world's 
 - ℹ️ **About** — version, check for updates, links and VirusTotal
 - 🎉 **Confetti and animations** when done
 - 🆙 **New-version notice** and **what's new** (changelog) from GitHub
+
+---
+
+## 📸 Screenshots
+
+<div align="center">
+
+<img src="docs/screenshots/inicio.png" width="32%" alt="Welcome screen" />
+<img src="docs/screenshots/progreso.png" width="32%" alt="Writing the USB" />
+<img src="docs/screenshots/guia.png" width="32%" alt="Installation guide" />
+
+<sub>Home · Writing the USB · Step-by-step install guide</sub>
+
+</div>
 
 ---
 
