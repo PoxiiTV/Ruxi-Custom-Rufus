@@ -112,6 +112,8 @@ Ruxi es un fork de [**Rufus**](https://github.com/pbatard/rufus) — la herramie
 
 🌐 **Web del proyecto:** [poxiitv.github.io/Ruxi-Custom-Rufus](https://poxiitv.github.io/Ruxi-Custom-Rufus/)
 
+🛡️ **100% limpio** — [✓ Análisis en VirusTotal (v1.3.0)](https://www.virustotal.com/gui/file/0f326839ce39707f178ad01b0754b1cc409ecc11902682e1a3f8890e69dc0f9a)
+
 </div>
 
 Baja el archivo **`Ruxi-Portable.exe`** de la última release.
@@ -366,6 +368,8 @@ Ruxi is a fork of [**Rufus**](https://github.com/pbatard/rufus) — the world's 
 <div align="center">
 
 ### 👉 **[Download the latest version](https://github.com/PoxiiTV/Ruxi-Custom-Rufus/releases)** 👈
+
+🛡️ **100% clean** — [✓ VirusTotal analysis (v1.3.0)](https://www.virustotal.com/gui/file/0f326839ce39707f178ad01b0754b1cc409ecc11902682e1a3f8890e69dc0f9a)
 
 </div>
 
