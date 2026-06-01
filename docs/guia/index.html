@@ -17,9 +17,13 @@
   header { text-align:center; padding:14px 0 18px; }
   header h1 { font-size:22px; background:var(--grad); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
   header p { font-size:13px; color:var(--dim); margin-top:4px; }
-  .chips { display:flex; gap:8px; flex-wrap:wrap; justify-content:center; margin:14px 0; }
-  .chip { padding:8px 12px; border-radius:10px; background:var(--glass); border:1.5px solid var(--stroke); color:var(--dim); font-size:12.5px; font-weight:600; cursor:pointer; }
+  .cfg { display:flex; flex-direction:column; gap:12px; background:var(--glass); border:1px solid var(--stroke); border-radius:14px; padding:14px; margin:14px 0; }
+  .cfg-group { display:flex; flex-direction:column; gap:7px; }
+  .cfg-label { font-size:12px; font-weight:600; color:var(--dim); }
+  .chips { display:flex; gap:8px; }
+  .chip { flex:1; text-align:center; padding:10px 12px; border-radius:10px; background:var(--glass); border:1.5px solid var(--stroke); color:var(--dim); font-size:12.5px; font-weight:600; cursor:pointer; }
   .chip.sel { background:var(--grad); color:#fff; border-color:transparent; }
+  .boot-banner { background:rgba(47,123,255,.1); border:1px solid rgba(47,123,255,.3); border-radius:10px; padding:9px 12px; font-size:12.5px; margin-bottom:8px; }
   h2 { font-size:15px; margin:22px 0 10px; display:flex; align-items:center; gap:8px; }
   table { border-collapse:collapse; width:100%; font-size:12.5px; border-radius:10px; overflow:hidden; border:1px solid var(--stroke); }
   th,td { padding:8px 10px; text-align:left; border-bottom:1px solid var(--stroke); }
@@ -42,14 +46,25 @@
     <p>Sigue los pasos para tu caso. Hecho con Ruxi.</p>
   </header>
 
-  <div class="chips">
-    <span class="chip" data-k="equipo" data-v="desktop">🖥️ Sobremesa</span>
-    <span class="chip" data-k="equipo" data-v="laptop">💻 Portátil</span>
-    <span class="chip" data-k="caso" data-v="new">🆕 PC nuevo</span>
-    <span class="chip" data-k="caso" data-v="reinstall">♻️ Reinstalar</span>
+  <div class="cfg">
+    <div class="cfg-group">
+      <span class="cfg-label">¿Qué tipo de equipo es?</span>
+      <div class="chips">
+        <span class="chip" data-k="equipo" data-v="desktop">🖥️ Sobremesa</span>
+        <span class="chip" data-k="equipo" data-v="laptop">💻 Portátil</span>
+      </div>
+    </div>
+    <div class="cfg-group">
+      <span class="cfg-label">¿Qué vas a hacer?</span>
+      <div class="chips">
+        <span class="chip" data-k="caso" data-v="new">🆕 PC nuevo</span>
+        <span class="chip" data-k="caso" data-v="reinstall">♻️ Reinstalar</span>
+      </div>
+    </div>
   </div>
 
   <h2>⌨️ Cómo arrancar desde el USB</h2>
+  <div class="boot-banner" id="boot-banner" style="display:none"></div>
   <p style="font-size:12.5px;color:var(--dim);margin-bottom:8px">Apaga el PC con el USB puesto, enciéndelo y pulsa repetidamente la tecla "Boot" de tu marca:</p>
   <table id="boot"><tr><th>Marca</th><th>BIOS</th><th>Boot</th></tr></table>
 
@@ -67,12 +82,14 @@ const params = new URLSearchParams(location.search);
 const state = {
   equipo: params.get('equipo') === 'laptop' ? 'laptop' : 'desktop',
   caso: params.get('caso') === 'reinstall' ? 'reinstall' : 'new',
+  marca: (params.get('marca') || '').toLowerCase(),
 };
 
 const BOOT = [
-  ['ASUS / ROG','Del / F2','F8'],['MSI','Del','F11'],['Gigabyte','Del / F2','F12'],
-  ['HP','F10 / Esc','F9'],['Lenovo','F2 / Fn+F2','F12'],['Dell','F2','F12'],['Acer','F2 / Del','F12'],
+  ['ASUS / ROG','Del / F2','F8','asus'],['MSI','Del','F11','msi'],['Gigabyte','Del / F2','F12','gigabyte'],
+  ['HP','F10 / Esc','F9','hp'],['Lenovo','F2 / Fn+F2','F12','lenovo'],['Dell','F2','F12','dell'],['Acer','F2 / Del','F12','acer'],
 ];
+const BRAND_NAMES = { asus:'ASUS', msi:'MSI', gigabyte:'Gigabyte', hp:'HP', lenovo:'Lenovo', dell:'Dell', acer:'Acer' };
 
 function installSteps() {
   const lap = state.equipo === 'laptop', re = state.caso === 'reinstall';
@@ -104,7 +121,16 @@ function postSteps() {
 function render() {
   document.querySelectorAll('.chip').forEach(c => c.classList.toggle('sel', state[c.dataset.k] === c.dataset.v));
   const boot = document.getElementById('boot');
-  boot.innerHTML = '<tr><th>Marca</th><th>BIOS</th><th>Boot</th></tr>' + BOOT.map(r => `<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td></tr>`).join('');
+  boot.innerHTML = '<tr><th>Marca</th><th>BIOS</th><th>Boot</th></tr>' +
+    BOOT.map(r => `<tr class="${r[3] === state.marca ? 'hl' : ''}"><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td></tr>`).join('');
+  const banner = document.getElementById('boot-banner');
+  const row = BOOT.find(r => r[3] === state.marca);
+  if (row) {
+    banner.innerHTML = `💻 Tu PC parece un <strong>${BRAND_NAMES[state.marca]}</strong> → tecla de arranque normalmente <strong>${row[2]}</strong> (resaltada abajo).`;
+    banner.style.display = 'block';
+  } else {
+    banner.style.display = 'none';
+  }
   let n = 0;
   const li = s => `<li class="${s.crit?'crit':''}"><strong>${++n}. ${s.t}</strong><div class="d">${s.d}</div>${s.btn?`<a class="btn" href="${s.btn.url}">${s.btn.label}</a>`:''}${s.tip?`<div class="tip">${s.tip}</div>`:''}</li>`;
   document.getElementById('install').innerHTML = installSteps().map(li).join('');
