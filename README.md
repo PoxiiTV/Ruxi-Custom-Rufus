@@ -12,6 +12,7 @@ Solo tú, un USB y unos minutos. 🚀
 <br>
 
 [![GitHub release](https://img.shields.io/github/v/release/PoxiiTV/Ruxi-Custom-Rufus?include_prereleases&style=for-the-badge&color=7b5cff&labelColor=11132a)](https://github.com/PoxiiTV/Ruxi-Custom-Rufus/releases)
+[![VirusTotal](https://img.shields.io/badge/VirusTotal-100%25%20limpio-54e6a6?style=for-the-badge&labelColor=11132a&logo=virustotal&logoColor=white)](https://www.virustotal.com/gui/file/0f326839ce39707f178ad01b0754b1cc409ecc11902682e1a3f8890e69dc0f9a)
 [![License: GPL v3](https://img.shields.io/badge/Licencia-GPLv3-2f7bff?style=for-the-badge&labelColor=11132a)](LICENSE.txt)
 [![Made by Poxi](https://img.shields.io/badge/hecho%20por-Poxi-e23aff?style=for-the-badge&labelColor=11132a)](https://github.com/PoxiiTV)
 
