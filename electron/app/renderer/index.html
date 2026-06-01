@@ -98,6 +98,10 @@
           </div>
         </div>
         <div class="settings-section">
+          <span class="settings-label" data-i18n="settings.sound">🔊 Sonido</span>
+          <button class="settings-toggle" id="toggle-sound"></button>
+        </div>
+        <div class="settings-section">
           <span class="settings-label" data-i18n="settings.theme">🎨 Tema de color</span>
           <div class="theme-grid">
             <button class="theme-opt" data-theme="poxi"><span class="theme-sw" style="background:linear-gradient(105deg,#2f7bff,#7b5cff,#e23aff)"></span>Poxi</button>
@@ -108,6 +112,24 @@
             <button class="theme-opt" data-theme="lime"><span class="theme-sw" style="background:linear-gradient(105deg,#9be15d,#14d1a0,#2f8bff)"></span>Lima</button>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Ninite builder overlay (beta) -->
+  <div class="faq-overlay" id="ninite-overlay" style="display:none">
+    <div class="faq-panel ninite-panel">
+      <div class="faq-head">
+        <h2 data-i18n="ninite.title">📦 Crea tu instalador <span class="beta-tag">BETA</span></h2>
+        <button class="ctrl" id="btn-ninite-close" data-i18n-title="tb.close" title="Cerrar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
+        </button>
+      </div>
+      <p class="ninite-intro" data-i18n="ninite.intro"></p>
+      <div class="ninite-apps" id="ninite-apps"></div>
+      <div class="ninite-foot">
+        <span class="ninite-count" id="ninite-count"></span>
+        <button class="btn btn-go" id="ninite-download" data-i18n="ninite.download" disabled></button>
       </div>
     </div>
   </div>
@@ -258,6 +280,18 @@
           <div class="iso-card-actions">
             <span class="iso-badge-inline" data-i18n="iso.recommended"></span>
             <button class="btn-download" data-download="poxi" data-filename="Win11-LTSC-Poxi.iso" data-i18n="iso.dl"></button>
+          </div>
+        </div>
+
+        <div class="iso-card iso-card-custom">
+          <div class="iso-card-icon" style="background:rgba(255,255,255,.06)">🔗</div>
+          <div class="iso-card-info">
+            <strong data-i18n="iso.custom.t"></strong>
+            <span data-i18n="iso.custom.d"></span>
+            <div class="custom-url-row">
+              <input class="ctl" type="text" id="custom-iso-url" data-i18n-ph="iso.custom.ph" autocomplete="off" />
+              <button class="btn-download" id="btn-custom-dl" data-i18n="iso.custom.btn"></button>
+            </div>
           </div>
         </div>
       </div>

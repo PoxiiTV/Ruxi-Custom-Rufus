@@ -12,6 +12,9 @@ window.I18N = {
     'tb.settings': 'Ajustes',
     'settings.title': '⚙️ Ajustes',
     'settings.lang': '🌍 Idioma',
+    'settings.sound': '🔊 Sonido',
+    'sound.on': '🔊 Sonidos activados',
+    'sound.off': '🔇 Sonidos silenciados',
     'settings.theme': '🎨 Tema de color',
     'tb.lang': 'Cambiar idioma',
     'tb.min': 'Minimizar',
@@ -60,6 +63,11 @@ window.I18N = {
     'iso.poxi.f4': 'Sin Copilot ni iconos que no pediste',
     'iso.dl': '⬇ Descargar aquí',
     'iso.openweb': 'Abrir web →',
+    'iso.custom.t': 'Otra ISO (pega tu enlace)',
+    'iso.custom.d': 'Si tienes un enlace directo a una ISO (.iso), pégalo aquí y la descargo.',
+    'iso.custom.ph': 'https://… enlace directo a la .iso',
+    'iso.custom.btn': '⬇ Descargar',
+    'iso.custom.bad': '⚠️ Pega un enlace válido que acabe en .iso',
     'iso.recommended': '⭐ Recomendado',
     'btn.skipIso': 'Ya tengo la ISO →',
 
@@ -197,6 +205,7 @@ window.I18N = {
     'err.iso.tooSmall': '⚠️ Este archivo es demasiado pequeño para ser una ISO de Windows válida.',
     'err.iso.invalid': '⚠️ No se pudo leer el archivo como una ISO válida.',
     'err.iso.notWindows': '⚠️ Esto no parece una ISO de Windows. Puedes continuar, pero comprueba que es la correcta.',
+    'err.iso.notIso': '⚠️ Arrastra un archivo .iso (eso no lo es).',
     'iso.labelSuffix': ' · etiqueta: {label}',
     'inspect.checking': 'Comprobando qué hay en el USB...',
     'inspect.empty.t': '✅ El USB está vacío',
@@ -206,6 +215,11 @@ window.I18N = {
     'inspect.more': '…y {n} más',
     'inspect.warn': 'Todo esto se borrará <strong>para siempre</strong>. Si hay algo importante, cópialo antes a otro sitio.',
     'pdf.error': 'No se pudo crear el PDF: {error}',
+    'ninite.title': '📦 Crea tu instalador <span class="beta-tag">BETA</span>',
+    'ninite.intro': 'Marca los programas que quieras y pulsa Descargar. Se baja UN instalador que los pone todos solo, sin anuncios ni basura (con tecnología de Ninite).',
+    'ninite.download': '⬇ Descargar mi instalador',
+    'ninite.count': '{n} programas seleccionados',
+    'ninite.builder': '🛠️ Crear el mío (beta)',
     'pdf.docTitle': '🪟 Guía de instalación de Windows — Ruxi',
     'pdf.meta': 'Equipo: <strong>{device}</strong> · Caso: <strong>{case}</strong>',
     'pdf.bootTitle': '⌨️ Tecla para arrancar desde el USB (según tu marca)',
@@ -222,6 +236,9 @@ window.I18N = {
     'tb.settings': 'Settings',
     'settings.title': '⚙️ Settings',
     'settings.lang': '🌍 Language',
+    'settings.sound': '🔊 Sound',
+    'sound.on': '🔊 Sounds on',
+    'sound.off': '🔇 Sounds muted',
     'settings.theme': '🎨 Color theme',
     'tb.lang': 'Change language',
     'tb.min': 'Minimize',
@@ -267,6 +284,11 @@ window.I18N = {
     'iso.poxi.f4': 'No Copilot or icons you never asked for',
     'iso.dl': '⬇ Download here',
     'iso.openweb': 'Open website →',
+    'iso.custom.t': 'Another ISO (paste your link)',
+    'iso.custom.d': 'If you have a direct link to an ISO (.iso), paste it here and I\'ll download it.',
+    'iso.custom.ph': 'https://… direct link to the .iso',
+    'iso.custom.btn': '⬇ Download',
+    'iso.custom.bad': '⚠️ Paste a valid link ending in .iso',
     'iso.recommended': '⭐ Recommended',
     'btn.skipIso': 'I already have the ISO →',
 
@@ -395,6 +417,7 @@ window.I18N = {
     'err.iso.tooSmall': '⚠️ This file is too small to be a valid Windows ISO.',
     'err.iso.invalid': '⚠️ Could not read the file as a valid ISO.',
     'err.iso.notWindows': "⚠️ This doesn't look like a Windows ISO. You can continue, but check it's the right one.",
+    'err.iso.notIso': '⚠️ Drag a .iso file (that one isn\'t).',
     'iso.labelSuffix': ' · label: {label}',
     'inspect.checking': "Checking what's on the USB...",
     'inspect.empty.t': '✅ The USB is empty',
@@ -404,6 +427,11 @@ window.I18N = {
     'inspect.more': '…and {n} more',
     'inspect.warn': 'All of this will be erased <strong>forever</strong>. If anything is important, copy it somewhere else first.',
     'pdf.error': 'Could not create the PDF: {error}',
+    'ninite.title': '📦 Build your installer <span class="beta-tag">BETA</span>',
+    'ninite.intro': 'Tick the programs you want and hit Download. You get ONE installer that sets them all up by itself, with no ads or junk (powered by Ninite).',
+    'ninite.download': '⬇ Download my installer',
+    'ninite.count': '{n} programs selected',
+    'ninite.builder': '🛠️ Build my own (beta)',
     'pdf.docTitle': '🪟 Windows installation guide — Ruxi',
     'pdf.meta': 'Computer: <strong>{device}</strong> · Case: <strong>{case}</strong>',
     'pdf.bootTitle': '⌨️ Key to boot from the USB (by brand)',
@@ -476,7 +504,8 @@ window.GUIDE = {
       if (lap) s.push({ t: 'Instala los drivers de tu portátil', d: 'Entra en la web de soporte de tu marca (HP, Lenovo, ASUS, Acer, MSI...), busca tu <strong>modelo exacto</strong> y descarga los drivers. Lo más importante: <strong>WiFi/Bluetooth, touchpad y teclas Fn</strong>.', tip: '💡 Muchas marcas tienen una app que lo hace sola: <em>MyASUS, Lenovo Vantage, HP Support Assistant, MyDell...</em>. Y si el WiFi no va al principio, descarga el driver de red desde otro PC y pásalo por USB.' });
       else s.push({ t: 'Instala los drivers de tu sobremesa', d: 'Descarga el driver de tu <strong>tarjeta gráfica</strong>: <em>NVIDIA (GeForce Experience), AMD (Adrenalin) o Intel</em>. Y el <strong>chipset</strong> desde la web de tu placa base (ASUS, Gigabyte, MSI, ASRock...).', tip: '💡 Si no sabes qué placa tienes, pulsa Win+R, escribe <em>msinfo32</em> y mira "Fabricante/Modelo de la placa base".' });
       s.push({ t: 'Comprueba que todo funciona', d: 'Revisa sonido, los puertos USB e internet.' + (lap ? ' Y además: cámara, touchpad, teclas de brillo/volumen y el lector de huella si tiene.' : '') });
-      s.push({ t: 'Instala los programas básicos de un golpe', d: 'Con <strong>Ninite</strong> instalas los programas más usados de una vez, sin anuncios ni basura: descarga un único instalador, ábrelo y él solo baja e instala todo (sin pulsar "Siguiente" mil veces ni marcar casillas raras). Incluye:<br>🌐 <strong>Chrome</strong> (navegador) · 🎬 <strong>VLC</strong> (vídeos) · 🗜️ <strong>WinRAR</strong> (abrir .zip y .rar)', action: { label: '📦 Descargar instalador (Chrome + VLC + WinRAR)', url: 'https://ninite.com/chrome-vlc-winrar/ninite.exe' }, tip: '💡 Es 100% seguro y gratis. Después puedes instalar lo que quieras más (juegos, ofimática...). ¡Tu PC ya está a punto! 🎉' });
+      s.push({ t: 'Instala los programas básicos de un golpe', d: 'Con <strong>Ninite</strong> instalas los programas más usados de una vez, sin anuncios ni basura: descarga un único instalador, ábrelo y él solo baja e instala todo (sin pulsar "Siguiente" mil veces ni marcar casillas raras). Incluye:<br>🌐 <strong>Chrome</strong> (navegador) · 🎬 <strong>VLC</strong> (vídeos) · 🗜️ <strong>WinRAR</strong> (abrir .zip y .rar)', action: { label: '📦 Descargar instalador (Chrome + VLC + WinRAR)', url: 'https://ninite.com/chrome-vlc-winrar/ninite.exe' }, builder: true, tip: '💡 Es 100% seguro y gratis. Después puedes instalar lo que quieras más (juegos, ofimática...). ¡Tu PC ya está a punto! 🎉' });
+      s.push({ advanced: true, t: '🔑 Activar Windows gratis (avanzado)', d: '⚠️ <strong>Solo para usuarios avanzados.</strong> Existe un proyecto de código abierto muy conocido, <strong>MAS (Microsoft Activation Scripts)</strong>, que activa Windows de forma gratuita. Si no sabes lo que haces, déjalo: Windows funciona perfectamente sin activar.', action: { label: '🔗 Abrir la guía de MAS (GitHub)', url: 'https://github.com/massgravel/Microsoft-Activation-Scripts' }, tip: 'ℹ️ Ruxi no activa Windows ni se hace responsable; solo te enseña dónde está esta herramienta. Úsala bajo tu propia responsabilidad.' });
       return s;
     },
   },
@@ -514,7 +543,8 @@ window.GUIDE = {
       if (lap) s.push({ t: 'Install your laptop drivers', d: 'Go to your brand\'s support website (HP, Lenovo, ASUS, Acer, MSI...), find your <strong>exact model</strong> and download the drivers. Most important: <strong>WiFi/Bluetooth, touchpad and Fn keys</strong>.', tip: '💡 Many brands have an app that does it for you: <em>MyASUS, Lenovo Vantage, HP Support Assistant, MyDell...</em>. And if WiFi doesn\'t work at first, download the network driver from another PC and copy it via USB.' });
       else s.push({ t: 'Install your desktop drivers', d: 'Download your <strong>graphics card</strong> driver: <em>NVIDIA (GeForce Experience), AMD (Adrenalin) or Intel</em>. And the <strong>chipset</strong> from your motherboard\'s website (ASUS, Gigabyte, MSI, ASRock...).', tip: '💡 If you don\'t know your motherboard, press Win+R, type <em>msinfo32</em> and look at "BaseBoard Manufacturer/Product".' });
       s.push({ t: 'Check that everything works', d: 'Check sound, the USB ports and internet.' + (lap ? ' And also: camera, touchpad, brightness/volume keys and the fingerprint reader if it has one.' : '') });
-      s.push({ t: 'Install the basic programs in one go', d: 'With <strong>Ninite</strong> you install the most-used programs at once, with no ads or junk: download a single installer, open it and it downloads and installs everything by itself (no clicking "Next" a thousand times or ticking weird boxes). Includes:<br>🌐 <strong>Chrome</strong> (browser) · 🎬 <strong>VLC</strong> (videos) · 🗜️ <strong>WinRAR</strong> (open .zip and .rar)', action: { label: '📦 Download installer (Chrome + VLC + WinRAR)', url: 'https://ninite.com/chrome-vlc-winrar/ninite.exe' }, tip: '💡 It\'s 100% safe and free. Afterwards you can install whatever else you want (games, office...). Your PC is all set! 🎉' });
+      s.push({ t: 'Install the basic programs in one go', d: 'With <strong>Ninite</strong> you install the most-used programs at once, with no ads or junk: download a single installer, open it and it downloads and installs everything by itself (no clicking "Next" a thousand times or ticking weird boxes). Includes:<br>🌐 <strong>Chrome</strong> (browser) · 🎬 <strong>VLC</strong> (videos) · 🗜️ <strong>WinRAR</strong> (open .zip and .rar)', action: { label: '📦 Download installer (Chrome + VLC + WinRAR)', url: 'https://ninite.com/chrome-vlc-winrar/ninite.exe' }, builder: true, tip: '💡 It\'s 100% safe and free. Afterwards you can install whatever else you want (games, office...). Your PC is all set! 🎉' });
+      s.push({ advanced: true, t: '🔑 Activate Windows for free (advanced)', d: '⚠️ <strong>Advanced users only.</strong> There is a well-known open-source project, <strong>MAS (Microsoft Activation Scripts)</strong>, that activates Windows for free. If you don\'t know what you\'re doing, skip it: Windows works perfectly fine unactivated.', action: { label: '🔗 Open the MAS guide (GitHub)', url: 'https://github.com/massgravel/Microsoft-Activation-Scripts' }, tip: 'ℹ️ Ruxi does not activate Windows nor takes responsibility; it only shows you where this tool is. Use it at your own risk.' });
       return s;
     },
   },

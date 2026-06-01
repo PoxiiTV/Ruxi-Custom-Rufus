@@ -1,6 +1,6 @@
 {
   "name": "ruxi",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "Instala Windows en minutos. Sin complicaciones. Para todos.",
   "main": "electron/app/main.js",
   "scripts": {

@@ -66,6 +66,8 @@ Ruxi es un fork de [**Rufus**](https://github.com/pbatard/rufus) — la herramie
 ### 🧭 Fácil de principio a fin
 - **Asistente guiado** — 9 pantallas que te llevan de la mano, con pantalla inicial *"¿Qué quieres hacer?"*
 - **Descarga de ISOs integrada** — Baja Windows desde la propia app, con barra de progreso, MB y velocidad
+- 🔗 **Pega tu propia URL** — ¿Tienes el enlace directo a otra ISO? Pégalo y se descarga
+- ⏸️ **Descargas reanudables** — Si se corta la descarga de nuestras ISOs, continúa desde donde se quedó
 - ⭐ **ISO recomendada** — Windows 11 IoT LTSC 2024 optimizado por Poxi: sin bloatware, sin telemetría, máximo rendimiento para gaming
 - **Todo automático** — GPT + UEFI + NTFS + bypass de TPM/SecureBoot/RAM configurados solos
 - 🙅 **Cuenta local** — Sin obligarte a usar cuenta de Microsoft
@@ -85,7 +87,8 @@ Ruxi es un fork de [**Rufus**](https://github.com/pbatard/rufus) — la herramie
 - 💻 **Detecta tu PC** y resalta automáticamente tu tecla de arranque
 - ✅ **Guía de instalación adaptativa** — Pasos marcables que cambian según tu equipo (🖥️ sobremesa / 💻 portátil) y tu caso (🆕 PC nuevo / ♻️ reinstalar)
 - 🚀 **Guía post-instalación** — Internet, Windows Update y drivers del fabricante (WiFi/touchpad en portátiles, GPU/chipset en sobremesa)
-- 📦 **Instalador de programas básicos** — Chrome + VLC + WinRAR de un clic con Ninite
+- 📦 **Instalador de programas básicos** — Chrome + VLC + WinRAR de un clic con Ninite, o **crea el tuyo** eligiendo de una lista (beta)
+- 🔑 **Activación de Windows** (avanzado) — Atajo a MAS (Microsoft Activation Scripts), claramente marcado para usuarios avanzados
 - 📱 **Llévate la guía al móvil** con un código QR · 📄 o **expórtala a PDF**
 - ❓ **FAQ integrada** con los problemas más comunes y sus soluciones
 
@@ -93,6 +96,7 @@ Ruxi es un fork de [**Rufus**](https://github.com/pbatard/rufus) — la herramie
 - ⚙️ **Ajustes** — Un panel para idioma y tema (y futuros ajustes)
 - 🌍 **Multi-idioma** — Español e Inglés, se elige al abrir y se cambia cuando quieras
 - 🎨 **Temas de color** — 6 paletas (Poxi, Aurora, Sunset, Océano, Ruby, Lima)
+- 🔊 **Silenciar sonidos** desde Ajustes
 - 🎉 **Confeti y animaciones** al terminar
 - 🆙 **Aviso de nueva versión** y **novedades** (changelog) desde GitHub
 
@@ -315,6 +319,8 @@ Ruxi is a fork of [**Rufus**](https://github.com/pbatard/rufus) — the world's 
 ### 🧭 Easy from start to finish
 - **Guided wizard** — 9 screens that walk you through, with an initial *"What do you want to do?"* screen
 - **Built-in ISO download** — Download Windows from the app, with progress bar, MB and speed
+- 🔗 **Paste your own URL** — Got a direct link to another ISO? Paste it and it downloads
+- ⏸️ **Resumable downloads** — If the download of our ISOs is interrupted, it continues where it left off
 - ⭐ **Recommended ISO** — Windows 11 IoT LTSC 2024 optimized by Poxi: no bloatware, no telemetry, max gaming performance
 - **Fully automatic** — GPT + UEFI + NTFS + TPM/SecureBoot/RAM bypass configured for you
 - 🙅 **Local account** — No forced Microsoft account
@@ -334,7 +340,8 @@ Ruxi is a fork of [**Rufus**](https://github.com/pbatard/rufus) — the world's 
 - 💻 **Detects your PC** and auto-highlights your boot key
 - ✅ **Adaptive install guide** — Checkable steps that change based on your computer (🖥️ desktop / 💻 laptop) and your case (🆕 new PC / ♻️ reinstall)
 - 🚀 **Post-install guide** — Internet, Windows Update and manufacturer drivers (WiFi/touchpad on laptops, GPU/chipset on desktops)
-- 📦 **Basic programs installer** — Chrome + VLC + WinRAR in one click via Ninite
+- 📦 **Basic programs installer** — Chrome + VLC + WinRAR in one click via Ninite, or **build your own** by picking from a list (beta)
+- 🔑 **Windows activation** (advanced) — Shortcut to MAS (Microsoft Activation Scripts), clearly marked for advanced users
 - 📱 **Take the guide on your phone** with a QR code · 📄 or **export it to PDF**
 - ❓ **Built-in FAQ** with the most common problems and their fixes
 
@@ -342,6 +349,7 @@ Ruxi is a fork of [**Rufus**](https://github.com/pbatard/rufus) — the world's 
 - ⚙️ **Settings** — One panel for language and theme (and future settings)
 - 🌍 **Bilingual** — Spanish and English, chosen on launch and switchable anytime
 - 🎨 **Color themes** — 6 palettes (Poxi, Aurora, Sunset, Ocean, Ruby, Lime)
+- 🔊 **Mute sounds** from Settings
 - 🎉 **Confetti and animations** when done
 - 🆙 **New-version notice** and **what's new** (changelog) from GitHub
 

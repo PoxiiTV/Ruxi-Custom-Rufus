@@ -152,6 +152,41 @@ html.needs-lang #lang-overlay { display: flex; }
 .settings-section .lang-options { flex-direction: row; margin-top: 0; }
 .settings-section .lang-opt { flex: 1; font-size: 13.5px; padding: 11px; }
 .lang-opt.selected { border-color: var(--mid); box-shadow: 0 0 0 1px var(--mid); }
+.settings-toggle {
+  align-self: flex-start; font-family: inherit; font-size: 13px; font-weight: 600;
+  cursor: pointer; padding: 9px 14px; border-radius: 11px;
+  border: 1.5px solid var(--mid); background: rgba(123,92,255,.12); color: var(--txt); transition: .15s;
+}
+.settings-toggle:hover { background: rgba(123,92,255,.2); }
+.settings-toggle.off { border-color: var(--stroke); background: var(--glass); color: var(--dim); }
+
+/* ── Constructor de Ninite (beta) ────────────────────────────────── */
+.ninite-panel { max-width: 560px; }
+.beta-tag { font-size: 10px; font-weight: 800; letter-spacing: 1px; background: var(--grad); color: #fff; padding: 2px 7px; border-radius: 6px; vertical-align: middle; margin-left: 6px; }
+.ninite-intro { font-size: 12.5px; color: var(--dim); line-height: 1.5; padding: 0 18px; margin-bottom: 8px; }
+.ninite-apps { overflow-y: auto; padding: 0 18px; display: flex; flex-direction: column; gap: 12px; }
+.ninite-group { display: flex; flex-direction: column; gap: 7px; }
+.ninite-cat { font-size: 11.5px; font-weight: 700; color: var(--dim); }
+.ninite-list { display: flex; flex-wrap: wrap; gap: 7px; }
+.ninite-app {
+  display: flex; align-items: center; gap: 7px; cursor: pointer;
+  background: var(--glass); border: 1.5px solid var(--stroke); border-radius: 10px;
+  padding: 7px 11px; font-size: 12.5px; font-weight: 600; transition: .14s;
+}
+.ninite-app input { display: none; }
+.ninite-app:hover { background: var(--glass-hi); }
+.ninite-app.on { border-color: var(--mid); background: rgba(123,92,255,.14); }
+.ninite-app::before { content: ''; width: 15px; height: 15px; border-radius: 5px; border: 1.5px solid var(--stroke); flex-shrink: 0; display: grid; place-items: center; }
+.ninite-app.on::before { content: '✓'; background: var(--mid); border-color: var(--mid); color: #fff; font-size: 10px; font-weight: 800; }
+.ninite-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 18px; border-top: 1px solid var(--stroke-soft); }
+.ninite-count { font-size: 12px; color: var(--dim); }
+.ninite-foot .btn { height: 40px; }
+.step-builder-btn {
+  align-self: flex-start; margin-top: 6px; background: var(--glass); color: var(--txt);
+  border: 1px solid var(--mid); font-family: inherit; font-size: 12px; font-weight: 700;
+  padding: 8px 14px; border-radius: 11px; cursor: pointer; transition: .15s;
+}
+.step-builder-btn:hover { background: rgba(123,92,255,.16); }
 
 /* ── Theme picker ────────────────────────────────────────────────── */
 .theme-panel { max-width: 420px; }
@@ -356,6 +391,11 @@ html.needs-lang #lang-overlay { display: flex; }
 .iso-drop-icon svg { width: 48px; height: 48px; color: var(--dim); }
 .iso-drop-zone p { font-size: 13px; color: var(--dim); }
 .iso-filename { font-family: 'JetBrains Mono',monospace; font-size: 11.5px; color: var(--green); }
+.iso-card-custom { flex-direction: row; align-items: flex-start; }
+.custom-url-row { display: flex; gap: 8px; margin-top: 8px; }
+.custom-url-row .ctl { flex: 1; font-size: 12px; padding: 8px 10px; }
+.custom-url-row .ctl.bad { border-color: var(--red); }
+.custom-url-row .btn-download { white-space: nowrap; }
 
 /* ── Boxes ───────────────────────────────────────────────────────── */
 .warning-box {
@@ -613,6 +653,7 @@ html.needs-lang #lang-overlay { display: flex; }
 .step-text strong { font-size: 13px; }
 .step-text span { font-size: 12px; color: var(--dim); line-height: 1.6; }
 .install-step.critical { border-color: rgba(255,170,0,.3); background: rgba(255,170,0,.05); }
+.install-step.advanced { border-color: rgba(255,85,119,.3); background: rgba(255,85,119,.05); }
 .step-action-btn {
   align-self: flex-start; margin-top: 8px;
   background: var(--grad); border: none; color: #fff;

@@ -244,15 +244,19 @@ ipcMain.handle('open-iso-picker', async () => {
 ipcMain.handle('open-url', (_, url) => shell.openExternal(url));
 
 // ── ISO Download ──────────────────────────────────────────────────────────────
-// Follows redirects and streams to Downloads folder, reporting progress
-function downloadFile(url, destPath, onProgress, onDone, onError) {
+// Sigue redirecciones, escribe a un .part (reanudable) y reporta progreso.
+const ISO_MIN_BYTES = 1.5 * 1024 * 1024 * 1024;
+function downloadFile(url, destPath, resumeFrom, onProgress, onDone, onError) {
+  const partPath = destPath + '.part';
   const followRedirect = (currentUrl, redirectCount = 0) => {
     if (redirectCount > 10) { onError('Demasiadas redirecciones. Descarga la ISO manualmente.'); return; }
 
     const parsed = new URL(currentUrl);
     const proto = parsed.protocol === 'https:' ? https : http;
+    const headers = { 'User-Agent': 'Mozilla/5.0' };
+    if (resumeFrom > 0) headers['Range'] = `bytes=${resumeFrom}-`;
 
-    const req = proto.get(currentUrl, { headers: { 'User-Agent': 'Mozilla/5.0' } }, (res) => {
+    const req = proto.get(currentUrl, { headers }, (res) => {
       // Handle redirects
       if ([301, 302, 303, 307, 308].includes(res.statusCode) && res.headers.location) {
         const next = res.headers.location.startsWith('http')
@@ -299,26 +303,35 @@ function downloadFile(url, destPath, onProgress, onDone, onError) {
         return;
       }
 
-      if (res.statusCode !== 200) {
+      if (res.statusCode !== 200 && res.statusCode !== 206) {
         onError(`Error de descarga: código HTTP ${res.statusCode}`);
         return;
       }
 
-      const total = parseInt(res.headers['content-length'] || '0', 10);
-      let downloaded = 0;
+      // 206 = el servidor acepta reanudar; 200 = descarga completa (reinicia)
+      const resumed = res.statusCode === 206;
+      let downloaded = resumed ? resumeFrom : 0;
+      let total;
+      if (resumed) {
+        const cr = res.headers['content-range'];
+        total = (cr && cr.includes('/')) ? parseInt(cr.split('/')[1], 10)
+          : resumeFrom + parseInt(res.headers['content-length'] || '0', 10);
+      } else {
+        total = parseInt(res.headers['content-length'] || '0', 10);
+      }
 
-      // Check free disk space
-      const downloadsDir = path.dirname(destPath);
+      // Comprobar espacio libre (lo que falta por descargar)
       try {
-        const free = getFreeSpace(downloadsDir);
-        if (total > 0 && free < total * 1.05) {
+        const free = getFreeSpace(path.dirname(destPath));
+        const need = total - downloaded;
+        if (total > 0 && free < need * 1.05) {
           res.resume();
-          onError(`Sin espacio suficiente en disco. Necesitas ${Math.round(total / 1073741824 * 1.05 * 10) / 10} GB libres.`);
+          onError(`Sin espacio suficiente en disco. Necesitas ${Math.round(need / 1073741824 * 1.05 * 10) / 10} GB libres.`);
           return;
         }
       } catch {}
 
-      const fileStream = fs.createWriteStream(destPath);
+      const fileStream = fs.createWriteStream(partPath, { flags: resumed ? 'a' : 'w' });
       res.pipe(fileStream);
 
       res.on('data', chunk => {
@@ -327,15 +340,20 @@ function downloadFile(url, destPath, onProgress, onDone, onError) {
       });
 
       fileStream.on('finish', () => {
-        fileStream.close();
-        // Validate size
-        const stat = fs.statSync(destPath);
-        if (stat.size < 1.5 * 1024 * 1024 * 1024) {
-          fs.unlinkSync(destPath);
-          onError(`El archivo recibido no es una ISO válida (${Math.round(stat.size/1024)} KB). Google Drive puede haber bloqueado la descarga directa. Inténtalo de nuevo o descárgala desde el navegador.`);
-          return;
-        }
-        onDone(destPath);
+        fileStream.close(() => {
+          let stat;
+          try { stat = fs.statSync(partPath); } catch { onError('No se encontró el archivo descargado.'); return; }
+          if (stat.size < ISO_MIN_BYTES) {
+            try { fs.unlinkSync(partPath); } catch {}
+            onError(`El archivo recibido no es una ISO válida (${Math.round(stat.size / 1024)} KB). Google Drive puede haber bloqueado la descarga directa. Inténtalo de nuevo o descárgala desde el navegador.`);
+            return;
+          }
+          try {
+            if (fs.existsSync(destPath)) fs.unlinkSync(destPath);
+            fs.renameSync(partPath, destPath);
+          } catch (e) { onError('No se pudo finalizar el archivo: ' + e.message); return; }
+          onDone(destPath);
+        });
       });
 
       fileStream.on('error', err => { onError('Error escribiendo el archivo: ' + err.message); });
@@ -357,23 +375,33 @@ function getFreeSpace(dir) {
   } catch { return Infinity; }
 }
 
-ipcMain.handle('download-iso', async (_, { url, filename }) => {
+ipcMain.handle('download-iso', async (_, { url, filename, resumable }) => {
   const downloadsDir = app.getPath('downloads');
   const destPath = path.join(downloadsDir, filename);
+  const partPath = destPath + '.part';
 
-  // If file already exists and is valid, reuse it
+  // Si ya existe el archivo final y es válido, reutilízalo
   if (fs.existsSync(destPath)) {
     const stat = fs.statSync(destPath);
-    if (stat.size > 1.5 * 1024 * 1024 * 1024) {
+    if (stat.size > ISO_MIN_BYTES) {
       return { status: 'already_exists', path: destPath, name: filename };
     }
-    fs.unlinkSync(destPath); // delete partial/corrupt file
+    try { fs.unlinkSync(destPath); } catch {}
+  }
+
+  // Reanudar solo si está permitido (nuestras ISOs); las URLs propias descargan de cero.
+  let resumeFrom = 0;
+  if (resumable !== false) {
+    try { if (fs.existsSync(partPath)) resumeFrom = fs.statSync(partPath).size; } catch {}
+  } else {
+    try { if (fs.existsSync(partPath)) fs.unlinkSync(partPath); } catch {}
   }
 
   return new Promise((resolve) => {
     downloadFile(
       url,
       destPath,
+      resumeFrom,
       (percent, downloaded, total) => {
         mainWindow.webContents.send('download-progress', {
           percent,

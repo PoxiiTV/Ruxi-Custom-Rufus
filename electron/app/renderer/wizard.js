@@ -100,6 +100,22 @@ document.querySelectorAll('.btn-download').forEach(btn => {
   });
 });
 
+// Descargar desde una URL propia
+document.getElementById('btn-custom-dl').addEventListener('click', () => {
+  const input = document.getElementById('custom-iso-url');
+  const url = (input.value || '').trim();
+  if (!/^https?:\/\/.+/i.test(url)) { input.classList.add('bad'); input.focus(); return; }
+  input.classList.remove('bad');
+  // Nombre de archivo a partir de la URL (o uno genérico)
+  let filename = 'Windows-personalizado.iso';
+  try {
+    const last = decodeURIComponent(new URL(url).pathname.split('/').pop() || '');
+    if (/\.iso$/i.test(last)) filename = last;
+  } catch {}
+  state._pendingDownload = { url, filename, resumable: false };  // URLs propias: descarga normal, sin reanudar
+  goTo(2);
+});
+
 document.getElementById('btn-skip-iso').addEventListener('click', () => {
   state._pendingDownload = null;
   goTo(2);
@@ -173,10 +189,10 @@ function maybeStartDownload() {
   if (!state._pendingDownload) return;
   const iso = state._pendingDownload;
   state._pendingDownload = null;
-  startInAppDownload(iso.url, iso.filename);
+  startInAppDownload(iso.url, iso.filename, iso.resumable !== false);
 }
 
-async function startInAppDownload(url, filename) {
+async function startInAppDownload(url, filename, resumable) {
   // Show download panel, hide drop zone
   isoDropZone.style.display = 'none';
   dlPanel.style.display = 'flex';
@@ -195,7 +211,7 @@ async function startInAppDownload(url, filename) {
       totalMB > 0 ? `${downloadedMB} / ${totalMB} MB` : `${downloadedMB} MB`;
   });
 
-  const result = await api.downloadIso({ url, filename });
+  const result = await api.downloadIso({ url, filename, resumable: resumable !== false });
 
   if (result.status === 'error') {
     dlPanel.style.display = 'none';
@@ -507,6 +523,7 @@ function updateEta(pct) {
 
 // Sonido de éxito (Web Audio, sin archivo externo)
 function playSuccessSound() {
+  if (!soundEnabled()) return;
   try {
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
     const notes = [523.25, 659.25, 783.99]; // Do-Mi-Sol
@@ -672,13 +689,14 @@ function getPostSteps() {
 
 function renderSteps(containerId, steps, offset) {
   const html = steps.map((s, i) => `
-    <label class="install-step ${s.crit ? 'critical' : ''}">
+    <label class="install-step ${s.crit ? 'critical' : ''} ${s.advanced ? 'advanced' : ''}">
       <input type="checkbox" class="step-check" />
       <span class="step-circle"></span>
       <div class="step-text">
         <strong>${offset + i + 1}. ${s.t}</strong>
         <span>${s.d}</span>
         ${s.action ? `<button type="button" class="step-action-btn" data-url="${s.action.url}">${s.action.label}</button>` : ''}
+        ${s.builder ? `<button type="button" class="step-builder-btn" data-ninite="1">${t('ninite.builder')}</button>` : ''}
         ${s.tip ? `<div class="tip-box">${s.tip}</div>` : ''}
       </div>
     </label>`).join('');
@@ -853,6 +871,64 @@ document.addEventListener('click', (e) => {
     const url = actionBtn.dataset.url;
     if (url) api.openUrl(url);
   }
+  const builderBtn = e.target.closest('.step-builder-btn');
+  if (builderBtn) { e.preventDefault(); e.stopPropagation(); openNinite(); }
+});
+
+// ── Constructor de Ninite (beta) ──────────────────────────────────
+const NINITE_APPS = [
+  { cat: '🌐 Navegadores', apps: [['chrome', 'Chrome'], ['firefox', 'Firefox'], ['brave', 'Brave'], ['opera', 'Opera']] },
+  { cat: '💬 Comunicación', apps: [['discord', 'Discord'], ['zoom', 'Zoom'], ['skype', 'Skype']] },
+  { cat: '🎬 Multimedia', apps: [['vlc', 'VLC'], ['spotify', 'Spotify'], ['audacity', 'Audacity'], ['itunes', 'iTunes']] },
+  { cat: '🎨 Imagen', apps: [['gimp', 'GIMP'], ['paint', 'Paint.NET'], ['sharex', 'ShareX'], ['krita', 'Krita']] },
+  { cat: '📄 Documentos', apps: [['libreoffice', 'LibreOffice'], ['foxit', 'Foxit Reader'], ['sumatra', 'SumatraPDF']] },
+  { cat: '🗜️ Compresión', apps: [['7zip', '7-Zip'], ['winrar', 'WinRAR'], ['peazip', 'PeaZip']] },
+  { cat: '🎮 Juegos', apps: [['steam', 'Steam']] },
+  { cat: '🧰 Utilidades', apps: [['notepadplusplus', 'Notepad++'], ['everything', 'Everything'], ['keepass2', 'KeePass 2'], ['teamviewer15', 'TeamViewer']] },
+  { cat: '🛡️ Seguridad', apps: [['malwarebytes', 'Malwarebytes']] },
+  { cat: '☁️ Nube', apps: [['dropbox', 'Dropbox'], ['googledrive', 'Google Drive'], ['onedrive', 'OneDrive']] },
+  { cat: '👨‍💻 Desarrollo', apps: [['vscode', 'VS Code'], ['python', 'Python'], ['filezilla', 'FileZilla']] },
+];
+const niniteOverlay = document.getElementById('ninite-overlay');
+const niniteSelected = new Set();
+function renderNiniteApps() {
+  const cont = document.getElementById('ninite-apps');
+  cont.innerHTML = NINITE_APPS.map(group => `
+    <div class="ninite-group">
+      <span class="ninite-cat">${group.cat}</span>
+      <div class="ninite-list">
+        ${group.apps.map(([slug, name]) => `
+          <label class="ninite-app ${niniteSelected.has(slug) ? 'on' : ''}" data-slug="${slug}">
+            <input type="checkbox" ${niniteSelected.has(slug) ? 'checked' : ''}><span>${name}</span>
+          </label>`).join('')}
+      </div>
+    </div>`).join('');
+  cont.querySelectorAll('.ninite-app input').forEach(chk => {
+    chk.addEventListener('change', () => {
+      const slug = chk.closest('.ninite-app').dataset.slug;
+      if (chk.checked) niniteSelected.add(slug); else niniteSelected.delete(slug);
+      chk.closest('.ninite-app').classList.toggle('on', chk.checked);
+      updateNinite();
+    });
+  });
+}
+function updateNinite() {
+  const btn = document.getElementById('ninite-download');
+  document.getElementById('ninite-count').textContent = t('ninite.count', { n: niniteSelected.size });
+  btn.disabled = niniteSelected.size === 0;
+}
+function openNinite() {
+  renderNiniteApps();
+  updateNinite();
+  niniteOverlay.style.display = 'flex';
+}
+function closeNinite() { niniteOverlay.style.display = 'none'; }
+document.getElementById('btn-ninite-close').addEventListener('click', closeNinite);
+niniteOverlay.addEventListener('click', (e) => { if (e.target === niniteOverlay) closeNinite(); });
+document.getElementById('ninite-download').addEventListener('click', () => {
+  if (!niniteSelected.size) return;
+  const slugs = NINITE_APPS.flatMap(g => g.apps.map(a => a[0])).filter(s => niniteSelected.has(s));
+  api.openUrl(`https://ninite.com/${slugs.join('-')}/ninite.exe`);
 });
 
 // ── Atajos de desarrollo (ocultos) ────────────────────────────────
@@ -913,13 +989,25 @@ function markCurrentLang() {
   const cur = getLang();
   settingsOverlay.querySelectorAll('.lang-opt').forEach(o => o.classList.toggle('selected', o.dataset.lang === cur));
 }
-function openSettings() { markCurrentTheme(); markCurrentLang(); settingsOverlay.style.display = 'flex'; }
+function openSettings() { markCurrentTheme(); markCurrentLang(); refreshSoundToggle(); settingsOverlay.style.display = 'flex'; }
 function closeSettings() { settingsOverlay.style.display = 'none'; }
 document.getElementById('btn-settings').addEventListener('click', openSettings);
 document.getElementById('btn-settings-close').addEventListener('click', closeSettings);
 settingsOverlay.addEventListener('click', (e) => { if (e.target === settingsOverlay) closeSettings(); });
 document.querySelectorAll('.theme-opt').forEach(o => {
   o.addEventListener('click', () => setTheme(o.dataset.theme));
+});
+
+// Sonido (silenciar)
+function soundEnabled() { return localStorage.getItem('ruxi-sound') !== '0'; }
+function refreshSoundToggle() {
+  const b = document.getElementById('toggle-sound');
+  b.textContent = soundEnabled() ? t('sound.on') : t('sound.off');
+  b.classList.toggle('off', !soundEnabled());
+}
+document.getElementById('toggle-sound').addEventListener('click', () => {
+  try { localStorage.setItem('ruxi-sound', soundEnabled() ? '0' : '1'); } catch {}
+  refreshSoundToggle();
 });
 
 // ── Idioma: selector + botón 🌐 ───────────────────────────────────
@@ -940,6 +1028,7 @@ window.onLangChanged = function () {
   if (state.currentScreen === 3) refreshUsbList();
   if (state.currentScreen === 7 && typeof applyPcDetect === 'function') applyPcDetect();
   if (state.isoPath) document.getElementById('iso-drop-label').textContent = t('iso.droplabel.sel');
+  refreshSoundToggle();
 };
 
 // ── Aviso de actualización ────────────────────────────────────────
