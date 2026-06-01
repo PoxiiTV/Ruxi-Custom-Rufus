@@ -9,6 +9,10 @@ window.I18N = {
   es: {
     // Title bar / overlays
     'tb.faq': 'Ayuda y preguntas frecuentes',
+    'tb.settings': 'Ajustes',
+    'settings.title': '⚙️ Ajustes',
+    'settings.lang': '🌍 Idioma',
+    'settings.theme': '🎨 Tema de color',
     'tb.lang': 'Cambiar idioma',
     'tb.min': 'Minimizar',
     'tb.close': 'Cerrar',
@@ -215,6 +219,10 @@ window.I18N = {
 
   en: {
     'tb.faq': 'Help and FAQ',
+    'tb.settings': 'Settings',
+    'settings.title': '⚙️ Settings',
+    'settings.lang': '🌍 Language',
+    'settings.theme': '🎨 Color theme',
     'tb.lang': 'Change language',
     'tb.min': 'Minimize',
     'tb.close': 'Close',

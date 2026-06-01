@@ -896,14 +896,39 @@ document.addEventListener('keydown', (e) => {
   else if (k === 'u') { e.preventDefault(); showUpdateBanner('9.9.9'); }
 });
 
+// ── Tema de color: selector + botón 🎨 ────────────────────────────
+const settingsOverlay = document.getElementById('settings-overlay');
+function getTheme() { return localStorage.getItem('ruxi-theme') || 'poxi'; }
+function setTheme(name) {
+  if (name === 'poxi') document.documentElement.removeAttribute('data-theme');
+  else document.documentElement.setAttribute('data-theme', name);
+  try { localStorage.setItem('ruxi-theme', name); } catch {}
+  markCurrentTheme();
+}
+function markCurrentTheme() {
+  const cur = getTheme();
+  document.querySelectorAll('.theme-opt').forEach(o => o.classList.toggle('selected', o.dataset.theme === cur));
+}
+function markCurrentLang() {
+  const cur = getLang();
+  settingsOverlay.querySelectorAll('.lang-opt').forEach(o => o.classList.toggle('selected', o.dataset.lang === cur));
+}
+function openSettings() { markCurrentTheme(); markCurrentLang(); settingsOverlay.style.display = 'flex'; }
+function closeSettings() { settingsOverlay.style.display = 'none'; }
+document.getElementById('btn-settings').addEventListener('click', openSettings);
+document.getElementById('btn-settings-close').addEventListener('click', closeSettings);
+settingsOverlay.addEventListener('click', (e) => { if (e.target === settingsOverlay) closeSettings(); });
+document.querySelectorAll('.theme-opt').forEach(o => {
+  o.addEventListener('click', () => setTheme(o.dataset.theme));
+});
+
 // ── Idioma: selector + botón 🌐 ───────────────────────────────────
 const langOverlay = document.getElementById('lang-overlay');
 function openLang() { langOverlay.style.display = 'flex'; }
 function closeLang() { langOverlay.style.display = 'none'; }
-document.getElementById('btn-lang').addEventListener('click', openLang);
 langOverlay.addEventListener('click', (e) => { if (e.target === langOverlay) closeLang(); });
 document.querySelectorAll('.lang-opt').forEach(b => {
-  b.addEventListener('click', () => { setLang(b.dataset.lang); closeLang(); });
+  b.addEventListener('click', () => { setLang(b.dataset.lang); closeLang(); markCurrentLang(); });
 });
 
 // Cuando cambia el idioma, re-renderiza el contenido dinámico

@@ -11,13 +11,38 @@
   --glass-hi: rgba(255,255,255,0.085);
   --stroke: rgba(255,255,255,0.10);
   --stroke-soft: rgba(255,255,255,0.06);
-  --from: #2f7bff;
-  --mid: #7b5cff;
-  --to: #e23aff;
-  --grad: linear-gradient(105deg,#2f7bff 0%,#7b5cff 48%,#e23aff 100%);
   --r: 22px;
   --green: #54e6a6;
   --red: #ff5577;
+  /* Tema por defecto: Poxi (azul · violeta · rosa) */
+  --from: #2f7bff;
+  --mid: #7b5cff;
+  --to: #e23aff;
+  --grad: linear-gradient(105deg, var(--from) 0%, var(--mid) 48%, var(--to) 100%);
+  --blob1: #2f7bff;
+  --blob2: #e23aff;
+  --blob3: #7b5cff;
+}
+/* ── Temas de color ──────────────────────────────────────────────── */
+html[data-theme="aurora"] {
+  --from: #14d1a0; --mid: #2f8bff; --to: #7b5cff;
+  --blob1: #14d1a0; --blob2: #2f8bff; --blob3: #7b5cff;
+}
+html[data-theme="sunset"] {
+  --from: #ff9d3d; --mid: #ff4d6d; --to: #e23aff;
+  --blob1: #ff8a3d; --blob2: #ff3d6d; --blob3: #e23aff;
+}
+html[data-theme="ocean"] {
+  --from: #00c2ff; --mid: #2f7bff; --to: #6a5cff;
+  --blob1: #00c2ff; --blob2: #2f7bff; --blob3: #6a5cff;
+}
+html[data-theme="ruby"] {
+  --from: #ff5577; --mid: #e23aff; --to: #9b5cff;
+  --blob1: #ff5577; --blob2: #e23aff; --blob3: #9b5cff;
+}
+html[data-theme="lime"] {
+  --from: #9be15d; --mid: #14d1a0; --to: #2f8bff;
+  --blob1: #9be15d; --blob2: #14d1a0; --blob3: #2f8bff;
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { height: 100%; overflow: hidden; }
@@ -43,9 +68,9 @@ body {
   position: absolute; border-radius: 50%;
   filter: blur(90px); opacity: .55; mix-blend-mode: screen;
 }
-.b1 { width:560px;height:560px;left:-140px;top:-120px;background:#2f7bff; }
-.b2 { width:520px;height:520px;right:-120px;top:8%;background:#e23aff;opacity:.42; }
-.b3 { width:600px;height:600px;left:38%;bottom:-260px;background:#7b5cff;opacity:.38; }
+.b1 { width:560px;height:560px;left:-140px;top:-120px;background:var(--blob1); }
+.b2 { width:520px;height:520px;right:-120px;top:8%;background:var(--blob2);opacity:.42; }
+.b3 { width:600px;height:600px;left:38%;bottom:-260px;background:var(--blob3);opacity:.38; }
 .grain {
   position: fixed; inset: 0; z-index: 1; pointer-events: none; opacity: .05;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
@@ -119,6 +144,27 @@ html.needs-lang #lang-overlay { display: flex; }
 
 /* ── Changelog body ──────────────────────────────────────────────── */
 .changelog-body { padding: 4px 2px; }
+
+/* ── Settings ────────────────────────────────────────────────────── */
+.settings-body { padding: 8px 18px 18px; display: flex; flex-direction: column; gap: 16px; }
+.settings-section { display: flex; flex-direction: column; gap: 9px; }
+.settings-label { font-size: 12.5px; font-weight: 700; color: var(--dim); letter-spacing: .3px; }
+.settings-section .lang-options { flex-direction: row; margin-top: 0; }
+.settings-section .lang-opt { flex: 1; font-size: 13.5px; padding: 11px; }
+.lang-opt.selected { border-color: var(--mid); box-shadow: 0 0 0 1px var(--mid); }
+
+/* ── Theme picker ────────────────────────────────────────────────── */
+.theme-panel { max-width: 420px; }
+.theme-grid { padding: 16px 18px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.theme-opt {
+  display: flex; align-items: center; gap: 11px; text-align: left;
+  font-family: inherit; font-size: 13px; font-weight: 600; cursor: pointer;
+  padding: 11px 13px; border-radius: 13px; border: 1.5px solid var(--stroke);
+  background: var(--glass); color: var(--txt); transition: .15s;
+}
+.theme-opt:hover { background: var(--glass-hi); }
+.theme-opt.selected { border-color: var(--mid); box-shadow: 0 0 0 1px var(--mid); }
+.theme-sw { width: 30px; height: 30px; border-radius: 9px; flex-shrink: 0; box-shadow: 0 0 0 1px rgba(255,255,255,.15) inset; }
 
 /* ── Title bar ───────────────────────────────────────────────────── */
 .titlebar {
