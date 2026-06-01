@@ -229,10 +229,9 @@ html.needs-lang #lang-overlay { display: flex; }
 .ctrl:hover { background: var(--glass-hi); color: var(--txt); }
 .ctrl.close:hover { background: rgba(226,58,255,.18); color: #ffb3f4; }
 .ctrl svg { width: 13px; height: 13px; pointer-events: none; }
-/* Iconos de utilidad con color del tema */
-#btn-settings { color: var(--mid); }
-#btn-faq { color: var(--to); }
-#btn-settings:hover, #btn-faq:hover { background: var(--glass-hi); filter: brightness(1.2); }
+/* Iconos de utilidad como emoji a color */
+.ctrl-emoji { font-size: 15px; line-height: 1; pointer-events: none; }
+#btn-settings:hover, #btn-faq:hover { background: var(--glass-hi); }
 /* Botón de cerrar de los paneles: hitbox cómoda */
 .faq-head .ctrl { width: 34px; height: 34px; border-radius: 10px; }
 .faq-head .ctrl svg { width: 15px; height: 15px; }
