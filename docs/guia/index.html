@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Guía de instalación · Ruxi</title>
+<style>
+  :root {
+    --bg:#070810; --txt:#eef0f7; --dim:#9aa0b6; --faint:#666c84;
+    --glass:rgba(255,255,255,.045); --stroke:rgba(255,255,255,.10);
+    --grad:linear-gradient(105deg,#2f7bff 0%,#7b5cff 48%,#e23aff 100%);
+    --green:#54e6a6;
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family:'Segoe UI',system-ui,sans-serif; background:radial-gradient(120% 80% at 20% 0%,#11132a,#070810 60%); color:var(--txt); min-height:100vh; padding:18px; line-height:1.5; }
+  .wrap { max-width:640px; margin:0 auto; }
+  header { text-align:center; padding:14px 0 18px; }
+  header h1 { font-size:22px; background:var(--grad); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+  header p { font-size:13px; color:var(--dim); margin-top:4px; }
+  .chips { display:flex; gap:8px; flex-wrap:wrap; justify-content:center; margin:14px 0; }
+  .chip { padding:8px 12px; border-radius:10px; background:var(--glass); border:1.5px solid var(--stroke); color:var(--dim); font-size:12.5px; font-weight:600; cursor:pointer; }
+  .chip.sel { background:var(--grad); color:#fff; border-color:transparent; }
+  h2 { font-size:15px; margin:22px 0 10px; display:flex; align-items:center; gap:8px; }
+  table { border-collapse:collapse; width:100%; font-size:12.5px; border-radius:10px; overflow:hidden; border:1px solid var(--stroke); }
+  th,td { padding:8px 10px; text-align:left; border-bottom:1px solid var(--stroke); }
+  th { background:rgba(123,92,255,.15); font-size:11px; text-transform:uppercase; letter-spacing:.5px; }
+  tr.hl td { background:rgba(123,92,255,.22); font-weight:700; }
+  ol { list-style:none; display:flex; flex-direction:column; gap:8px; }
+  li { background:var(--glass); border:1px solid var(--stroke); border-radius:12px; padding:12px 14px; }
+  li.crit { border-color:rgba(255,170,0,.35); background:rgba(255,170,0,.06); }
+  li strong { font-size:13.5px; }
+  li .d { font-size:12.5px; color:var(--dim); margin-top:4px; }
+  li .tip { background:rgba(123,92,255,.1); border-radius:8px; padding:7px 10px; margin-top:8px; font-size:11.5px; color:var(--dim); }
+  a.btn { display:inline-block; margin-top:8px; background:var(--grad); color:#fff; text-decoration:none; padding:9px 16px; border-radius:11px; font-size:12.5px; font-weight:700; }
+  footer { text-align:center; color:var(--faint); font-size:11px; margin:26px 0 10px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>🪟 Guía de instalación de Windows</h1>
+    <p>Sigue los pasos para tu caso. Hecho con Ruxi.</p>
+  </header>
+
+  <div class="chips">
+    <span class="chip" data-k="equipo" data-v="desktop">🖥️ Sobremesa</span>
+    <span class="chip" data-k="equipo" data-v="laptop">💻 Portátil</span>
+    <span class="chip" data-k="caso" data-v="new">🆕 PC nuevo</span>
+    <span class="chip" data-k="caso" data-v="reinstall">♻️ Reinstalar</span>
+  </div>
+
+  <h2>⌨️ Cómo arrancar desde el USB</h2>
+  <p style="font-size:12.5px;color:var(--dim);margin-bottom:8px">Apaga el PC con el USB puesto, enciéndelo y pulsa repetidamente la tecla "Boot" de tu marca:</p>
+  <table id="boot"><tr><th>Marca</th><th>BIOS</th><th>Boot</th></tr></table>
+
+  <h2>📀 Durante la instalación</h2>
+  <ol id="install"></ol>
+
+  <h2>🚀 Después de instalar</h2>
+  <ol id="post"></ol>
+
+  <footer>github.com/PoxiiTV/Ruxi-Custom-Rufus</footer>
+</div>
+
+<script>
+const params = new URLSearchParams(location.search);
+const state = {
+  equipo: params.get('equipo') === 'laptop' ? 'laptop' : 'desktop',
+  caso: params.get('caso') === 'reinstall' ? 'reinstall' : 'new',
+};
+
+const BOOT = [
+  ['ASUS / ROG','Del / F2','F8'],['MSI','Del','F11'],['Gigabyte','Del / F2','F12'],
+  ['HP','F10 / Esc','F9'],['Lenovo','F2 / Fn+F2','F12'],['Dell','F2','F12'],['Acer','F2 / Del','F12'],
+];
+
+function installSteps() {
+  const lap = state.equipo === 'laptop', re = state.caso === 'reinstall';
+  const s = [];
+  s.push({t:'Aparece "Instalación de Windows"', d:'Sale una pantalla con idioma y teclado. Déjalo en <em>Español</em> → <strong>Siguiente</strong> → <strong>"Instalar ahora"</strong>.'});
+  s.push({t:'Cuando pida la clave de producto', d:'Pulsa abajo en <em>"No tengo clave de producto"</em>. Windows funcionará igual, lo activas después.'});
+  s.push({t:'Elige la edición (si te lo pregunta)', d:'Normalmente <em>Windows Pro</em>. Si solo hay una opción, dale a Siguiente.'});
+  s.push({t:'Acepta los términos', d:'Marca la casilla → Siguiente.'});
+  s.push({t:'Tipo de instalación: "Personalizada"', d:'Elige <strong>"Personalizada: instalar solo Windows"</strong>. <em>NUNCA</em> "Actualización".'});
+  if (re) s.push({crit:1, t:'⚠️ Momento clave — Borrar el disco viejo', d:'Verás varias particiones (Recuperación, Sistema, EFI, Principal...). Identifica <strong>TU disco por el tamaño total</strong> y borra TODAS sus particiones una a una con <strong>"Eliminar"</strong>, hasta dejar una sola línea: <strong>"Espacio no asignado"</strong>. Selecciónala → Siguiente.', tip: lap ? '💡 Los portátiles suelen tener un solo disco: bórralo entero. Si ves uno aparte pequeño, suele ser de recuperación.' : '💡 Si tienes VARIOS discos (ej. uno de datos), NO toques sus particiones. Borra SOLO las del disco donde va Windows. Fíjate en el tamaño.'});
+  else s.push({crit:1, t:'⚠️ Momento clave — Elegir el disco', d:'Verás tu disco como <strong>"Espacio no asignado"</strong>. Haz clic en él y pulsa <strong>Siguiente</strong>. Windows crea las particiones solo.', tip: lap ? '💡 Si ya hubiera particiones, bórralas todas hasta dejar "Espacio no asignado".' : '💡 Si ves VARIOS discos, elige por el tamaño el que quieras para Windows.'});
+  s.push({t:'Windows se instala solo', d:'Copia archivos y se reinicia varias veces. <strong>No toques nada</strong> y no quites el USB.' + (lap ? ' <strong>Mantén el portátil enchufado.</strong>' : '')});
+  s.push({t:'Configuración inicial', d:'Elige país (España) y teclado. ' + (lap ? 'Cuando pida la red, <strong>conéctate a tu WiFi</strong>.' : 'Si tienes cable de red lo detecta; si no, configura el WiFi.') + '<br>✨ No te obliga a cuenta de Microsoft: entras con tu usuario local.'});
+  s.push({t:'¡Llegaste al escritorio!', d:'Ya está instalado. Ahora déjalo perfecto 👇'});
+  return s;
+}
+function postSteps() {
+  const lap = state.equipo === 'laptop';
+  const s = [];
+  s.push({t:'Conéctate a internet', d: lap ? 'Icono de red (abajo derecha) → tu WiFi → contraseña. Si no aparece, usa cable o comparte del móvil por USB.' : 'Conecta el cable de red, o configura el WiFi (icono abajo derecha).'});
+  s.push({t:'Pasa Windows Update', d:'<strong>Configuración → Windows Update → Buscar actualizaciones</strong>. Instala todo. Esto ya pone muchos drivers.'});
+  if (lap) s.push({t:'Instala los drivers de tu portátil', d:'Web de soporte de tu marca → tu <strong>modelo exacto</strong> → drivers (sobre todo <strong>WiFi, touchpad y teclas Fn</strong>).', tip:'💡 Apps tipo MyASUS, Lenovo Vantage o HP Support Assistant lo hacen solas.'});
+  else s.push({t:'Instala los drivers de tu sobremesa', d:'Driver de la <strong>tarjeta gráfica</strong> (NVIDIA/AMD/Intel) y <strong>chipset</strong> de la web de tu placa base.', tip:'💡 Win+R → <em>msinfo32</em> para ver el modelo de tu placa.'});
+  s.push({t:'Comprueba que todo funciona', d:'Sonido, USB e internet.' + (lap ? ' Y cámara, touchpad, teclas de brillo/volumen.' : '')});
+  s.push({t:'Instala los programas básicos', d:'Con <strong>Ninite</strong> instalas Chrome + VLC + WinRAR de una vez, sin basura.', btn:{label:'📦 Descargar instalador', url:'https://ninite.com/chrome-vlc-winrar/ninite.exe'}});
+  return s;
+}
+
+function render() {
+  document.querySelectorAll('.chip').forEach(c => c.classList.toggle('sel', state[c.dataset.k] === c.dataset.v));
+  const boot = document.getElementById('boot');
+  boot.innerHTML = '<tr><th>Marca</th><th>BIOS</th><th>Boot</th></tr>' + BOOT.map(r => `<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td></tr>`).join('');
+  let n = 0;
+  const li = s => `<li class="${s.crit?'crit':''}"><strong>${++n}. ${s.t}</strong><div class="d">${s.d}</div>${s.btn?`<a class="btn" href="${s.btn.url}">${s.btn.label}</a>`:''}${s.tip?`<div class="tip">${s.tip}</div>`:''}</li>`;
+  document.getElementById('install').innerHTML = installSteps().map(li).join('');
+  document.getElementById('post').innerHTML = postSteps().map(li).join('');
+}
+document.querySelectorAll('.chip').forEach(c => c.addEventListener('click', () => { state[c.dataset.k] = c.dataset.v; render(); }));
+render();
+</script>
+</body>
+</html>
