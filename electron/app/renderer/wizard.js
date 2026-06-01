@@ -1066,8 +1066,12 @@ async function openChangelog() {
   body.innerHTML = `<p style="color:var(--dim);font-size:13px">${t('changelog.loading')}</p>`;
   const r = await api.getReleaseNotes();
   if (!r || !r.ok) { body.innerHTML = `<p style="color:var(--dim);font-size:13px">${t('changelog.error')}</p>`; return; }
-  // Render sencillo de las notas (texto plano con saltos de línea)
-  const safe = escHtml(r.body || '').replace(/\r?\n/g, '<br>').replace(/^### (.*)$/gm, '<strong>$1</strong>');
+  // Render de las notas: convierte el markdown básico (negrita, títulos, listas)
+  let safe = escHtml(r.body || '');
+  safe = safe.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');      // **negrita**
+  safe = safe.replace(/^#{1,6}\s*(.+)$/gm, '<strong>$1</strong>');   // # títulos
+  safe = safe.replace(/^[-*]\s+(.+)$/gm, '• $1');                    // - viñetas → •
+  safe = safe.replace(/\r?\n/g, '<br>');
   body.innerHTML = `<h3 style="margin:0 0 10px">${escHtml(r.name || '')}</h3><div style="font-size:13px;line-height:1.6;color:var(--txt)">${safe}</div>`;
 }
 function closeChangelog() { changelogOverlay.style.display = 'none'; }
