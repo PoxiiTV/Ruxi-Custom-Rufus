@@ -1,6 +1,6 @@
 {
   "name": "ruxi",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "Instala Windows en minutos. Sin complicaciones. Para todos.",
   "main": "electron/app/main.js",
   "scripts": {
@@ -20,6 +20,11 @@
     "productName": "Ruxi",
     "directories": {
       "output": "dist"
+    },
+    "publish": {
+      "provider": "github",
+      "owner": "PoxiiTV",
+      "repo": "Ruxi-Custom-Rufus"
     },
     "win": {
       "icon": "electron/app/renderer/assets/logo.ico",
@@ -60,5 +65,8 @@
         ]
       }
     ]
+  },
+  "dependencies": {
+    "electron-updater": "^6.8.3"
   }
 }

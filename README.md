@@ -101,7 +101,7 @@ Ruxi es un fork de [**Rufus**](https://github.com/pbatard/rufus) — la herramie
 - 🔊 **Silenciar sonidos** desde Ajustes
 - ℹ️ **Acerca de** — versión, buscar actualizaciones, enlaces y VirusTotal
 - 🎉 **Confeti y animaciones** al terminar
-- 🆙 **Aviso de nueva versión** y **novedades** (changelog) desde GitHub
+- 🆙 **Auto-actualización** (versión instalador) y **aviso + novedades** (changelog) desde GitHub
 
 ---
 
@@ -377,7 +377,7 @@ Ruxi is a fork of [**Rufus**](https://github.com/pbatard/rufus) — the world's 
 - 🔊 **Mute sounds** from Settings
 - ℹ️ **About** — version, check for updates, links and VirusTotal
 - 🎉 **Confetti and animations** when done
-- 🆙 **New-version notice** and **what's new** (changelog) from GitHub
+- 🆙 **Auto-update** (installer version) and **notice + what's new** (changelog) from GitHub
 
 ---
 

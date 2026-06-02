@@ -70,11 +70,40 @@ function createWindow() {
   mainWindow.once('ready-to-show', () => mainWindow.show());
 }
 
-app.whenReady().then(createWindow);
+app.whenReady().then(() => {
+  createWindow();
+  setupAutoUpdater();
+});
 app.on('window-all-closed', () => {
   if (activeDownload) activeDownload.abort();
   app.quit();
 });
+
+// ── Auto-actualización (solo versión instalador, no portable) ─────────────────
+const isPortable = !!process.env.PORTABLE_EXECUTABLE_DIR;
+// 'auto'   → instalada con NSIS: se actualiza sola (electron-updater)
+// 'notice' → portable: solo avisa y abre la página de descargas
+// 'none'   → modo desarrollo
+function getUpdateMode() {
+  if (!app.isPackaged) return 'none';
+  return isPortable ? 'notice' : 'auto';
+}
+ipcMain.handle('get-update-mode', () => getUpdateMode());
+
+function setupAutoUpdater() {
+  if (getUpdateMode() !== 'auto') return;
+  try {
+    const { autoUpdater } = require('electron-updater');
+    autoUpdater.autoDownload = true;
+    autoUpdater.autoInstallOnAppQuit = true;
+    autoUpdater.on('update-downloaded', (info) => {
+      if (mainWindow) mainWindow.webContents.send('update-ready', { version: info.version });
+    });
+    autoUpdater.on('error', () => {});  // silencioso: si falla, el usuario sigue normal
+    autoUpdater.checkForUpdates().catch(() => {});
+    ipcMain.handle('install-update', () => { try { autoUpdater.quitAndInstall(); } catch {} });
+  } catch (e) { /* electron-updater no disponible: ignorar */ }
+}
 
 // ── Window controls ───────────────────────────────────────────────────────────
 ipcMain.handle('window-minimize', () => mainWindow.minimize());

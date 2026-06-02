@@ -1090,6 +1090,17 @@ async function checkForUpdate() {
   } catch {}
 }
 
+// Versión instalada: cuando el auto-updater ya descargó la nueva, ofrecer reiniciar
+function showUpdateReadyBanner(version) {
+  const banner = document.getElementById('update-banner');
+  document.getElementById('update-text').textContent = t('update.ready', { v: version || '' });
+  document.getElementById('update-news').style.display = 'none';
+  const dl = document.getElementById('update-dl');
+  dl.textContent = t('update.restart');
+  dl.onclick = () => api.installUpdate();
+  banner.style.display = 'flex';
+}
+
 // ── Changelog / Novedades ─────────────────────────────────────────
 const changelogOverlay = document.getElementById('changelog-overlay');
 async function openChangelog() {
@@ -1111,9 +1122,15 @@ document.getElementById('btn-changelog-close').addEventListener('click', closeCh
 changelogOverlay.addEventListener('click', (e) => { if (e.target === changelogOverlay) closeChangelog(); });
 
 // ── Init ──────────────────────────────────────────────────────────
-(function init() {
+(async function init() {
   const saved = localStorage.getItem('ruxi-lang');
   setLang(saved || 'es');          // aplica idioma (y traduce toda la UI)
   if (!saved) openLang();          // primera vez: pregunta el idioma
-  checkForUpdate();
+  let mode = 'notice';
+  try { mode = await api.getUpdateMode(); } catch {}
+  if (mode === 'notice') {
+    checkForUpdate();              // portable: solo avisa y abre descargas
+  } else if (mode === 'auto') {
+    api.onUpdateReady((d) => showUpdateReadyBanner(d && d.version));  // instalador: se actualiza solo
+  }
 })();

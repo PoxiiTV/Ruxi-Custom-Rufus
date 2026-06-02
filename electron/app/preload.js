@@ -28,4 +28,7 @@ contextBridge.exposeInMainWorld('ruxi', {
   getAppVersion: () => ipcRenderer.invoke('get-app-version'),
   checkUpdate: () => ipcRenderer.invoke('check-update'),
   getReleaseNotes: () => ipcRenderer.invoke('get-release-notes'),
+  getUpdateMode: () => ipcRenderer.invoke('get-update-mode'),
+  onUpdateReady: (cb) => ipcRenderer.on('update-ready', (_, d) => cb(d)),
+  installUpdate: () => ipcRenderer.invoke('install-update'),
 });
