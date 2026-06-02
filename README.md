@@ -131,8 +131,11 @@ Ruxi es un fork de [**Rufus**](https://github.com/pbatard/rufus) — la herramie
 
 </div>
 
-Baja el archivo **`Ruxi-Portable.exe`** de la última release.
-**No se instala** — doble clic y listo. ✨
+Tienes dos opciones en la última release:
+- 🟣 **`Ruxi-Portable.exe`** — no se instala, doble clic y listo
+- 🔵 **`Ruxi-Setup-x.x.x.exe`** — instalador con accesos directos (escritorio y menú inicio)
+
+Cualquiera de las dos sirve. ✨
 
 > 🖥️ Requiere **Windows 10/11 (64 bits)**. Te pedirá permisos de administrador al abrirlo (es normal y necesario para grabar el USB).
 
@@ -402,8 +405,11 @@ Ruxi is a fork of [**Rufus**](https://github.com/pbatard/rufus) — the world's 
 
 </div>
 
-Grab the **`Ruxi-Portable.exe`** file from the latest release.
-**No installation** — double click and go. ✨
+Two options in the latest release:
+- 🟣 **`Ruxi-Portable.exe`** — no install, just double click and go
+- 🔵 **`Ruxi-Setup-x.x.x.exe`** — installer with shortcuts (desktop and Start menu)
+
+Either one works. ✨
 
 > 🖥️ Requires **Windows 10/11 (64-bit)**. It will ask for administrator permissions on launch (normal and required to write the USB).
 

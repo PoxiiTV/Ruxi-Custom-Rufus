@@ -7,7 +7,8 @@
     "start": "electron .",
     "build": "electron-builder",
     "build:portable": "electron-builder --win portable",
-    "build:installer": "electron-builder --win nsis"
+    "build:installer": "electron-builder --win nsis",
+    "build:all": "electron-builder --win portable nsis"
   },
   "devDependencies": {
     "electron": "^22.3.27",
@@ -38,7 +39,8 @@
       "installerHeaderIcon": "electron/app/renderer/assets/logo.ico",
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
-      "shortcutName": "Ruxi"
+      "shortcutName": "Ruxi",
+      "artifactName": "Ruxi-Setup-${version}.exe"
     },
     "portable": {
       "artifactName": "Ruxi-Portable.exe",
