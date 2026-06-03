@@ -12,7 +12,7 @@ Solo tú, un USB y unos minutos. 🚀
 <br>
 
 [![GitHub release](https://img.shields.io/github/v/release/PoxiiTV/Ruxi-Custom-Rufus?include_prereleases&style=for-the-badge&color=7b5cff&labelColor=11132a)](https://github.com/PoxiiTV/Ruxi-Custom-Rufus/releases)
-[![VirusTotal](https://img.shields.io/badge/VirusTotal-100%25%20limpio-54e6a6?style=for-the-badge&labelColor=11132a&logo=virustotal&logoColor=white)](https://www.virustotal.com/gui/file/fd84333989f24b1bba913c1585640b963297e12453160372887fb263816ff07f)
+[![VirusTotal](https://img.shields.io/badge/VirusTotal-100%25%20limpio-54e6a6?style=for-the-badge&labelColor=11132a&logo=virustotal&logoColor=white)](https://www.virustotal.com/gui/file/f41d186c69a2eb239db2114702f45808ed080911c78b8dd7dc55c47fc683a425)
 [![License: GPL v3](https://img.shields.io/badge/Licencia-GPLv3-2f7bff?style=for-the-badge&labelColor=11132a)](LICENSE.txt)
 [![Made by Poxi](https://img.shields.io/badge/hecho%20por-Poxi-e23aff?style=for-the-badge&labelColor=11132a)](https://github.com/PoxiiTV)
 
@@ -127,7 +127,7 @@ Ruxi es un fork de [**Rufus**](https://github.com/pbatard/rufus) — la herramie
 
 🌐 **Web del proyecto:** [poxiitv.github.io/Ruxi-Custom-Rufus](https://poxiitv.github.io/Ruxi-Custom-Rufus/)
 
-🛡️ **100% limpio (v1.4.0)** — VirusTotal: [✓ portable](https://www.virustotal.com/gui/file/fd84333989f24b1bba913c1585640b963297e12453160372887fb263816ff07f) · [✓ instalador](https://www.virustotal.com/gui/file/e8539cd6760da9980af83c2d020de08a90940243b091dfb08bbbae5cf65eaaa7)
+🛡️ **100% limpio (v1.4.1)** — VirusTotal: [✓ portable](https://www.virustotal.com/gui/file/f41d186c69a2eb239db2114702f45808ed080911c78b8dd7dc55c47fc683a425) · [✓ instalador](https://www.virustotal.com/gui/file/ed57a4abf5d112a1c646ac86a2c16866f862da3a572139e452278b12ff757f04)
 
 </div>
 
@@ -401,7 +401,7 @@ Ruxi is a fork of [**Rufus**](https://github.com/pbatard/rufus) — the world's 
 
 ### 👉 **[Download the latest version](https://github.com/PoxiiTV/Ruxi-Custom-Rufus/releases)** 👈
 
-🛡️ **100% clean (v1.4.0)** — VirusTotal: [✓ portable](https://www.virustotal.com/gui/file/fd84333989f24b1bba913c1585640b963297e12453160372887fb263816ff07f) · [✓ installer](https://www.virustotal.com/gui/file/e8539cd6760da9980af83c2d020de08a90940243b091dfb08bbbae5cf65eaaa7)
+🛡️ **100% clean (v1.4.1)** — VirusTotal: [✓ portable](https://www.virustotal.com/gui/file/f41d186c69a2eb239db2114702f45808ed080911c78b8dd7dc55c47fc683a425) · [✓ installer](https://www.virustotal.com/gui/file/ed57a4abf5d112a1c646ac86a2c16866f862da3a572139e452278b12ff757f04)
 
 </div>
 
