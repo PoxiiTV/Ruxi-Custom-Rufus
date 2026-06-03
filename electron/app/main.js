@@ -648,3 +648,18 @@ ipcMain.handle('cancel-flash', () => {
   if (flashProcess) { flashProcess.kill(); flashProcess = null; }
   stopPowerBlocker();
 });
+
+// ── Reiniciar directamente a la BIOS/UEFI ────────────────────────────────────
+//  shutdown /r /fw /f /t 0  → reinicia (/r) entrando en el firmware (/fw),
+//  forzando el cierre de programas (/f) sin espera (/t 0). Requiere admin y UEFI.
+//  Si el PC es BIOS legacy, /fw no está soportado y shutdown devuelve error:
+//  lo capturamos para que la UI ofrezca el método manual (tecla de arranque).
+ipcMain.handle('reboot-to-firmware', async () => {
+  try {
+    execSync('shutdown /r /fw /f /t 0', { timeout: 5000, stdio: ['ignore', 'pipe', 'pipe'] });
+    return { ok: true };
+  } catch (e) {
+    const msg = (e && e.stderr ? e.stderr.toString() : '') || (e && e.message) || '';
+    return { ok: false, error: msg.trim() };
+  }
+});

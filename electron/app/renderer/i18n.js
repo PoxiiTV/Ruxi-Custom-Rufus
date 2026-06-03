@@ -167,6 +167,15 @@ window.I18N = {
     'sb.3': 'Cámbiala a <strong>"Disabled"</strong>',
     'sb.4': 'Guarda y sal (normalmente <strong>F10</strong>)',
     'sb.5': 'Intenta arrancar desde USB de nuevo',
+    'sb.what': '<strong>¿Qué es Secure Boot?</strong> Es una protección de la BIOS que solo deja arrancar sistemas "firmados" por Microsoft. A veces impide arrancar desde el USB y por eso hay que apagarlo un momento para instalar.',
+    'sb.reenable': '✅ <strong>¿Hay que volver a activarlo después?</strong> Sí, es recomendable: cuando Windows ya esté instalado y funcionando, vuelve a la BIOS y pon Secure Boot otra vez en <strong>"Enabled"</strong>. Da algo más de seguridad y algunos juegos/anticheats lo piden. Windows seguirá funcionando igual.',
+
+    // Desplegables "¿por qué?"
+    'why.label': 'ℹ️ ¿Por qué? (saber más)',
+    's7.biosVsBoot.q': 'ℹ️ ¿Qué es la BIOS y qué es el "menú de arranque" (Boot)?',
+    's7.biosVsBoot.a': 'Son dos menús distintos que aparecen al encender, ANTES de que cargue Windows:<br><br>• <strong>Menú de arranque (Boot Menu)</strong>: una lista rápida para elegir "arranco desde el USB esta vez". Es lo que normalmente quieres. Suele ser <strong>F8, F11, F12 o Esc</strong> según la marca.<br>• <strong>BIOS/UEFI (Setup)</strong>: los ajustes internos del PC (orden de arranque, Secure Boot, etc.). Suele ser <strong>Supr (Del) o F2</strong>.<br><br>👉 Para instalar Windows normalmente basta con el <strong>menú Boot</strong> y elegir el USB. Solo entras a la <strong>BIOS</strong> si necesitas desactivar Secure Boot o cambiar ajustes.',
+    's7.noEnter.q': 'ℹ️ No consigo entrar / el teclado no responde al arrancar',
+    's7.noEnter.a': 'A veces el teclado USB no responde tan pronto, o el PC arranca demasiado rápido. Prueba esto <strong>desde el Windows que tienes ahora</strong>:<br><br>1️⃣ <strong>Con Mayús (Shift):</strong> mantén pulsado <strong>Shift</strong> y haz clic en Inicio → Apagar → <strong>Reiniciar</strong>. Entrarás a un menú azul → <em>Solución de problemas → Opciones avanzadas → Configuración de firmware UEFI</em>.<br><br>2️⃣ <strong>Con un comando:</strong> abre <strong>CMD</strong> y escribe <code>shutdown /r /o /t 0</code> → te lleva al mismo menú azul.<br><br>3️⃣ <strong>Desde Ajustes:</strong> Configuración → Sistema → Recuperación → <em>Inicio avanzado → Reiniciar ahora</em>.<br><br>Desde ese menú azul entras directo a la BIOS sin pelearte con las teclas. 😉',
     'btn.toGuide': 'Ver guía de instalación →',
     'btn.anotherUsb': '🔁 Crear otro USB',
     'pc.detect': '💻 Tu PC parece un <strong>{brand}</strong>{extra} → tecla de arranque normalmente <strong>{key}</strong> (resaltada abajo).',
@@ -181,6 +190,14 @@ window.I18N = {
     'cfg.scenario': '¿Qué vas a hacer?',
     'chip.new': '🆕 PC nuevo (sin sistema)',
     'chip.reinstall': '♻️ Reinstalar (borrar lo que hay)',
+    'cfg.backup': '¿Quieres conservar tus archivos?',
+    'chip.bkYes': '💾 Sí, conservarlos',
+    'chip.bkNo': '🗑️ No, borrar todo',
+    'bk.start.t': '💾 ANTES DE NADA: copia tus archivos',
+    'bk.start.d': 'Instalar Windows <strong>borrará todo</strong> el disco. Si quieres conservar fotos, documentos, etc., <strong>cópialos AHORA</strong> (mientras tu Windows actual aún funciona) a <strong>otro disco duro o un USB distinto</strong> al de la instalación.<br><br>Carpetas que casi siempre quieres guardar:<br>📄 <strong>Documentos</strong> · 🖼️ <strong>Imágenes</strong> · 🎬 <strong>Vídeos</strong> · ⬇️ <strong>Descargas</strong> · 🖥️ <strong>Escritorio</strong><br>(están en <code>C:\\Usuarios\\TuNombre\\</code>)',
+    'bk.start.tip': '💡 No copies la carpeta "Windows" ni "Archivos de programa": los programas se reinstalan, no se copian. Solo tus archivos personales.',
+    'bk.end.t': '📂 Devuelve tus archivos al nuevo Windows',
+    'bk.end.d': 'Ahora que Windows está instalado, conecta el disco/USB donde guardaste tus archivos y <strong>cópialos de vuelta</strong> a sus carpetas (Documentos, Imágenes, Escritorio…). Los programas (Chrome, etc.) se instalan aparte, no se copian.',
     'btn.qr': '📱 Llévatela al móvil',
     'btn.pdf': '📄 Guardar en PDF',
     'btn.pdf.gen': '⏳ Generando...',
@@ -190,10 +207,28 @@ window.I18N = {
     'done.sub': 'Windows está instalado y configurado. Ya puedes quitar el USB y disfrutar de tu PC.',
     'guide.progress': '{done} de {total}',
     'btn.finish': 'Cerrar',
+    'btn.toBios': 'Siguiente →',
+
+    // Pantalla 9 — Entrar a la BIOS ahora
+    's9.title': '🔄 ¿Entrar a la BIOS ahora?',
+    's9.sub': 'Cuando tengas el USB listo y tus archivos guardados, este botón reinicia el PC y entra directo a la BIOS, sin tener que acertar la tecla.',
+    's9.warn': '⚠️ <strong>Pulsa esto SOLO si vas a instalar Windows en ESTE mismo ordenador.</strong> Al reiniciar se cerrará todo (incluida esta ventana), así que termina antes lo que tengas abierto.',
+    's9.order.title': '📋 Ya en la BIOS: pon el USB el primero',
+    's9.order.1': 'Busca la sección <strong>"Boot"</strong> (Arranque), también llamada <em>Boot Order</em> o <em>Boot Priority</em>.',
+    's9.order.2': 'Pon tu <strong>USB como primera opción</strong> (<em>Boot Option #1</em>). Se mueve con las teclas <strong>+ / −</strong>, <strong>F5 / F6</strong>, o arrastrando.',
+    's9.order.3': 'Guarda y sal (normalmente <strong>F10</strong>). El PC arrancará desde el USB y empezará la instalación de Windows.',
+    's9.order.tip': '💡 ¿No sabes cuál es tu USB? Suele salir con su marca (Kingston, SanDisk...) o como <em>"UEFI: nombre-del-USB"</em>. Si aparece una opción que pone UEFI, elige esa.',
+    's9.btn': '🔄 Entrar a la BIOS ahora',
+    's9.note': 'Si tu PC no soporta esta función, no pasa nada: reinícialo normal y pulsa la <strong>tecla de arranque</strong> de tu marca (la tienes en la tabla de la pantalla anterior).',
+    's9.qr': '📱 Al reiniciar perderás esta guía de la pantalla. Llévatela en el móvil antes:',
+    's9.qr.btn': 'Abrir QR de la guía',
+    's9.confirm': 'El PC se REINICIARÁ ahora y entrará en la BIOS.\n\n¿Has guardado tus archivos y tienes la guía a mano (en el móvil)?\n\nPulsa Aceptar para continuar.',
+    's9.confirm2': '⚠️ ÚLTIMA confirmación.\n\nEl ordenador se va a apagar y reiniciar AHORA MISMO. Cierra lo que tengas abierto.\n\n¿Seguro al 100% de que quieres reiniciar y entrar a la BIOS?',
+    's9.failed': 'Tu PC no ha podido entrar a la BIOS automáticamente (puede ser una placa antigua o estar en modo Legacy).\n\nReinícialo tú normalmente y pulsa la tecla de arranque de tu marca (mira la tabla de la pantalla anterior).',
 
     // Status / update / changelog
     'status.ready': 'Listo',
-    'status.step': 'Paso {n} de 9',
+    'status.step': 'Paso {n} de 10',
     'status.flashing': 'Grabando USB...',
     'status.usbReady': 'USB listo',
     'status.error': 'Error',
@@ -393,6 +428,13 @@ window.I18N = {
     'sb.3': 'Set it to <strong>"Disabled"</strong>',
     'sb.4': 'Save and exit (usually <strong>F10</strong>)',
     'sb.5': 'Try booting from USB again',
+    'sb.what': '<strong>What is Secure Boot?</strong> It\'s a BIOS protection that only lets systems "signed" by Microsoft boot. Sometimes it stops you booting from the USB, so you have to turn it off for a moment to install.',
+    'sb.reenable': '✅ <strong>Do I have to turn it back on afterwards?</strong> Yes, it\'s recommended: once Windows is installed and working, go back into the BIOS and set Secure Boot to <strong>"Enabled"</strong> again. It adds a bit more security and some games/anti-cheats require it. Windows will keep working the same.',
+    'why.label': 'ℹ️ Why? (learn more)',
+    's7.biosVsBoot.q': 'ℹ️ What is the BIOS and what is the "boot menu"?',
+    's7.biosVsBoot.a': 'They are two different menus that appear when you turn on the PC, BEFORE Windows loads:<br><br>• <strong>Boot Menu</strong>: a quick list to choose "boot from the USB this time". It\'s what you usually want. Usually <strong>F8, F11, F12 or Esc</strong> depending on the brand.<br>• <strong>BIOS/UEFI (Setup)</strong>: the PC\'s internal settings (boot order, Secure Boot, etc.). Usually <strong>Del or F2</strong>.<br><br>👉 To install Windows, the <strong>Boot Menu</strong> and choosing the USB is usually enough. You only go into the <strong>BIOS</strong> if you need to disable Secure Boot or change settings.',
+    's7.noEnter.q': 'ℹ️ I can\'t get in / the keyboard doesn\'t respond at boot',
+    's7.noEnter.a': 'Sometimes the USB keyboard doesn\'t respond that early, or the PC boots too fast. Try this <strong>from the Windows you have now</strong>:<br><br>1️⃣ <strong>With Shift:</strong> hold <strong>Shift</strong> and click Start → Power → <strong>Restart</strong>. You\'ll get a blue menu → <em>Troubleshoot → Advanced options → UEFI Firmware Settings</em>.<br><br>2️⃣ <strong>With a command:</strong> open <strong>CMD</strong> and type <code>shutdown /r /o /t 0</code> → it takes you to the same blue menu.<br><br>3️⃣ <strong>From Settings:</strong> Settings → System → Recovery → <em>Advanced startup → Restart now</em>.<br><br>From that blue menu you go straight into the BIOS without fighting with the keys. 😉',
     'btn.toGuide': 'See installation guide →',
     'btn.anotherUsb': '🔁 Create another USB',
     'pc.detect': '💻 Your PC looks like a <strong>{brand}</strong>{extra} → boot key is usually <strong>{key}</strong> (highlighted below).',
@@ -406,6 +448,14 @@ window.I18N = {
     'cfg.scenario': 'What are you doing?',
     'chip.new': '🆕 New PC (no system)',
     'chip.reinstall': '♻️ Reinstall (wipe what\'s there)',
+    'cfg.backup': 'Do you want to keep your files?',
+    'chip.bkYes': '💾 Yes, keep them',
+    'chip.bkNo': '🗑️ No, erase everything',
+    'bk.start.t': '💾 FIRST OF ALL: copy your files',
+    'bk.start.d': 'Installing Windows will <strong>erase the whole</strong> disk. If you want to keep photos, documents, etc., <strong>copy them NOW</strong> (while your current Windows still works) to <strong>another hard drive or a USB different</strong> from the installation one.<br><br>Folders you almost always want to save:<br>📄 <strong>Documents</strong> · 🖼️ <strong>Pictures</strong> · 🎬 <strong>Videos</strong> · ⬇️ <strong>Downloads</strong> · 🖥️ <strong>Desktop</strong><br>(they\'re in <code>C:\\Users\\YourName\\</code>)',
+    'bk.start.tip': '💡 Don\'t copy the "Windows" or "Program Files" folders: programs get reinstalled, not copied. Only your personal files.',
+    'bk.end.t': '📂 Put your files back on the new Windows',
+    'bk.end.d': 'Now that Windows is installed, plug in the drive/USB where you saved your files and <strong>copy them back</strong> to their folders (Documents, Pictures, Desktop…). Programs (Chrome, etc.) are installed separately, not copied.',
     'btn.qr': '📱 Take it on your phone',
     'btn.pdf': '📄 Save as PDF',
     'btn.pdf.gen': '⏳ Generating...',
@@ -415,9 +465,26 @@ window.I18N = {
     'done.sub': 'Windows is installed and configured. You can now remove the USB and enjoy your PC.',
     'guide.progress': '{done} of {total}',
     'btn.finish': 'Close',
+    'btn.toBios': 'Next →',
+
+    // Screen 9 — Enter the BIOS now
+    's9.title': '🔄 Enter the BIOS now?',
+    's9.sub': 'Once your USB is ready and your files are saved, this button restarts the PC and goes straight into the BIOS, without having to guess the key.',
+    's9.warn': '⚠️ <strong>Only press this if you\'re going to install Windows on THIS same computer.</strong> Restarting will close everything (including this window), so finish whatever you have open first.',
+    's9.order.title': '📋 Once in the BIOS: put the USB first',
+    's9.order.1': 'Find the <strong>"Boot"</strong> section, also called <em>Boot Order</em> or <em>Boot Priority</em>.',
+    's9.order.2': 'Set your <strong>USB as the first option</strong> (<em>Boot Option #1</em>). You move it with the <strong>+ / −</strong> keys, <strong>F5 / F6</strong>, or by dragging.',
+    's9.order.3': 'Save and exit (usually <strong>F10</strong>). The PC will boot from the USB and start the Windows installation.',
+    's9.order.tip': '💡 Don\'t know which one is your USB? It usually shows its brand (Kingston, SanDisk...) or as <em>"UEFI: usb-name"</em>. If there\'s an option that says UEFI, pick that one.',
+    's9.btn': '🔄 Enter the BIOS now',
+    's9.note': 'If your PC doesn\'t support this, no problem: restart it normally and press your brand\'s <strong>boot key</strong> (it\'s in the table on the previous screen).',
+    's9.qr': '📱 When you restart you\'ll lose this on-screen guide. Take it on your phone first:',
+    's9.qr.btn': 'Open guide QR',
+    's9.confirm': 'The PC will RESTART now and enter the BIOS.\n\nHave you saved your files and do you have the guide handy (on your phone)?\n\nClick OK to continue.',
+    's9.confirm2': '⚠️ LAST confirmation.\n\nThe computer is going to shut down and restart RIGHT NOW. Close whatever you have open.\n\nAre you 100% sure you want to restart and enter the BIOS?',
 
     'status.ready': 'Ready',
-    'status.step': 'Step {n} of 9',
+    'status.step': 'Step {n} of 10',
     'status.flashing': 'Writing USB...',
     'status.usbReady': 'USB ready',
     'status.error': 'Error',
@@ -512,8 +579,8 @@ window.GUIDE = {
       s.push({ t: 'Elige la edición (si te lo pregunta)', d: 'Normalmente <em>Windows Pro</em>. Si solo hay una opción, dale a Siguiente.' });
       s.push({ t: 'Acepta los términos', d: 'Marca la casilla de aceptar → Siguiente.' });
       s.push({ t: 'Tipo de instalación: "Personalizada"', d: 'Elige <strong>"Personalizada: instalar solo Windows"</strong>. <em>NUNCA</em> elijas "Actualización".' });
-      if (re) s.push({ crit: 1, t: '⚠️ Momento clave — Borrar el disco viejo', d: 'Verás varias particiones (Recuperación, Sistema, EFI, Principal...). Identifica <strong>TU disco por el tamaño total</strong> y borra TODAS sus particiones una a una con <strong>"Eliminar"</strong>, hasta que quede una sola línea: <strong>"Espacio no asignado"</strong>. Selecciónala y pulsa <strong>Siguiente</strong>.', tip: lap ? '💡 Los portátiles suelen tener un solo disco: bórralo entero sin miedo. Si ves un disco aparte muy pequeño, suele ser de recuperación del fabricante.' : '💡 Si tienes VARIOS discos (ej. uno de datos de 1&nbsp;TB para fotos), NO toques sus particiones. Fíjate bien en el tamaño y borra SOLO las del disco donde quieres Windows.' });
-      else s.push({ crit: 1, t: '⚠️ Momento clave — Elegir el disco', d: 'Verás tu disco como <strong>"Espacio no asignado"</strong>. Haz clic en él y pulsa <strong>Siguiente</strong>. Windows creará las particiones automáticamente, tú no tienes que hacer nada más.', tip: lap ? '💡 Si por algún motivo ya hubiera particiones, bórralas todas con "Eliminar" hasta dejar solo "Espacio no asignado".' : '💡 Si ves VARIOS discos, elige por el tamaño el que quieras usar para Windows. Si ya tuviera particiones, bórralas hasta dejar "Espacio no asignado".' });
+      if (re) s.push({ crit: 1, t: '⚠️ Momento clave — Borrar el disco viejo', d: 'Verás varias particiones (Recuperación, Sistema, EFI, Principal...). Identifica <strong>TU disco por el tamaño total</strong> y borra TODAS sus particiones una a una con <strong>"Eliminar"</strong>, hasta que quede una sola línea: <strong>"Espacio no asignado"</strong>. Selecciónala y pulsa <strong>Siguiente</strong>.', why: 'Un disco se divide en <strong>particiones</strong>, como cajones dentro de un armario. Windows suele tener varias (Sistema, Recuperación, EFI...). Al borrarlas todas, el disco queda como <strong>"Espacio no asignado"</strong>, es decir, un disco totalmente limpio. Cuando lo seleccionas, Windows crea las particiones nuevas él solo y bien hechas. Por eso se borran: para empezar de cero y no arrastrar errores del Windows viejo.<br>⚠️ Borra solo las particiones del disco donde vas a poner Windows. Si tienes <strong>otro disco con tus datos</strong>, NO toques sus particiones.', tip: lap ? '💡 Los portátiles suelen tener un solo disco: bórralo entero sin miedo. Si ves un disco aparte muy pequeño, suele ser de recuperación del fabricante.' : '💡 Si tienes VARIOS discos (ej. uno de datos de 1&nbsp;TB para fotos), NO toques sus particiones. Fíjate bien en el tamaño y borra SOLO las del disco donde quieres Windows.' });
+      else s.push({ crit: 1, t: '⚠️ Momento clave — Elegir el disco', d: 'Verás tu disco como <strong>"Espacio no asignado"</strong>. Haz clic en él y pulsa <strong>Siguiente</strong>. Windows creará las particiones automáticamente, tú no tienes que hacer nada más.', why: 'Una <strong>partición</strong> es una división del disco, como un cajón. "Espacio no asignado" significa que el disco está limpio, sin cajones todavía. Al seleccionarlo y darle a Siguiente, Windows crea las particiones que necesita él solo, bien hechas. No tienes que entender de particiones: deja que Windows lo haga.', tip: lap ? '💡 Si por algún motivo ya hubiera particiones, bórralas todas con "Eliminar" hasta dejar solo "Espacio no asignado".' : '💡 Si ves VARIOS discos, elige por el tamaño el que quieras usar para Windows. Si ya tuviera particiones, bórralas hasta dejar "Espacio no asignado".' });
       s.push({ t: 'Windows se instala solo', d: 'Copia los archivos y se reinicia varias veces. <strong>No toques nada</strong> y no quites el USB hasta que te pida configurar.' + (lap ? ' <strong>Mantén el portátil enchufado a la corriente.</strong>' : '') });
       s.push({ t: 'Configuración inicial de Windows', d: 'Elige país (España) y teclado. ' + (lap ? 'Cuando pida la red, <strong>conéctate a tu WiFi</strong> (te pedirá la contraseña).' : 'Si tienes cable de red, lo detecta solo; si usas WiFi, conéctala cuando lo pida.') + '<br>✨ Como Ruxi ya lo configuró todo, <strong>NO te obliga a poner cuenta de Microsoft</strong>: entrarás directo con tu usuario local.' });
       s.push({ t: '¡Llegaste al escritorio de Windows!', d: 'Ya está instalado. Ahora vamos a dejarlo perfecto con los pasos de abajo 👇' });
@@ -551,8 +618,8 @@ window.GUIDE = {
       s.push({ t: 'Choose the edition (if asked)', d: 'Usually <em>Windows Pro</em>. If there\'s only one option, click Next.' });
       s.push({ t: 'Accept the terms', d: 'Tick the accept box → Next.' });
       s.push({ t: 'Installation type: "Custom"', d: 'Choose <strong>"Custom: install Windows only"</strong>. <em>NEVER</em> pick "Upgrade".' });
-      if (re) s.push({ crit: 1, t: '⚠️ Key moment — Wipe the old disk', d: 'You\'ll see several partitions (Recovery, System, EFI, Primary...). Identify <strong>YOUR disk by its total size</strong> and delete ALL its partitions one by one with <strong>"Delete"</strong>, until a single line remains: <strong>"Unallocated space"</strong>. Select it and press <strong>Next</strong>.', tip: lap ? '💡 Laptops usually have a single disk: wipe it entirely without fear. If you see a small separate disk, it\'s usually the manufacturer\'s recovery.' : '💡 If you have SEVERAL disks (e.g. a 1&nbsp;TB data disk for photos), do NOT touch their partitions. Check the size carefully and delete ONLY those of the disk where you want Windows.' });
-      else s.push({ crit: 1, t: '⚠️ Key moment — Choose the disk', d: 'You\'ll see your disk as <strong>"Unallocated space"</strong>. Click on it and press <strong>Next</strong>. Windows will create the partitions automatically, you don\'t have to do anything else.', tip: lap ? '💡 If for some reason there are already partitions, delete them all with "Delete" until only "Unallocated space" is left.' : '💡 If you see SEVERAL disks, pick by size the one you want for Windows. If it already has partitions, delete them until only "Unallocated space" remains.' });
+      if (re) s.push({ crit: 1, t: '⚠️ Key moment — Wipe the old disk', d: 'You\'ll see several partitions (Recovery, System, EFI, Primary...). Identify <strong>YOUR disk by its total size</strong> and delete ALL its partitions one by one with <strong>"Delete"</strong>, until a single line remains: <strong>"Unallocated space"</strong>. Select it and press <strong>Next</strong>.', why: 'A disk is divided into <strong>partitions</strong>, like drawers inside a cabinet. Windows usually has several (System, Recovery, EFI...). When you delete them all, the disk becomes <strong>"Unallocated space"</strong>, i.e. a completely clean disk. When you select it, Windows creates the new partitions itself, properly. That\'s why you delete them: to start from scratch and not carry over errors from the old Windows.<br>⚠️ Only delete the partitions of the disk where you\'re putting Windows. If you have <strong>another disk with your data</strong>, do NOT touch its partitions.', tip: lap ? '💡 Laptops usually have a single disk: wipe it entirely without fear. If you see a small separate disk, it\'s usually the manufacturer\'s recovery.' : '💡 If you have SEVERAL disks (e.g. a 1&nbsp;TB data disk for photos), do NOT touch their partitions. Check the size carefully and delete ONLY those of the disk where you want Windows.' });
+      else s.push({ crit: 1, t: '⚠️ Key moment — Choose the disk', d: 'You\'ll see your disk as <strong>"Unallocated space"</strong>. Click on it and press <strong>Next</strong>. Windows will create the partitions automatically, you don\'t have to do anything else.', why: 'A <strong>partition</strong> is a division of the disk, like a drawer. "Unallocated space" means the disk is clean, with no drawers yet. When you select it and press Next, Windows creates the partitions it needs itself, properly. You don\'t need to understand partitions: let Windows do it.', tip: lap ? '💡 If for some reason there are already partitions, delete them all with "Delete" until only "Unallocated space" is left.' : '💡 If you see SEVERAL disks, pick by size the one you want for Windows. If it already has partitions, delete them until only "Unallocated space" remains.' });
       s.push({ t: 'Windows installs by itself', d: 'It copies files and restarts several times. <strong>Don\'t touch anything</strong> and don\'t remove the USB until it asks you to configure.' + (lap ? ' <strong>Keep the laptop plugged into power.</strong>' : '') });
       s.push({ t: 'Initial Windows setup', d: 'Choose country and keyboard. ' + (lap ? 'When it asks for the network, <strong>connect to your WiFi</strong> (it will ask for the password).' : 'If you have an ethernet cable it detects it automatically; if you use WiFi, connect it when asked.') + '<br>✨ Since Ruxi already configured everything, it <strong>does NOT force you to add a Microsoft account</strong>: you go straight in with your local user.' });
       s.push({ t: 'You reached the Windows desktop!', d: "It's installed. Now let's make it perfect with the steps below 👇" });

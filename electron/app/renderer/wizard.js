@@ -1,7 +1,8 @@
 /* ══════════════════════════════════════════════════════════════════
    Ruxi — Wizard State Machine
-   8 screens: 0=Welcome, 1=ChooseISO, 2=SelectISO, 3=USB,
-              4=Username, 5=Summary, 6=Progress, 7=Done, 8=InstallGuide
+   10 screens: 0=Welcome, 1=ChooseISO, 2=SelectISO, 3=USB,
+               4=Username, 5=Summary, 6=Progress, 7=Done, 8=InstallGuide,
+               9=EnterBIOS
 ══════════════════════════════════════════════════════════════════ */
 
 const api = window.ruxi;
@@ -684,16 +685,45 @@ document.getElementById('btn-another-usb').addEventListener('click', () => {
 
 // ── SCREEN 8 — Install guide (dinámica según equipo + escenario) ──
 document.getElementById('btn-back-7').addEventListener('click', () => goTo(7));
-document.getElementById('btn-finish').addEventListener('click', () => api.close());
+document.getElementById('btn-finish').addEventListener('click', () => goTo(9));
 
-const guide = { device: 'desktop', scenario: 'new' };
+// ── SCREEN 9 — Entrar a la BIOS ahora ─────────────────────────────
+document.getElementById('btn-back-8').addEventListener('click', () => goTo(8));
+document.getElementById('btn-close-9').addEventListener('click', () => api.close());
+document.getElementById('btn-bios-qr').addEventListener('click', () => openQr());
+document.getElementById('btn-enter-bios').addEventListener('click', async () => {
+  // Doble confirmación: evita reinicios por un clic accidental.
+  if (!confirm(t('s9.confirm'))) return;
+  if (!confirm(t('s9.confirm2'))) return;
+  const btn = document.getElementById('btn-enter-bios');
+  btn.disabled = true;
+  const r = await api.rebootToFirmware();
+  // Si el firmware no soporta /fw (BIOS legacy) o falla, avisamos y dejamos el método manual.
+  if (!r || !r.ok) {
+    btn.disabled = false;
+    alert(t('s9.failed'));
+  }
+  // Si funciona, el PC se reinicia y la app se cierra sola.
+});
 
-// Pasos según el tipo de equipo y el escenario, en el idioma actual
+const guide = { device: 'desktop', scenario: 'new', backup: 'no' };
+
+// Pasos según el tipo de equipo y el escenario, en el idioma actual.
+// Si el usuario quiere conservar archivos, inyectamos un paso al principio
+// (copiar antes de instalar) y otro al final del post (devolverlos).
 function getInstallSteps() {
-  return window.GUIDE[getLang()].install(guide.device === 'laptop', guide.scenario === 'reinstall');
+  const steps = window.GUIDE[getLang()].install(guide.device === 'laptop', guide.scenario === 'reinstall');
+  if (guide.backup === 'yes') {
+    return [{ crit: 1, t: t('bk.start.t'), d: t('bk.start.d'), tip: t('bk.start.tip') }, ...steps];
+  }
+  return steps;
 }
 function getPostSteps() {
-  return window.GUIDE[getLang()].post(guide.device === 'laptop');
+  const steps = window.GUIDE[getLang()].post(guide.device === 'laptop');
+  if (guide.backup === 'yes') {
+    return [...steps, { t: t('bk.end.t'), d: t('bk.end.d') }];
+  }
+  return steps;
 }
 
 function renderSteps(containerId, steps, offset) {
@@ -706,6 +736,7 @@ function renderSteps(containerId, steps, offset) {
         <span>${s.d}</span>
         ${s.action ? `<button type="button" class="step-action-btn" data-url="${s.action.url}">${s.action.label}</button>` : ''}
         ${s.builder ? `<button type="button" class="step-builder-btn" data-ninite="1">${t('ninite.builder')}</button>` : ''}
+        ${s.why ? `<details class="step-why"><summary>${t('why.label')}</summary><div class="step-why-body">${s.why}</div></details>` : ''}
         ${s.tip ? `<div class="tip-box">${s.tip}</div>` : ''}
       </div>
     </label>`).join('');
@@ -757,6 +788,14 @@ document.querySelectorAll('#chips-scenario .chip').forEach(chip => {
     document.querySelectorAll('#chips-scenario .chip').forEach(c => c.classList.remove('selected'));
     chip.classList.add('selected');
     guide.scenario = chip.dataset.scenario;
+    buildGuide();
+  });
+});
+document.querySelectorAll('#chips-backup .chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    document.querySelectorAll('#chips-backup .chip').forEach(c => c.classList.remove('selected'));
+    chip.classList.add('selected');
+    guide.backup = chip.dataset.backup;
     buildGuide();
   });
 });
@@ -944,6 +983,7 @@ document.getElementById('ninite-download').addEventListener('click', () => {
 //  Ctrl+Shift+P  → simula el grabado (pantalla de progreso) sin USB
 //  Ctrl+Shift+G  → salta a la guía final (pantalla 7) sin grabar USB
 //  Ctrl+Shift+H  → salta directo a la guía de instalación (pantalla 8)
+//  Ctrl+Shift+B  → salta a la pantalla "Entrar a la BIOS" (pantalla 9)
 //  Ctrl+Shift+U  → fuerza el banner de actualización (para probarlo)
 let simTimer = null;
 function simulateFlash() {
@@ -978,6 +1018,7 @@ document.addEventListener('keydown', (e) => {
   if (k === 'p') { e.preventDefault(); simulateFlash(); }
   else if (k === 'g') { e.preventDefault(); goTo(7); fireConfetti(); }
   else if (k === 'h') { e.preventDefault(); buildGuide(); goTo(8); }
+  else if (k === 'b') { e.preventDefault(); goTo(9); }
   else if (k === 'u') { e.preventDefault(); showUpdateBanner('9.9.9'); }
 });
 

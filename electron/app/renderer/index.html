@@ -490,6 +490,14 @@
               <div class="boot-key-row" data-brand="dell"><span>Dell</span><span>F2</span><span>F12</span></div>
               <div class="boot-key-row" data-brand="acer"><span>Acer</span><span>F2 / Del</span><span>F12</span></div>
             </div>
+            <details class="step-why">
+              <summary data-i18n="s7.biosVsBoot.q"></summary>
+              <div class="step-why-body" data-i18n="s7.biosVsBoot.a"></div>
+            </details>
+            <details class="step-why">
+              <summary data-i18n="s7.noEnter.q"></summary>
+              <div class="step-why-body" data-i18n="s7.noEnter.a"></div>
+            </details>
           </div>
         </div>
         <div class="guide-step">
@@ -507,6 +515,7 @@
           <span class="tw">▶</span> <span data-i18n="sb.toggle"></span>
         </button>
         <div class="adv-body" id="secure-boot-body" style="display:none">
+          <p data-i18n="sb.what"></p>
           <p data-i18n="sb.intro"></p>
           <ol>
             <li data-i18n="sb.1"></li>
@@ -515,6 +524,7 @@
             <li data-i18n="sb.4"></li>
             <li data-i18n="sb.5"></li>
           </ol>
+          <p data-i18n="sb.reenable"></p>
         </div>
       </div>
 
@@ -544,6 +554,13 @@
             <button class="chip" data-scenario="reinstall" data-i18n="chip.reinstall"></button>
           </div>
         </div>
+        <div class="config-group">
+          <span class="config-label" data-i18n="cfg.backup"></span>
+          <div class="chips" id="chips-backup">
+            <button class="chip selected" data-backup="no" data-i18n="chip.bkNo"></button>
+            <button class="chip" data-backup="yes" data-i18n="chip.bkYes"></button>
+          </div>
+        </div>
       </div>
 
       <div class="guide-tools">
@@ -570,7 +587,38 @@
 
       <div class="screen-footer">
         <button class="btn btn-ghost" id="btn-back-7" data-i18n="btn.back"></button>
-        <button class="btn btn-go" id="btn-finish" data-i18n="btn.finish"></button>
+        <button class="btn btn-go" id="btn-finish" data-i18n="btn.toBios"></button>
+      </div>
+    </div>
+
+    <!-- SCREEN 9 — Entrar a la BIOS ahora -->
+    <div class="screen" id="screen-9">
+      <div class="sec-head"><span class="sec-dot"></span><h2 data-i18n="s9.title"></h2></div>
+      <p class="screen-hint" data-i18n="s9.sub"></p>
+
+      <div class="bios-warn" data-i18n="s9.warn"></div>
+
+      <div class="bios-order">
+        <h3 class="guide-section-title" data-i18n="s9.order.title"></h3>
+        <ol class="bios-order-list">
+          <li data-i18n="s9.order.1"></li>
+          <li data-i18n="s9.order.2"></li>
+          <li data-i18n="s9.order.3"></li>
+        </ol>
+        <div class="tip-box" data-i18n="s9.order.tip"></div>
+      </div>
+
+      <button class="btn btn-go bios-enter-btn" id="btn-enter-bios" data-i18n="s9.btn"></button>
+      <p class="bios-note" data-i18n="s9.note"></p>
+
+      <div class="bios-remind">
+        <span data-i18n="s9.qr"></span>
+        <button class="btn-link" id="btn-bios-qr" data-i18n="s9.qr.btn"></button>
+      </div>
+
+      <div class="screen-footer">
+        <button class="btn btn-ghost" id="btn-back-8" data-i18n="btn.back"></button>
+        <button class="btn btn-ghost" id="btn-close-9" data-i18n="btn.finish"></button>
       </div>
     </div>
 
