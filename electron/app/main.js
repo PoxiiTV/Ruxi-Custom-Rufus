@@ -135,7 +135,8 @@ ipcMain.handle('list-usb-drives', async () => {
         return true;
       })
       .map(d => {
-        const sizeGB = Math.round(parseInt(d.Size) / 1073741824);
+        const sizeBytes = parseInt(d.Size);
+        const sizeGB = Math.round(sizeBytes / 1073741824);
         const freeGB = d.FreeSpace ? Math.round(parseInt(d.FreeSpace) / 1073741824) : null;
         const label = d.VolumeName || '';
         const isRemovable = d.DriveType === 2;
@@ -151,7 +152,7 @@ ipcMain.handle('list-usb-drives', async () => {
           freeGB,
           letters: [d.DeviceID],
           label: displayName,
-          tooSmall: sizeGB < 8,
+          tooSmall: sizeBytes < 6.5 * 1073741824,  // ~6,5 GB reales (un USB de "8GB" suele tener ~7,1 usables)
           driveType: d.DriveType,
           removable: isRemovable,
           isSystem,

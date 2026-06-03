@@ -91,7 +91,7 @@ window.I18N = {
 
     // Screen 3
     's3.title': 'Conecta tu USB',
-    's3.hint': 'El USB debe tener <strong>mínimo 8 GB</strong>. Todo lo que contenga <strong>se borrará</strong>.',
+    's3.hint': 'El USB debe tener <strong>al menos ~6,5 GB</strong> (8 GB recomendado). Todo lo que contenga <strong>se borrará</strong>.',
     's3.warn': '⚠️ <strong>ATENCIÓN:</strong> TODO lo que haya dentro del USB se borrará sin excepción. Haz una copia si tienes algo importante.',
     'usb.searching': 'Buscando dispositivos USB...',
     'usb.none': 'No se detectaron unidades. Conecta tu USB e intenta de nuevo.',
@@ -99,7 +99,7 @@ window.I18N = {
     'usb.system': 'Aquí está tu Windows actual — no se puede usar',
     'usb.badgeSystem': 'Disco del sistema',
     'usb.badgeInternal': '⚠️ Disco interno',
-    'usb.tooSmall': '— mín. 8 GB',
+    'usb.tooSmall': '— mín. 6,5 GB',
     'btn.showInternal': '⚙️ Mostrar discos internos',
     'btn.showUsbOnly': '💾 Mostrar solo USB',
     'btn.search': '🔄 Buscar',
@@ -321,7 +321,7 @@ window.I18N = {
     'btn.continue': 'Continue →',
 
     's3.title': 'Plug in your USB',
-    's3.hint': 'The USB must be <strong>at least 8 GB</strong>. Everything on it <strong>will be erased</strong>.',
+    's3.hint': 'The USB must be <strong>at least ~6.5 GB</strong> (8 GB recommended). Everything on it <strong>will be erased</strong>.',
     's3.warn': '⚠️ <strong>WARNING:</strong> EVERYTHING on the USB will be erased, no exceptions. Make a backup if you have anything important.',
     'usb.searching': 'Searching for USB devices...',
     'usb.none': 'No drives detected. Plug in your USB and try again.',
@@ -329,7 +329,7 @@ window.I18N = {
     'usb.system': "This is your current Windows — it can't be used",
     'usb.badgeSystem': 'System disk',
     'usb.badgeInternal': '⚠️ Internal disk',
-    'usb.tooSmall': '— min. 8 GB',
+    'usb.tooSmall': '— min. 6.5 GB',
     'btn.showInternal': '⚙️ Show internal disks',
     'btn.showUsbOnly': '💾 Show USB only',
     'btn.search': '🔄 Search',
