@@ -26,6 +26,10 @@
       "owner": "PoxiiTV",
       "repo": "Ruxi-Custom-Rufus"
     },
+    "files": [
+      "electron/**/*",
+      "package.json"
+    ],
     "win": {
       "icon": "electron/app/renderer/assets/logo.ico",
       "requestedExecutionLevel": "requireAdministrator",
