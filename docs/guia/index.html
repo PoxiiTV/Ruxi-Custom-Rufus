@@ -37,6 +37,15 @@
   li .tip { background:rgba(123,92,255,.1); border-radius:8px; padding:7px 10px; margin-top:8px; font-size:11.5px; color:var(--dim); }
   a.btn { display:inline-block; margin-top:8px; background:var(--grad); color:#fff; text-decoration:none; padding:9px 16px; border-radius:11px; font-size:12.5px; font-weight:700; }
   footer { text-align:center; color:var(--faint); font-size:11px; margin:26px 0 10px; }
+  details.acc { background:var(--glass); border:1px solid var(--stroke); border-radius:12px; margin-top:8px; overflow:hidden; }
+  details.acc summary { cursor:pointer; list-style:none; padding:11px 14px; font-size:12.5px; font-weight:600; color:var(--txt); }
+  details.acc summary::-webkit-details-marker { display:none; }
+  details.acc[open] summary { border-bottom:1px solid var(--stroke); }
+  details.acc .acc-body { padding:12px 14px; font-size:12.5px; color:var(--dim); line-height:1.6; }
+  details.acc .acc-body code { font-family:ui-monospace,'Consolas',monospace; font-size:11.5px; background:rgba(47,123,255,.14); color:#8bbeff; padding:2px 6px; border-radius:6px; }
+  details.acc .acc-body ol { list-style:decimal; padding-left:20px; display:flex; flex-direction:column; gap:6px; margin-top:8px; }
+  details.acc .acc-body ol li { background:none; border:none; border-radius:0; padding:0; }
+  li details.acc { margin-top:8px; }
 </style>
 </head>
 <body>
@@ -61,12 +70,67 @@
         <span class="chip" data-k="caso" data-v="reinstall">♻️ Reinstalar</span>
       </div>
     </div>
+    <div class="cfg-group">
+      <span class="cfg-label">¿Quieres conservar tus archivos?</span>
+      <div class="chips">
+        <span class="chip" data-k="backup" data-v="no">🗑️ No, borrar todo</span>
+        <span class="chip" data-k="backup" data-v="yes">💾 Sí, conservarlos</span>
+      </div>
+    </div>
   </div>
 
   <h2>⌨️ Cómo arrancar desde el USB</h2>
   <div class="boot-banner" id="boot-banner" style="display:none"></div>
   <p style="font-size:12.5px;color:var(--dim);margin-bottom:8px">Apaga el PC con el USB puesto, enciéndelo y pulsa repetidamente la tecla "Boot" de tu marca:</p>
   <table id="boot"><tr><th>Marca</th><th>BIOS</th><th>Boot</th></tr></table>
+
+  <details class="acc">
+    <summary>ℹ️ ¿Qué es la BIOS y qué es el menú Boot?</summary>
+    <div class="acc-body">
+      Son dos menús distintos que aparecen al encender, ANTES de que cargue Windows:<br>
+      • <strong>Menú de arranque (Boot)</strong>: una lista rápida para elegir "arranco desde el USB esta vez". Es lo que normalmente quieres. Suele ser <strong>F8, F11, F12 o Esc</strong>.<br>
+      • <strong>BIOS/UEFI</strong>: los ajustes internos del PC (orden de arranque, Secure Boot...). Suele ser <strong>Supr (Del) o F2</strong>.<br>
+      👉 Para instalar Windows normalmente basta con el <strong>menú Boot</strong> y elegir el USB. Solo entras a la BIOS si necesitas desactivar Secure Boot o cambiar ajustes.
+    </div>
+  </details>
+  <details class="acc">
+    <summary>ℹ️ No consigo entrar / el teclado no responde</summary>
+    <div class="acc-body">
+      A veces el teclado no responde tan pronto, o el PC arranca demasiado rápido. Prueba esto <strong>desde el Windows que tienes ahora</strong>:
+      <ol>
+        <li><strong>Con Mayús (Shift):</strong> mantén pulsado Shift y haz clic en Inicio → Apagar → <strong>Reiniciar</strong> → menú azul → <em>Solución de problemas → Opciones avanzadas → Configuración de firmware UEFI</em>.</li>
+        <li><strong>Con un comando:</strong> abre <strong>CMD</strong> y escribe <code>shutdown /r /o /t 0</code>.</li>
+        <li><strong>Desde Ajustes:</strong> Configuración → Sistema → Recuperación → <em>Inicio avanzado → Reiniciar ahora</em>.</li>
+      </ol>
+      Desde ese menú azul entras directo a la BIOS sin pelearte con las teclas. 😉
+    </div>
+  </details>
+  <details class="acc">
+    <summary>📋 Cómo ordenar el arranque (que el USB sea el primero)</summary>
+    <div class="acc-body">
+      Una vez dentro de la BIOS:
+      <ol>
+        <li>Busca la sección <strong>"Boot"</strong> (Arranque), también llamada <em>Boot Order</em> o <em>Boot Priority</em>.</li>
+        <li>Pon tu <strong>USB como primera opción</strong> (<em>Boot Option #1</em>). Se mueve con las teclas <strong>+ / −</strong>, <strong>F5 / F6</strong>, o arrastrando.</li>
+        <li>Guarda y sal (normalmente <strong>F10</strong>). El PC arrancará desde el USB y empezará la instalación.</li>
+      </ol>
+      💡 ¿No sabes cuál es tu USB? Suele salir con su marca (Kingston, SanDisk...) o como <em>"UEFI: nombre-del-USB"</em>. Si aparece una opción que pone UEFI, elige esa.
+    </div>
+  </details>
+  <details class="acc">
+    <summary>🔒 Secure Boot (si sale error "Secure Boot Violation")</summary>
+    <div class="acc-body">
+      <strong>¿Qué es?</strong> Una protección de la BIOS que solo deja arrancar sistemas "firmados" por Microsoft. A veces impide arrancar desde el USB, por eso hay que apagarlo un momento.
+      <ol>
+        <li>Entra al BIOS (tecla de tu marca, tabla de arriba).</li>
+        <li>Busca la opción <strong>"Secure Boot"</strong> (pestaña "Boot" o "Security").</li>
+        <li>Cámbiala a <strong>"Disabled"</strong>.</li>
+        <li>Guarda y sal (normalmente <strong>F10</strong>).</li>
+        <li>Intenta arrancar desde el USB de nuevo.</li>
+      </ol>
+      ✅ <strong>¿Hay que volver a activarlo después?</strong> Sí, es recomendable: con Windows ya instalado, vuelve a la BIOS y pon Secure Boot otra vez en <strong>"Enabled"</strong>. Da algo más de seguridad y algunos juegos/anticheats lo piden.
+    </div>
+  </details>
 
   <h2>📀 Durante la instalación</h2>
   <ol id="install"></ol>
@@ -82,6 +146,7 @@ const params = new URLSearchParams(location.search);
 const state = {
   equipo: params.get('equipo') === 'laptop' ? 'laptop' : 'desktop',
   caso: params.get('caso') === 'reinstall' ? 'reinstall' : 'new',
+  backup: params.get('backup') === 'yes' ? 'yes' : 'no',
   marca: (params.get('marca') || '').toLowerCase(),
 };
 
@@ -99,11 +164,12 @@ function installSteps() {
   s.push({t:'Elige la edición (si te lo pregunta)', d:'Normalmente <em>Windows Pro</em>. Si solo hay una opción, dale a Siguiente.'});
   s.push({t:'Acepta los términos', d:'Marca la casilla → Siguiente.'});
   s.push({t:'Tipo de instalación: "Personalizada"', d:'Elige <strong>"Personalizada: instalar solo Windows"</strong>. <em>NUNCA</em> "Actualización".'});
-  if (re) s.push({crit:1, t:'⚠️ Momento clave — Borrar el disco viejo', d:'Verás varias particiones (Recuperación, Sistema, EFI, Principal...). Identifica <strong>TU disco por el tamaño total</strong> y borra TODAS sus particiones una a una con <strong>"Eliminar"</strong>, hasta dejar una sola línea: <strong>"Espacio no asignado"</strong>. Selecciónala → Siguiente.', tip: lap ? '💡 Los portátiles suelen tener un solo disco: bórralo entero. Si ves uno aparte pequeño, suele ser de recuperación.' : '💡 Si tienes VARIOS discos (ej. uno de datos), NO toques sus particiones. Borra SOLO las del disco donde va Windows. Fíjate en el tamaño.'});
-  else s.push({crit:1, t:'⚠️ Momento clave — Elegir el disco', d:'Verás tu disco como <strong>"Espacio no asignado"</strong>. Haz clic en él y pulsa <strong>Siguiente</strong>. Windows crea las particiones solo.', tip: lap ? '💡 Si ya hubiera particiones, bórralas todas hasta dejar "Espacio no asignado".' : '💡 Si ves VARIOS discos, elige por el tamaño el que quieras para Windows.'});
+  if (re) s.push({crit:1, t:'⚠️ Momento clave — Borrar el disco viejo', d:'Verás varias particiones (Recuperación, Sistema, EFI, Principal...). Identifica <strong>TU disco por el tamaño total</strong> y borra TODAS sus particiones una a una con <strong>"Eliminar"</strong>, hasta dejar una sola línea: <strong>"Espacio no asignado"</strong>. Selecciónala → Siguiente.', why:'Un disco se divide en <strong>particiones</strong>, como cajones dentro de un armario. Windows suele tener varias (Sistema, Recuperación, EFI...). Al borrarlas todas, el disco queda como <strong>"Espacio no asignado"</strong> (totalmente limpio) y Windows crea las particiones nuevas él solo, bien hechas. Por eso se borran: para empezar de cero.<br>⚠️ Borra solo las del disco donde va Windows. Si tienes otro disco con tus datos, NO toques sus particiones.', tip: lap ? '💡 Los portátiles suelen tener un solo disco: bórralo entero. Si ves uno aparte pequeño, suele ser de recuperación.' : '💡 Si tienes VARIOS discos (ej. uno de datos), NO toques sus particiones. Borra SOLO las del disco donde va Windows. Fíjate en el tamaño.'});
+  else s.push({crit:1, t:'⚠️ Momento clave — Elegir el disco', d:'Verás tu disco como <strong>"Espacio no asignado"</strong>. Haz clic en él y pulsa <strong>Siguiente</strong>. Windows crea las particiones solo.', why:'Una <strong>partición</strong> es una división del disco, como un cajón. "Espacio no asignado" significa que el disco está limpio, sin cajones todavía. Al seleccionarlo y darle a Siguiente, Windows crea las particiones que necesita él solo. No tienes que entender de particiones: deja que Windows lo haga.', tip: lap ? '💡 Si ya hubiera particiones, bórralas todas hasta dejar "Espacio no asignado".' : '💡 Si ves VARIOS discos, elige por el tamaño el que quieras para Windows.'});
   s.push({t:'Windows se instala solo', d:'Copia archivos y se reinicia varias veces. <strong>No toques nada</strong> y no quites el USB.' + (lap ? ' <strong>Mantén el portátil enchufado.</strong>' : '')});
   s.push({t:'Configuración inicial', d:'Elige país (España) y teclado. ' + (lap ? 'Cuando pida la red, <strong>conéctate a tu WiFi</strong>.' : 'Si tienes cable de red lo detecta; si no, configura el WiFi.') + '<br>✨ No te obliga a cuenta de Microsoft: entras con tu usuario local.'});
   s.push({t:'¡Llegaste al escritorio!', d:'Ya está instalado. Ahora déjalo perfecto 👇'});
+  if (state.backup === 'yes') s.unshift({crit:1, t:'💾 ANTES DE NADA: copia tus archivos', d:'Instalar Windows <strong>borra todo</strong> el disco. Copia AHORA (mientras tu Windows actual aún funciona) tus archivos a <strong>otro disco duro o un USB distinto</strong> al de la instalación.<br>Carpetas: 📄 Documentos · 🖼️ Imágenes · 🎬 Vídeos · ⬇️ Descargas · 🖥️ Escritorio (están en <code>C:\\Usuarios\\TuNombre\\</code>).', tip:'💡 No copies "Windows" ni "Archivos de programa": los programas se reinstalan, no se copian. Solo tus archivos personales.'});
   return s;
 }
 function postSteps() {
@@ -115,6 +181,7 @@ function postSteps() {
   else s.push({t:'Instala los drivers de tu sobremesa', d:'Driver de la <strong>tarjeta gráfica</strong> (NVIDIA/AMD/Intel) y <strong>chipset</strong> de la web de tu placa base.', tip:'💡 Win+R → <em>msinfo32</em> para ver el modelo de tu placa.'});
   s.push({t:'Comprueba que todo funciona', d:'Sonido, USB e internet.' + (lap ? ' Y cámara, touchpad, teclas de brillo/volumen.' : '')});
   s.push({t:'Instala los programas básicos', d:'Con <strong>Ninite</strong> instalas Chrome + VLC + WinRAR de una vez, sin basura.', btn:{label:'📦 Descargar instalador', url:'https://ninite.com/chrome-vlc-winrar/ninite.exe'}});
+  if (state.backup === 'yes') s.push({t:'📂 Devuelve tus archivos al nuevo Windows', d:'Conecta el disco/USB donde guardaste tus archivos y <strong>cópialos de vuelta</strong> a sus carpetas (Documentos, Imágenes, Escritorio…). Los programas (Chrome, etc.) se instalan aparte, no se copian.'});
   return s;
 }
 
@@ -132,7 +199,7 @@ function render() {
     banner.style.display = 'none';
   }
   let n = 0;
-  const li = s => `<li class="${s.crit?'crit':''}"><strong>${++n}. ${s.t}</strong><div class="d">${s.d}</div>${s.btn?`<a class="btn" href="${s.btn.url}">${s.btn.label}</a>`:''}${s.tip?`<div class="tip">${s.tip}</div>`:''}</li>`;
+  const li = s => `<li class="${s.crit?'crit':''}"><strong>${++n}. ${s.t}</strong><div class="d">${s.d}</div>${s.btn?`<a class="btn" href="${s.btn.url}">${s.btn.label}</a>`:''}${s.why?`<details class="acc"><summary>ℹ️ ¿Por qué?</summary><div class="acc-body">${s.why}</div></details>`:''}${s.tip?`<div class="tip">${s.tip}</div>`:''}</li>`;
   document.getElementById('install').innerHTML = installSteps().map(li).join('');
   document.getElementById('post').innerHTML = postSteps().map(li).join('');
 }

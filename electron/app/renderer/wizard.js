@@ -805,7 +805,7 @@ const GUIDE_PAGES_URL = 'https://poxiitv.github.io/Ruxi-Custom-Rufus/guia/';
 function buildGuideUrl() {
   const b = (typeof detectedBrand === 'function') ? detectedBrand() : null;
   const marca = b ? `&marca=${b.brand}` : '';
-  return `${GUIDE_PAGES_URL}?equipo=${guide.device}&caso=${guide.scenario}&idioma=${getLang()}${marca}`;
+  return `${GUIDE_PAGES_URL}?equipo=${guide.device}&caso=${guide.scenario}&backup=${guide.backup}&idioma=${getLang()}${marca}`;
 }
 const qrOverlay = document.getElementById('qr-overlay');
 function openQr() {
