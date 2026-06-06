@@ -3,20 +3,24 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Guía de instalación · Ruxi</title>
+<title>Ruxi</title>
 <style>
   :root {
     --bg:#070810; --txt:#eef0f7; --dim:#9aa0b6; --faint:#666c84;
-    --glass:rgba(255,255,255,.045); --stroke:rgba(255,255,255,.10);
+    --glass:rgba(255,255,255,.045); --glass-hi:rgba(255,255,255,.085); --stroke:rgba(255,255,255,.10);
     --grad:linear-gradient(105deg,#2f7bff 0%,#7b5cff 48%,#e23aff 100%);
-    --green:#54e6a6;
+    --mid:#7b5cff; --green:#54e6a6;
   }
   * { box-sizing:border-box; margin:0; padding:0; }
-  body { font-family:'Segoe UI',system-ui,sans-serif; background:radial-gradient(120% 80% at 20% 0%,#11132a,#070810 60%); color:var(--txt); min-height:100vh; padding:18px; line-height:1.5; }
+  body { font-family:'Segoe UI','Microsoft YaHei',system-ui,sans-serif; background:radial-gradient(120% 80% at 20% 0%,#11132a,#070810 60%); color:var(--txt); min-height:100vh; padding:18px; line-height:1.5; }
   .wrap { max-width:640px; margin:0 auto; }
   header { text-align:center; padding:14px 0 18px; }
   header h1 { font-size:22px; background:var(--grad); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
   header p { font-size:13px; color:var(--dim); margin-top:4px; }
+  .lang-bar { display:flex; flex-wrap:wrap; gap:6px; justify-content:center; margin-top:14px; }
+  .lang-pill { display:inline-flex; align-items:center; gap:6px; padding:6px 11px; border-radius:999px; background:var(--glass); border:1.5px solid var(--stroke); color:var(--dim); font:inherit; font-size:12px; font-weight:600; cursor:pointer; }
+  .lang-pill.sel { background:var(--grad); color:#fff; border-color:transparent; }
+  .lang-pill .flag { width:18px; height:12px; border-radius:2px; display:block; }
   .cfg { display:flex; flex-direction:column; gap:12px; background:var(--glass); border:1px solid var(--stroke); border-radius:14px; padding:14px; margin:14px 0; }
   .cfg-group { display:flex; flex-direction:column; gap:7px; }
   .cfg-label { font-size:12px; font-weight:600; color:var(--dim); }
@@ -51,96 +55,58 @@
 <body>
 <div class="wrap">
   <header>
-    <h1>🪟 Guía de instalación de Windows</h1>
-    <p>Sigue los pasos para tu caso. Hecho con Ruxi.</p>
+    <h1 data-i18n="pdf.docTitle"></h1>
+    <div class="lang-bar" id="lang-bar"></div>
   </header>
 
   <div class="cfg">
     <div class="cfg-group">
-      <span class="cfg-label">¿Qué tipo de equipo es?</span>
+      <span class="cfg-label" data-i18n="cfg.device"></span>
       <div class="chips">
-        <span class="chip" data-k="equipo" data-v="desktop">🖥️ Sobremesa</span>
-        <span class="chip" data-k="equipo" data-v="laptop">💻 Portátil</span>
+        <span class="chip" data-k="equipo" data-v="desktop" data-i18n="chip.desktop"></span>
+        <span class="chip" data-k="equipo" data-v="laptop" data-i18n="chip.laptop"></span>
       </div>
     </div>
     <div class="cfg-group">
-      <span class="cfg-label">¿Qué vas a hacer?</span>
+      <span class="cfg-label" data-i18n="cfg.scenario"></span>
       <div class="chips">
-        <span class="chip" data-k="caso" data-v="new">🆕 PC nuevo</span>
-        <span class="chip" data-k="caso" data-v="reinstall">♻️ Reinstalar</span>
+        <span class="chip" data-k="caso" data-v="new" data-i18n="chip.new"></span>
+        <span class="chip" data-k="caso" data-v="reinstall" data-i18n="chip.reinstall"></span>
       </div>
     </div>
     <div class="cfg-group">
-      <span class="cfg-label">¿Quieres conservar tus archivos?</span>
+      <span class="cfg-label" data-i18n="cfg.backup"></span>
       <div class="chips">
-        <span class="chip" data-k="backup" data-v="no">🗑️ No, borrar todo</span>
-        <span class="chip" data-k="backup" data-v="yes">💾 Sí, conservarlos</span>
+        <span class="chip" data-k="backup" data-v="no" data-i18n="chip.bkNo"></span>
+        <span class="chip" data-k="backup" data-v="yes" data-i18n="chip.bkYes"></span>
       </div>
     </div>
   </div>
 
-  <h2>⌨️ Cómo arrancar desde el USB</h2>
+  <h2 data-i18n="mg.bootHead"></h2>
   <div class="boot-banner" id="boot-banner" style="display:none"></div>
-  <p style="font-size:12.5px;color:var(--dim);margin-bottom:8px">Apaga el PC con el USB puesto, enciéndelo y pulsa repetidamente la tecla "Boot" de tu marca:</p>
-  <table id="boot"><tr><th>Marca</th><th>BIOS</th><th>Boot</th></tr></table>
+  <p style="font-size:12.5px;color:var(--dim);margin-bottom:8px" data-i18n="pdf.bootIntro"></p>
+  <table id="boot"></table>
+  <div id="boot-details"></div>
 
-  <details class="acc">
-    <summary>ℹ️ ¿Qué es la BIOS y qué es el menú Boot?</summary>
-    <div class="acc-body">
-      Son dos menús distintos que aparecen al encender, ANTES de que cargue Windows:<br>
-      • <strong>Menú de arranque (Boot)</strong>: una lista rápida para elegir "arranco desde el USB esta vez". Es lo que normalmente quieres. Suele ser <strong>F8, F11, F12 o Esc</strong>.<br>
-      • <strong>BIOS/UEFI</strong>: los ajustes internos del PC (orden de arranque, Secure Boot...). Suele ser <strong>Supr (Del) o F2</strong>.<br>
-      👉 Para instalar Windows normalmente basta con el <strong>menú Boot</strong> y elegir el USB. Solo entras a la BIOS si necesitas desactivar Secure Boot o cambiar ajustes.
-    </div>
-  </details>
-  <details class="acc">
-    <summary>ℹ️ No consigo entrar / el teclado no responde</summary>
-    <div class="acc-body">
-      A veces el teclado no responde tan pronto, o el PC arranca demasiado rápido. Prueba esto <strong>desde el Windows que tienes ahora</strong>:
-      <ol>
-        <li><strong>Con Mayús (Shift):</strong> mantén pulsado Shift y haz clic en Inicio → Apagar → <strong>Reiniciar</strong> → menú azul → <em>Solución de problemas → Opciones avanzadas → Configuración de firmware UEFI</em>.</li>
-        <li><strong>Con un comando:</strong> abre <strong>CMD</strong> y escribe <code>shutdown /r /o /t 0</code>.</li>
-        <li><strong>Desde Ajustes:</strong> Configuración → Sistema → Recuperación → <em>Inicio avanzado → Reiniciar ahora</em>.</li>
-      </ol>
-      Desde ese menú azul entras directo a la BIOS sin pelearte con las teclas. 😉
-    </div>
-  </details>
-  <details class="acc">
-    <summary>📋 Cómo ordenar el arranque (que el USB sea el primero)</summary>
-    <div class="acc-body">
-      Una vez dentro de la BIOS:
-      <ol>
-        <li>Busca la sección <strong>"Boot"</strong> (Arranque), también llamada <em>Boot Order</em> o <em>Boot Priority</em>.</li>
-        <li>Pon tu <strong>USB como primera opción</strong> (<em>Boot Option #1</em>). Se mueve con las teclas <strong>+ / −</strong>, <strong>F5 / F6</strong>, o arrastrando.</li>
-        <li>Guarda y sal (normalmente <strong>F10</strong>). El PC arrancará desde el USB y empezará la instalación.</li>
-      </ol>
-      💡 ¿No sabes cuál es tu USB? Suele salir con su marca (Kingston, SanDisk...) o como <em>"UEFI: nombre-del-USB"</em>. Si aparece una opción que pone UEFI, elige esa.
-    </div>
-  </details>
-  <details class="acc">
-    <summary>🔒 Secure Boot (si sale error "Secure Boot Violation")</summary>
-    <div class="acc-body">
-      <strong>¿Qué es?</strong> Una protección de la BIOS que solo deja arrancar sistemas "firmados" por Microsoft. A veces impide arrancar desde el USB, por eso hay que apagarlo un momento.
-      <ol>
-        <li>Entra al BIOS (tecla de tu marca, tabla de arriba).</li>
-        <li>Busca la opción <strong>"Secure Boot"</strong> (pestaña "Boot" o "Security").</li>
-        <li>Cámbiala a <strong>"Disabled"</strong>.</li>
-        <li>Guarda y sal (normalmente <strong>F10</strong>).</li>
-        <li>Intenta arrancar desde el USB de nuevo.</li>
-      </ol>
-      ✅ <strong>¿Hay que volver a activarlo después?</strong> Sí, es recomendable: con Windows ya instalado, vuelve a la BIOS y pon Secure Boot otra vez en <strong>"Enabled"</strong>. Da algo más de seguridad y algunos juegos/anticheats lo piden.
-    </div>
-  </details>
-
-  <h2>📀 Durante la instalación</h2>
+  <h2 data-i18n="sec.during"></h2>
   <ol id="install"></ol>
 
-  <h2>🚀 Después de instalar</h2>
+  <h2 data-i18n="sec.after"></h2>
   <ol id="post"></ol>
 
   <footer>github.com/PoxiiTV/Ruxi-Custom-Rufus</footer>
 </div>
 
+<script src="i18n/core.js"></script>
+<script src="i18n/lang/es.js"></script>
+<script src="i18n/lang/en.js"></script>
+<script src="i18n/lang/fr.js"></script>
+<script src="i18n/lang/pt.js"></script>
+<script src="i18n/lang/de.js"></script>
+<script src="i18n/lang/ru.js"></script>
+<script src="i18n/lang/zh.js"></script>
+<script src="i18n/guide-builder.js"></script>
 <script>
 const params = new URLSearchParams(location.search);
 const state = {
@@ -149,6 +115,8 @@ const state = {
   backup: params.get('backup') === 'yes' ? 'yes' : 'no',
   marca: (params.get('marca') || '').toLowerCase(),
 };
+// Idioma: de la URL (?idioma=), si no el guardado, si no ES. setLang valida contra LANGS.
+setLang(params.get('idioma') || getLang());
 
 const BOOT = [
   ['ASUS / ROG','Del / F2','F8','asus'],['MSI','Del','F11','msi'],['Gigabyte','Del / F2','F12','gigabyte'],
@@ -156,54 +124,70 @@ const BOOT = [
 ];
 const BRAND_NAMES = { asus:'ASUS', msi:'MSI', gigabyte:'Gigabyte', hp:'HP', lenovo:'Lenovo', dell:'Dell', acer:'Acer' };
 
-function installSteps() {
-  const lap = state.equipo === 'laptop', re = state.caso === 'reinstall';
-  const s = [];
-  s.push({t:'Aparece "Instalación de Windows"', d:'Sale una pantalla con idioma y teclado. Déjalo en <em>Español</em> → <strong>Siguiente</strong> → <strong>"Instalar ahora"</strong>.'});
-  s.push({t:'Cuando pida la clave de producto', d:'Pulsa abajo en <em>"No tengo clave de producto"</em>. Windows funcionará igual, lo activas después.'});
-  s.push({t:'Elige la edición (si te lo pregunta)', d:'Normalmente <em>Windows Pro</em>. Si solo hay una opción, dale a Siguiente.'});
-  s.push({t:'Acepta los términos', d:'Marca la casilla → Siguiente.'});
-  s.push({t:'Tipo de instalación: "Personalizada"', d:'Elige <strong>"Personalizada: instalar solo Windows"</strong>. <em>NUNCA</em> "Actualización".'});
-  if (re) s.push({crit:1, t:'⚠️ Momento clave — Borrar el disco viejo', d:'Verás varias particiones (Recuperación, Sistema, EFI, Principal...). Identifica <strong>TU disco por el tamaño total</strong> y borra TODAS sus particiones una a una con <strong>"Eliminar"</strong>, hasta dejar una sola línea: <strong>"Espacio no asignado"</strong>. Selecciónala → Siguiente.', why:'Un disco se divide en <strong>particiones</strong>, como cajones dentro de un armario. Windows suele tener varias (Sistema, Recuperación, EFI...). Al borrarlas todas, el disco queda como <strong>"Espacio no asignado"</strong> (totalmente limpio) y Windows crea las particiones nuevas él solo, bien hechas. Por eso se borran: para empezar de cero.<br>⚠️ Borra solo las del disco donde va Windows. Si tienes otro disco con tus datos, NO toques sus particiones.', tip: lap ? '💡 Los portátiles suelen tener un solo disco: bórralo entero. Si ves uno aparte pequeño, suele ser de recuperación.' : '💡 Si tienes VARIOS discos (ej. uno de datos), NO toques sus particiones. Borra SOLO las del disco donde va Windows. Fíjate en el tamaño.'});
-  else s.push({crit:1, t:'⚠️ Momento clave — Elegir el disco', d:'Verás tu disco como <strong>"Espacio no asignado"</strong>. Haz clic en él y pulsa <strong>Siguiente</strong>. Windows crea las particiones solo.', why:'Una <strong>partición</strong> es una división del disco, como un cajón. "Espacio no asignado" significa que el disco está limpio, sin cajones todavía. Al seleccionarlo y darle a Siguiente, Windows crea las particiones que necesita él solo. No tienes que entender de particiones: deja que Windows lo haga.', tip: lap ? '💡 Si ya hubiera particiones, bórralas todas hasta dejar "Espacio no asignado".' : '💡 Si ves VARIOS discos, elige por el tamaño el que quieras para Windows.'});
-  s.push({t:'Windows se instala solo', d:'Copia archivos y se reinicia varias veces. <strong>No toques nada</strong> y no quites el USB.' + (lap ? ' <strong>Mantén el portátil enchufado.</strong>' : '')});
-  s.push({t:'Configuración inicial', d:'Elige país (España) y teclado. ' + (lap ? 'Cuando pida la red, <strong>conéctate a tu WiFi</strong>.' : 'Si tienes cable de red lo detecta; si no, configura el WiFi.') + '<br>✨ No te obliga a cuenta de Microsoft: entras con tu usuario local.'});
-  s.push({t:'¡Llegaste al escritorio!', d:'Ya está instalado. Ahora déjalo perfecto 👇'});
-  if (state.backup === 'yes') s.unshift({crit:1, t:'💾 ANTES DE NADA: copia tus archivos', d:'Instalar Windows <strong>borra todo</strong> el disco. Copia AHORA (mientras tu Windows actual aún funciona) tus archivos a <strong>otro disco duro o un USB distinto</strong> al de la instalación.<br>Carpetas: 📄 Documentos · 🖼️ Imágenes · 🎬 Vídeos · ⬇️ Descargas · 🖥️ Escritorio (están en <code>C:\\Usuarios\\TuNombre\\</code>).', tip:'💡 No copies "Windows" ni "Archivos de programa": los programas se reinstalan, no se copian. Solo tus archivos personales.'});
-  return s;
+function renderLangBar() {
+  const cur = getLang();
+  document.getElementById('lang-bar').innerHTML = window.LANGS.map(l =>
+    `<button class="lang-pill ${l.code === cur ? 'sel' : ''}" data-lang="${l.code}">${l.flag}<span>${l.name}</span></button>`
+  ).join('');
 }
-function postSteps() {
-  const lap = state.equipo === 'laptop';
-  const s = [];
-  s.push({t:'Conéctate a internet', d: lap ? 'Icono de red (abajo derecha) → tu WiFi → contraseña. Si no aparece, usa cable o comparte del móvil por USB.' : 'Conecta el cable de red, o configura el WiFi (icono abajo derecha).'});
-  s.push({t:'Pasa Windows Update', d:'<strong>Configuración → Windows Update → Buscar actualizaciones</strong>. Instala todo. Esto ya pone muchos drivers.'});
-  if (lap) s.push({t:'Instala los drivers de tu portátil', d:'Web de soporte de tu marca → tu <strong>modelo exacto</strong> → drivers (sobre todo <strong>WiFi, touchpad y teclas Fn</strong>).', tip:'💡 Apps tipo MyASUS, Lenovo Vantage o HP Support Assistant lo hacen solas.'});
-  else s.push({t:'Instala los drivers de tu sobremesa', d:'Driver de la <strong>tarjeta gráfica</strong> (NVIDIA/AMD/Intel) y <strong>chipset</strong> de la web de tu placa base.', tip:'💡 Win+R → <em>msinfo32</em> para ver el modelo de tu placa.'});
-  s.push({t:'Comprueba que todo funciona', d:'Sonido, USB e internet.' + (lap ? ' Y cámara, touchpad, teclas de brillo/volumen.' : '')});
-  s.push({t:'Instala los programas básicos', d:'Con <strong>Ninite</strong> instalas Chrome + VLC + WinRAR de una vez, sin basura.', btn:{label:'📦 Descargar instalador', url:'https://ninite.com/chrome-vlc-winrar/ninite.exe'}});
-  if (state.backup === 'yes') s.push({t:'📂 Devuelve tus archivos al nuevo Windows', d:'Conecta el disco/USB donde guardaste tus archivos y <strong>cópialos de vuelta</strong> a sus carpetas (Documentos, Imágenes, Escritorio…). Los programas (Chrome, etc.) se instalan aparte, no se copian.'});
-  return s;
+
+function bootDetails() {
+  const order = `<ol><li>${t('s9.order.1')}</li><li>${t('s9.order.2')}</li><li>${t('s9.order.3')}</li></ol>${t('s9.order.tip')}`;
+  const sb = `${t('sb.what')}<br><br>${t('sb.intro')}<ol><li>${t('sb.1')}</li><li>${t('sb.2')}</li><li>${t('sb.3')}</li><li>${t('sb.4')}</li><li>${t('sb.5')}</li></ol>${t('sb.reenable')}`;
+  const det = [
+    [t('s7.biosVsBoot.q'), t('s7.biosVsBoot.a')],
+    [t('s7.noEnter.q'), t('s7.noEnter.a')],
+    [t('s9.order.title'), order],
+    [t('sb.toggle'), sb],
+  ];
+  return det.map(d => `<details class="acc"><summary>${d[0]}</summary><div class="acc-body">${d[1]}</div></details>`).join('');
 }
 
 function render() {
+  document.documentElement.lang = getLang();
+  document.title = t('pdf.docTitle').replace(/<[^>]+>/g, '');
+  applyI18n();
+
+  // Chips seleccionados
   document.querySelectorAll('.chip').forEach(c => c.classList.toggle('sel', state[c.dataset.k] === c.dataset.v));
-  const boot = document.getElementById('boot');
-  boot.innerHTML = '<tr><th>Marca</th><th>BIOS</th><th>Boot</th></tr>' +
+
+  // Tabla de teclas de arranque
+  document.getElementById('boot').innerHTML =
+    `<tr><th>${t('boot.brand')}</th><th>${t('boot.bios')}</th><th>${t('boot.boot')}</th></tr>` +
     BOOT.map(r => `<tr class="${r[3] === state.marca ? 'hl' : ''}"><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td></tr>`).join('');
+
+  // Banner de marca detectada
   const banner = document.getElementById('boot-banner');
   const row = BOOT.find(r => r[3] === state.marca);
   if (row) {
-    banner.innerHTML = `💻 Tu PC parece un <strong>${BRAND_NAMES[state.marca]}</strong> → tecla de arranque normalmente <strong>${row[2]}</strong> (resaltada abajo).`;
+    banner.innerHTML = t('pc.detect', { brand: BRAND_NAMES[state.marca], extra: '', key: row[2] });
     banner.style.display = 'block';
   } else {
     banner.style.display = 'none';
   }
+
+  // Desplegables de arranque (BIOS vs Boot, no entro, orden, Secure Boot)
+  document.getElementById('boot-details').innerHTML = bootDetails();
+
+  // Pasos (constructor compartido)
   let n = 0;
-  const li = s => `<li class="${s.crit?'crit':''}"><strong>${++n}. ${s.t}</strong><div class="d">${s.d}</div>${s.btn?`<a class="btn" href="${s.btn.url}">${s.btn.label}</a>`:''}${s.why?`<details class="acc"><summary>ℹ️ ¿Por qué?</summary><div class="acc-body">${s.why}</div></details>`:''}${s.tip?`<div class="tip">${s.tip}</div>`:''}</li>`;
-  document.getElementById('install').innerHTML = installSteps().map(li).join('');
-  document.getElementById('post').innerHTML = postSteps().map(li).join('');
+  const li = s => `<li class="${s.crit ? 'crit' : ''}"><strong>${++n}. ${s.t}</strong><div class="d">${s.d}</div>${s.action ? `<a class="btn" href="${s.action.url}" target="_blank" rel="noopener">${s.action.label}</a>` : ''}${s.why ? `<details class="acc"><summary>${t('why.label')}</summary><div class="acc-body">${s.why}</div></details>` : ''}${s.tip ? `<div class="tip">${s.tip}</div>` : ''}</li>`;
+  const install = window.GUIDE_BUILD.install({ laptop: state.equipo === 'laptop', reinstall: state.caso === 'reinstall', backup: state.backup === 'yes' });
+  const post = window.GUIDE_BUILD.post({ laptop: state.equipo === 'laptop', backup: state.backup === 'yes' });
+  document.getElementById('install').innerHTML = install.map(li).join('');
+  document.getElementById('post').innerHTML = post.map(li).join('');
+
+  renderLangBar();
 }
-document.querySelectorAll('.chip').forEach(c => c.addEventListener('click', () => { state[c.dataset.k] = c.dataset.v; render(); }));
+
+// Delegación: chips de configuración + selector de idioma
+document.addEventListener('click', (e) => {
+  const chip = e.target.closest('.chip');
+  if (chip) { state[chip.dataset.k] = chip.dataset.v; render(); return; }
+  const pill = e.target.closest('.lang-pill');
+  if (pill) { setLang(pill.dataset.lang); render(); return; }
+});
+
 render();
 </script>
 </body>

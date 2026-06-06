@@ -96,7 +96,7 @@ Ruxi es un fork de [**Rufus**](https://github.com/pbatard/rufus) — la herramie
 
 ### ✨ Detalles
 - ⚙️ **Ajustes** — Un panel para idioma y tema (y futuros ajustes)
-- 🌍 **Multi-idioma** — Español e Inglés, se elige al abrir y se cambia cuando quieras
+- 🌍 **Multi-idioma** — 7 idiomas (Español, English, Français, Português, Deutsch, Русский, 中文), se elige al abrir y se cambia cuando quieras
 - 🎨 **Temas de color** — 6 paletas (Poxi, Aurora, Sunset, Océano, Ruby, Lima)
 - 🔊 **Silenciar sonidos** desde Ajustes
 - ℹ️ **Acerca de** — versión, buscar actualizaciones, enlaces y VirusTotal
@@ -372,7 +372,7 @@ Ruxi is a fork of [**Rufus**](https://github.com/pbatard/rufus) — the world's 
 
 ### ✨ Details
 - ⚙️ **Settings** — One panel for language and theme (and future settings)
-- 🌍 **Bilingual** — Spanish and English, chosen on launch and switchable anytime
+- 🌍 **Multilingual** — 7 languages (Español, English, Français, Português, Deutsch, Русский, 中文), chosen on launch and switchable anytime
 - 🎨 **Color themes** — 6 palettes (Poxi, Aurora, Sunset, Ocean, Ruby, Lime)
 - 🔊 **Mute sounds** from Settings
 - ℹ️ **About** — version, check for updates, links and VirusTotal

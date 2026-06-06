@@ -426,7 +426,7 @@ let waitingTipTimer = null;
 function startWaitingTips() {
   const el = document.getElementById('waiting-tip-text');
   const box = document.getElementById('waiting-tip');
-  let order = [...window.GUIDE[getLang()].tips].sort(() => Math.random() - 0.5);
+  let order = [...window.GUIDE_BUILD.tips()].sort(() => Math.random() - 0.5);
   let i = 0;
   const show = () => {
     box.classList.remove('show');
@@ -708,22 +708,20 @@ document.getElementById('btn-enter-bios').addEventListener('click', async () => 
 
 const guide = { device: 'desktop', scenario: 'new', backup: 'no' };
 
-// Pasos según el tipo de equipo y el escenario, en el idioma actual.
-// Si el usuario quiere conservar archivos, inyectamos un paso al principio
-// (copiar antes de instalar) y otro al final del post (devolverlos).
+// Pasos según el tipo de equipo / escenario / backup, en el idioma actual.
+// La lógica (incluida la inyección de los pasos de backup) vive en guide-builder.js.
 function getInstallSteps() {
-  const steps = window.GUIDE[getLang()].install(guide.device === 'laptop', guide.scenario === 'reinstall');
-  if (guide.backup === 'yes') {
-    return [{ crit: 1, t: t('bk.start.t'), d: t('bk.start.d'), tip: t('bk.start.tip') }, ...steps];
-  }
-  return steps;
+  return window.GUIDE_BUILD.install({
+    laptop: guide.device === 'laptop',
+    reinstall: guide.scenario === 'reinstall',
+    backup: guide.backup === 'yes',
+  });
 }
 function getPostSteps() {
-  const steps = window.GUIDE[getLang()].post(guide.device === 'laptop');
-  if (guide.backup === 'yes') {
-    return [...steps, { t: t('bk.end.t'), d: t('bk.end.d') }];
-  }
-  return steps;
+  return window.GUIDE_BUILD.post({
+    laptop: guide.device === 'laptop',
+    backup: guide.backup === 'yes',
+  });
 }
 
 function renderSteps(containerId, steps, offset) {

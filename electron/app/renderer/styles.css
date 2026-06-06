@@ -47,7 +47,7 @@ html[data-theme="lime"] {
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { height: 100%; overflow: hidden; }
 body {
-  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  font-family: 'Plus Jakarta Sans', 'Segoe UI', 'Microsoft YaHei', system-ui, sans-serif;
   background: var(--bg);
   color: var(--txt);
   -webkit-font-smoothing: antialiased;
@@ -133,7 +133,7 @@ html.needs-lang #lang-overlay { display: flex; }
 .lang-body .welcome-icon img { border-radius: 16px; }
 .lang-body h2 { font-size: 20px; font-weight: 800; margin-top: 8px; }
 .lang-sub { font-size: 13px; color: var(--dim); }
-.lang-options { display: flex; flex-direction: column; gap: 10px; width: 100%; margin-top: 14px; }
+.lang-options { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; width: 100%; margin-top: 14px; }
 .lang-opt {
   font-family: inherit; font-size: 15px; font-weight: 700; cursor: pointer;
   padding: 14px; border-radius: 14px; border: 1.5px solid var(--stroke);
@@ -146,11 +146,11 @@ html.needs-lang #lang-overlay { display: flex; }
 .changelog-body { padding: 4px 2px; }
 
 /* ── Settings ────────────────────────────────────────────────────── */
-.settings-body { padding: 8px 18px 18px; display: flex; flex-direction: column; gap: 16px; }
+.settings-body { padding: 8px 18px 18px; display: flex; flex-direction: column; gap: 16px; overflow-y: auto; min-height: 0; }
 .settings-section { display: flex; flex-direction: column; gap: 9px; }
 .settings-label { font-size: 12.5px; font-weight: 700; color: var(--dim); letter-spacing: .3px; }
-.settings-section .lang-options { flex-direction: row; margin-top: 0; }
-.settings-section .lang-opt { flex: 1; font-size: 13.5px; padding: 11px; }
+.settings-section .lang-options { margin-top: 0; }
+.settings-section .lang-opt { font-size: 13px; padding: 11px 10px; }
 .lang-opt.selected { border-color: var(--mid); box-shadow: 0 0 0 1px var(--mid); }
 .settings-toggle {
   align-self: flex-start; font-family: inherit; font-size: 13px; font-weight: 600;
@@ -179,12 +179,12 @@ html.needs-lang #lang-overlay { display: flex; }
 .ninite-intro { font-size: 12.5px; color: var(--dim); line-height: 1.5; padding: 0 18px; margin-bottom: 8px; }
 .ninite-apps { overflow-y: auto; padding: 0 18px; display: flex; flex-direction: column; gap: 12px; }
 /* Scrollbar bonita en los paneles con scroll */
-.ninite-apps::-webkit-scrollbar, .faq-list::-webkit-scrollbar { width: 8px; }
-.ninite-apps::-webkit-scrollbar-track, .faq-list::-webkit-scrollbar-track { background: transparent; margin: 4px 0; }
-.ninite-apps::-webkit-scrollbar-thumb, .faq-list::-webkit-scrollbar-thumb {
+.ninite-apps::-webkit-scrollbar, .faq-list::-webkit-scrollbar, .settings-body::-webkit-scrollbar { width: 8px; }
+.ninite-apps::-webkit-scrollbar-track, .faq-list::-webkit-scrollbar-track, .settings-body::-webkit-scrollbar-track { background: transparent; margin: 4px 0; }
+.ninite-apps::-webkit-scrollbar-thumb, .faq-list::-webkit-scrollbar-thumb, .settings-body::-webkit-scrollbar-thumb {
   background: var(--mid); border-radius: 8px; border: 2px solid transparent; background-clip: padding-box;
 }
-.ninite-apps::-webkit-scrollbar-thumb:hover, .faq-list::-webkit-scrollbar-thumb:hover { background: var(--to); background-clip: padding-box; }
+.ninite-apps::-webkit-scrollbar-thumb:hover, .faq-list::-webkit-scrollbar-thumb:hover, .settings-body::-webkit-scrollbar-thumb:hover { background: var(--to); background-clip: padding-box; }
 .ninite-group { display: flex; flex-direction: column; gap: 7px; }
 .ninite-cat { font-size: 11.5px; font-weight: 700; color: var(--dim); }
 .ninite-list { display: flex; flex-wrap: wrap; gap: 7px; }
