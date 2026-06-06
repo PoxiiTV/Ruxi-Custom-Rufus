@@ -16,9 +16,9 @@ Solo tú, un USB y unos minutos. 🚀
 [![License: GPL v3](https://img.shields.io/badge/Licencia-GPLv3-2f7bff?style=for-the-badge&labelColor=11132a)](LICENSE.txt)
 [![Made by Poxi](https://img.shields.io/badge/hecho%20por-Poxi-e23aff?style=for-the-badge&labelColor=11132a)](https://github.com/PoxiiTV)
 
-**🇪🇸 Español** · [🇬🇧 English](#-ruxi--english)
+**Español** · [English](#-ruxi--english)
 
-🌍 **La app está disponible en 7 idiomas** — 🇪🇸 Español · 🇬🇧 English · 🇫🇷 Français · 🇵🇹 Português · 🇩🇪 Deutsch · 🇷🇺 Русский · 🇨🇳 中文
+🌍 **La app está disponible en 7 idiomas** — Español · English · Français · Português · Deutsch · Русский · 中文
 
 </div>
 
@@ -294,9 +294,9 @@ Hecho con 💜 por **Poxi**
 **No jargon. No weird steps. No paying anyone.**
 Just you, a USB stick and a few minutes. 🚀
 
-[🇪🇸 Español](#-ruxi) · **🇬🇧 English**
+[Español](#-ruxi) · **English**
 
-🌍 **The app is available in 7 languages** — 🇪🇸 Español · 🇬🇧 English · 🇫🇷 Français · 🇵🇹 Português · 🇩🇪 Deutsch · 🇷🇺 Русский · 🇨🇳 中文
+🌍 **The app is available in 7 languages** — Español · English · Français · Português · Deutsch · Русский · 中文
 
 </div>
 
