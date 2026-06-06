@@ -18,6 +18,8 @@ Solo tú, un USB y unos minutos. 🚀
 
 **🇪🇸 Español** · [🇬🇧 English](#-ruxi--english)
 
+🌍 **La app está disponible en 7 idiomas** — 🇪🇸 Español · 🇬🇧 English · 🇫🇷 Français · 🇵🇹 Português · 🇩🇪 Deutsch · 🇷🇺 Русский · 🇨🇳 中文
+
 </div>
 
 <br>
@@ -293,6 +295,8 @@ Hecho con 💜 por **Poxi**
 Just you, a USB stick and a few minutes. 🚀
 
 [🇪🇸 Español](#-ruxi) · **🇬🇧 English**
+
+🌍 **The app is available in 7 languages** — 🇪🇸 Español · 🇬🇧 English · 🇫🇷 Français · 🇵🇹 Português · 🇩🇪 Deutsch · 🇷🇺 Русский · 🇨🇳 中文
 
 </div>
 
